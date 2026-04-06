@@ -39,10 +39,14 @@ struct CountdownWidgetView: View {
                     .foregroundStyle(fgPrimary)
                     .minimumScaleFactor(0.4)
                     .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, -4)
                 } else {
                     Text("—")
                         .font(.system(size: 32, weight: .bold, design: .rounded))
                         .foregroundStyle(fgPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, -7)
                 }
 
                 Spacer()
@@ -64,12 +68,13 @@ struct CountdownWidgetView: View {
                     .foregroundStyle(fgSecondary)
                     .padding(.bottom, 6)
 
-                progressBar(progress: 1 - countdown.progress)
+                progressBar(progress: countdown.barProgress)
 
                 Text(countdown.title)
-                    .font(.system(.caption2, design: .rounded, weight: .medium))
-                    .foregroundStyle(fgSecondary)
-                    .lineLimit(1)
+                    .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                    .foregroundStyle(fgPrimary)
+                    .lineLimit(2)
+                    .truncationMode(.tail)
                     .padding(.top, 4)
             }
         }
@@ -95,10 +100,14 @@ struct CountdownWidgetView: View {
                     .foregroundStyle(fgPrimary)
                     .minimumScaleFactor(0.4)
                     .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, -7)
                 } else {
                     Text("—")
                         .font(.system(size: 32, weight: .bold, design: .rounded))
                         .foregroundStyle(fgPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, -7)
                 }
 
                 Spacer()
@@ -120,12 +129,13 @@ struct CountdownWidgetView: View {
                     .foregroundStyle(fgSecondary)
                     .padding(.bottom, 6)
 
-                progressBar(progress: 1 - countdown.progress)
+                progressBar(progress: countdown.barProgress)
 
                 Text(countdown.title)
-                    .font(.system(.caption2, design: .rounded, weight: .medium))
-                    .foregroundStyle(fgSecondary)
-                    .lineLimit(1)
+                    .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                    .foregroundStyle(fgPrimary)
+                    .lineLimit(2)
+                    .truncationMode(.tail)
                     .padding(.top, 4)
             }
         }
@@ -215,8 +225,8 @@ struct CountdownWidgetView: View {
         return luminance < 0.5 // dark bg → light text
     }
 
-    private var fgPrimary: Color { usesLightText ? .white : Color(.label) }
-    private var fgSecondary: Color { usesLightText ? .white.opacity(0.55) : Color(.secondaryLabel) }
+    private var fgPrimary: Color { usesLightText ? .white : .black }
+    private var fgSecondary: Color { usesLightText ? .white.opacity(0.5) : .black.opacity(0.4) }
 
     private var backgroundImage: UIImage? {
         guard let path = entry.countdown?.backgroundImagePath else { return nil }

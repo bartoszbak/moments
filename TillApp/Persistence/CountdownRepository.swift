@@ -50,7 +50,8 @@ final class CountdownRepository: NSObject, ObservableObject {
                 targetDate: countdown.targetDate,
                 createdDate: countdown.createdDate,
                 backgroundColorHex: countdown.backgroundColorHex,
-                backgroundImagePath: sharedImagePath
+                backgroundImagePath: sharedImagePath,
+                startPercentage: countdown.startPercentage
             )
         }
         SharedDataStore.save(widgetData)
@@ -65,7 +66,8 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundImagePath: String? = nil,
         thumbnailImagePath: String? = nil,
         backgroundColorIndex: Int? = nil,
-        backgroundColorHex: String? = nil
+        backgroundColorHex: String? = nil,
+        startPercentage: Double = 1.0
     ) throws {
         let context = backgroundContext
         let colorIndex = backgroundColorIndex
@@ -79,6 +81,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.thumbnailImagePath = thumbnailImagePath
             entity.backgroundColorIndex = colorIndex.map { Int16($0) } ?? -1
             entity.backgroundColorHex = colorHex
+            entity.startPercentage = startPercentage
             entity.createdDate = Date()
             try context.save()
         }
@@ -93,7 +96,8 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundImagePath: String? = nil,
         thumbnailImagePath: String? = nil,
         backgroundColorIndex: Int?? = nil,
-        backgroundColorHex: String?? = nil
+        backgroundColorHex: String?? = nil,
+        startPercentage: Double? = nil
     ) throws {
         let id = countdown.id
         let context = backgroundContext
@@ -110,6 +114,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let thumbnailImagePath { entity.thumbnailImagePath = thumbnailImagePath }
             if let newColorIndex { entity.backgroundColorIndex = newColorIndex.map { Int16($0) } ?? -1 }
             if let newColorHex { entity.backgroundColorHex = newColorHex }
+            if let startPercentage { entity.startPercentage = startPercentage }
             try context.save()
         }
     }

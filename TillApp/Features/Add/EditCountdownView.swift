@@ -10,6 +10,7 @@ struct EditCountdownView: View {
     @State private var title = ""
     @State private var targetDate = Date()
     @State private var background: BackgroundSelection = .none
+    @State private var startPercentage: Double = 1.0
     @State private var hasLoaded = false
 
     private var countdown: Countdown? {
@@ -30,6 +31,7 @@ struct EditCountdownView: View {
                     }
                 }
                 BackgroundPickerSection(selection: $background)
+                ProgressStartPickerSection(value: $startPercentage)
             }
             .navigationTitle("Edit Countdown")
             .navigationBarTitleDisplayMode(.inline)
@@ -50,7 +52,11 @@ struct EditCountdownView: View {
                 } else if let hex = countdown.backgroundColorHex,
                           let color = Color(hex: hex) {
                     background = .custom(color)
+                } else if let thumbURL = countdown.thumbnailImageURL,
+                          let image = UIImage(contentsOfFile: thumbURL.path) {
+                    background = .photo(image)
                 }
+                startPercentage = countdown.startPercentage
                 hasLoaded = true
             }
         }
@@ -87,7 +93,8 @@ struct EditCountdownView: View {
         try? repository.update(
             countdown, title: trimmed, targetDate: targetDate,
             backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
-            backgroundColorIndex: colorIndex, backgroundColorHex: colorHex
+            backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
+            startPercentage: startPercentage
         )
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         dismiss()

@@ -14,6 +14,7 @@
 		2744DDC21016A57F7C767C51 /* EditCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C58FCE12709F9EBFB8854C /* EditCountdownView.swift */; };
 		3499A7D9EA4A65C46EE123FD /* CountdownRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AB3326C401C746A46C153B /* CountdownRepository.swift */; };
 		3A0C0BADD738F2316BB967AE /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35972B7006B54128E8E34193 /* SharedDataStore.swift */; };
+		43FB1660E36AD33E7B6CB72A /* ProgressStartPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF84AFCF89DF8198F77A0699 /* ProgressStartPickerSection.swift */; };
 		4572E3CB6E92802F9FD3A52B /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35972B7006B54128E8E34193 /* SharedDataStore.swift */; };
 		4F188A86A675200C82550FF3 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B070EA8FE958E37EC91E99B /* Color+Hex.swift */; };
 		5532E3FCF0BECE3D5A3D8E37 /* AddCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22EF982CEF1A03E1286ECE6C /* AddCountdownView.swift */; };
@@ -94,6 +95,7 @@
 		F76E950F560E90D719DA5AD0 /* WidgetCountdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCountdown.swift; sourceTree = "<group>"; };
 		F7C58FCE12709F9EBFB8854C /* EditCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCountdownView.swift; sourceTree = "<group>"; };
 		FE7EC32305026F8DDCA55DCF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		FF84AFCF89DF8198F77A0699 /* ProgressStartPickerSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStartPickerSection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -224,6 +226,7 @@
 				22EF982CEF1A03E1286ECE6C /* AddCountdownView.swift */,
 				94889C08DC49F011604F63F9 /* BackgroundPickerSection.swift */,
 				F7C58FCE12709F9EBFB8854C /* EditCountdownView.swift */,
+				FF84AFCF89DF8198F77A0699 /* ProgressStartPickerSection.swift */,
 			);
 			path = Add;
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 				2744DDC21016A57F7C767C51 /* EditCountdownView.swift in Sources */,
 				C817D064FDFF4173FE1B3495 /* ImageStorageService.swift in Sources */,
 				F8BB03FFB125F8AE18D09A02 /* PersistenceController.swift in Sources */,
+				43FB1660E36AD33E7B6CB72A /* ProgressStartPickerSection.swift in Sources */,
 				4572E3CB6E92802F9FD3A52B /* SharedDataStore.swift in Sources */,
 				7C02586524F7A7DE7EBE085D /* TillApp.xcdatamodeld in Sources */,
 				C2915FEA057737C608C1831A /* TillAppApp.swift in Sources */,

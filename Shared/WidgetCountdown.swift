@@ -7,6 +7,7 @@ struct WidgetCountdown: Codable, Identifiable {
     let createdDate: Date
     let backgroundColorHex: String?
     let backgroundImagePath: String?
+    let startPercentage: Double
 
     var daysRemaining: Int {
         max(0, Int(targetDate.timeIntervalSinceNow) / 86400)
@@ -22,6 +23,9 @@ struct WidgetCountdown: Codable, Identifiable {
         let elapsed = Date().timeIntervalSince(createdDate)
         return min(1, max(0, elapsed / total))
     }
+
+    /// Width fraction to pass to the progress bar (accounts for startPercentage)
+    var barProgress: Double { startPercentage * (1 - progress) }
 }
 
 extension WidgetCountdown {
@@ -31,6 +35,7 @@ extension WidgetCountdown {
         targetDate: Date().addingTimeInterval(42 * 86400),
         createdDate: Date().addingTimeInterval(-14 * 86400),
         backgroundColorHex: nil,
-        backgroundImagePath: nil
+        backgroundImagePath: nil,
+        startPercentage: 1.0
     )
 }

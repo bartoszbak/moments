@@ -9,6 +9,7 @@ final class CountdownEntity: NSManagedObject {
     @NSManaged var thumbnailImagePath: String?
     @NSManaged var backgroundColorIndex: Int16
     @NSManaged var backgroundColorHex: String?
+    @NSManaged var startPercentage: Double
     @NSManaged var createdDate: Date?
 
     @nonobjc static func fetchRequest() -> NSFetchRequest<CountdownEntity> {
@@ -25,7 +26,8 @@ final class CountdownEntity: NSManagedObject {
             thumbnailImageURL: thumbnailImagePath.map { URL(fileURLWithPath: $0) },
             backgroundColorIndex: backgroundColorIndex >= 0 ? Int(backgroundColorIndex) : nil,
             backgroundColorHex: backgroundColorHex,
-            createdDate: createdDate
+            createdDate: createdDate,
+            startPercentage: startPercentage > 0 ? startPercentage : 1.0
         )
     }
 }

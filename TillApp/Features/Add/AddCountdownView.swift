@@ -8,6 +8,7 @@ struct AddCountdownView: View {
     @State private var title = ""
     @State private var targetDate = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
     @State private var background: BackgroundSelection = .none
+    @State private var startPercentage: Double = 1.0
     @State private var isCreating = false
     @State private var showTitleError = false
     @State private var showPastDateWarning = false
@@ -37,6 +38,7 @@ struct AddCountdownView: View {
                     }
                 }
                 BackgroundPickerSection(selection: $background)
+                ProgressStartPickerSection(value: $startPercentage)
             }
             .navigationTitle("New Countdown")
             .navigationBarTitleDisplayMode(.inline)
@@ -80,7 +82,8 @@ struct AddCountdownView: View {
             try repository.create(
                 title: trimmed, targetDate: targetDate,
                 backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
-                backgroundColorIndex: colorIndex, backgroundColorHex: colorHex
+                backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
+                startPercentage: startPercentage
             )
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             dismiss()

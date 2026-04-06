@@ -9,6 +9,7 @@ struct Countdown: Identifiable, Hashable {
     var backgroundColorIndex: Int?   // preset index (0-5)
     var backgroundColorHex: String?  // custom color hex; overrides preset if set
     let createdDate: Date
+    var startPercentage: Double      // progress bar starting fill (0.5 – 1.0)
 
     func timeRemaining(from now: Date) -> TimeInterval {
         max(0, targetDate.timeIntervalSince(now))
