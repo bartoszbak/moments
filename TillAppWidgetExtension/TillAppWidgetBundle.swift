@@ -1,0 +1,32 @@
+import WidgetKit
+import SwiftUI
+
+@main
+struct TillAppWidgetBundle: WidgetBundle {
+    var body: some Widget {
+        CountdownWidget()
+    }
+}
+
+struct CountdownWidget: Widget {
+    let kind = "CountdownWidget"
+
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(
+            kind: kind,
+            intent: SelectCountdownIntent.self,
+            provider: CountdownProvider()
+        ) { entry in
+            CountdownWidgetView(entry: entry)
+        }
+        .configurationDisplayName("Countdown")
+        .description("See how many days until your event.")
+        .supportedFamilies([
+            .systemSmall,
+            .systemMedium,
+            .accessoryCircular,
+            .accessoryRectangular,
+            .accessoryInline,
+        ])
+    }
+}

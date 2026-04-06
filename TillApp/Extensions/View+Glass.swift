@@ -1,0 +1,47 @@
+import SwiftUI
+
+extension View {
+    /// Applies Liquid Glass on iOS 26+, falls back to ultraThinMaterial on earlier OS.
+    @ViewBuilder
+    func glassCard(cornerRadius: CGFloat = 20) -> some View {
+        if #available(iOS 26, *) {
+            self.glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
+        } else {
+            self
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                .shadow(color: .black.opacity(0.12), radius: 12, x: 0, y: 4)
+        }
+    }
+
+    /// Interactive Liquid Glass for tappable surfaces.
+    @ViewBuilder
+    func interactiveGlassCard(cornerRadius: CGFloat = 20) -> some View {
+        if #available(iOS 26, *) {
+            self.glassEffect(.regular.interactive(), in: .rect(cornerRadius: cornerRadius))
+        } else {
+            self
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                .shadow(color: .black.opacity(0.15), radius: 16, x: 0, y: 6)
+        }
+    }
+
+    /// Apply `.glass` button style on iOS 26+, `.bordered` on earlier OS.
+    @ViewBuilder
+    func adaptiveGlassButtonStyle() -> some View {
+        if #available(iOS 26, *) {
+            self.buttonStyle(.glass)
+        } else {
+            self.buttonStyle(.bordered)
+        }
+    }
+
+    /// Apply `.glassProminent` button style on iOS 26+, `.borderedProminent` on earlier OS.
+    @ViewBuilder
+    func adaptiveGlassProminentButtonStyle() -> some View {
+        if #available(iOS 26, *) {
+            self.buttonStyle(.glassProminent)
+        } else {
+            self.buttonStyle(.borderedProminent)
+        }
+    }
+}
