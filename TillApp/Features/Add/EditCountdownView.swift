@@ -12,6 +12,7 @@ struct EditCountdownView: View {
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
     @State private var hasLoaded = false
+    @State private var showDeleteConfirmation = false
 
     private var countdown: Countdown? {
         repository.countdowns.first { $0.id == countdownID }
@@ -32,6 +33,21 @@ struct EditCountdownView: View {
                 }
                 BackgroundPickerSection(selection: $background)
                 ProgressStartPickerSection(value: $startPercentage)
+                Section {
+                    Button(role: .destructive) {
+                        showDeleteConfirmation = true
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("Delete")
+                            Spacer()
+                        }
+                    }
+                }
+            }
+            .alert("Delete this countdown?", isPresented: $showDeleteConfirmation) {
+                Button("Delete", role: .destructive, action: delete)
+                Button("Cancel", role: .cancel) { }
             }
             .navigationTitle("Edit Countdown")
             .navigationBarTitleDisplayMode(.inline)
@@ -97,6 +113,13 @@ struct EditCountdownView: View {
             startPercentage: startPercentage
         )
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        dismiss()
+    }
+
+    private func delete() {
+        guard let countdown else { return }
+        try? repository.delete(countdown)
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         dismiss()
     }
 }

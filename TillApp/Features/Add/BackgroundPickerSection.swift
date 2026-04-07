@@ -99,27 +99,29 @@ struct BackgroundPickerSection: View {
     private var photoPicker: some View {
         PhotosPicker(selection: $photoItem, matching: .images) {
             HStack(spacing: 14) {
-                ZStack {
-                    if case .photo(let image) = selection {
-                        Image(uiImage: image).resizable().scaledToFill()
-                    } else {
-                        Color.secondary.opacity(0.12)
-                        Image(systemName: "photo.on.rectangle.angled").foregroundStyle(.secondary)
+                if case .photo(let image) = selection {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 36, height: 36)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    Text("Edit")
+                        .font(.body).foregroundStyle(.primary)
+                    Spacer()
+                    Button {
+                        selection = .none
+                        photoItem = nil
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.red)
+                            .font(.title3)
                     }
+                    .buttonStyle(.plain)
+                } else {
+                    Label("Choose Photo", systemImage: "photo.on.rectangle.angled")
+                        .font(.body)
+                        .foregroundStyle(.primary)
                 }
-                .frame(width: 36, height: 36)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-                VStack(alignment: .leading, spacing: 1) {
-                    if case .photo = selection {
-                        Text("Change Photo")
-                        Button("Remove") { selection = .none; photoItem = nil }
-                            .font(.caption).foregroundStyle(.red)
-                    } else {
-                        Text("Choose Photo")
-                    }
-                }
-                .font(.body).foregroundStyle(.primary)
             }
         }
     }

@@ -1,6 +1,6 @@
 name: TillApp
 options:
-  bundleIdPrefix: com.tillapp
+  bundleIdPrefix: com.tillappcounter
   deploymentTarget:
     iOS: "17.0"
   xcodeVersion: "16.0"
@@ -24,7 +24,7 @@ targets:
       - path: Shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.tillapp.TillApp
+        PRODUCT_BUNDLE_IDENTIFIER: com.tillappcounter.TillApp
         INFOPLIST_FILE: TillApp/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1,2"
@@ -32,6 +32,9 @@ targets:
         CODE_SIGN_STYLE: Automatic
     entitlements:
       path: TillApp/TillApp.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.tillappcounter.TillApp
     dependencies:
       - target: TillAppWidgetExtension
         embed: true
@@ -67,13 +70,16 @@ targets:
       - path: Shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.tillapp.TillApp.widget
+        PRODUCT_BUNDLE_IDENTIFIER: com.tillappcounter.TillApp.widget
         INFOPLIST_FILE: TillAppWidgetExtension/Info.plist
         SKIP_INSTALL: YES
         SWIFT_VERSION: "5.0"
         CODE_SIGN_STYLE: Automatic
     entitlements:
       path: TillAppWidgetExtension/TillAppWidgetExtension.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.tillappcounter.TillApp
     dependencies:
       - sdk: WidgetKit.framework
       - sdk: SwiftUI.framework

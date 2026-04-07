@@ -35,7 +35,7 @@ final class CountdownRepository: NSObject, ObservableObject {
 
     private func syncCountdowns() {
         countdowns = fetchedResultsController.fetchedObjects?.compactMap { $0.toCountdown() } ?? []
-        let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.tillapp.TillApp")
+        let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.tillappcounter.TillApp")
         let widgetData = countdowns.map { countdown -> WidgetCountdown in
             var sharedImagePath: String? = nil
             if let thumbURL = countdown.thumbnailImageURL, let groupURL {
@@ -120,6 +120,12 @@ final class CountdownRepository: NSObject, ObservableObject {
     }
 
     // MARK: - Delete
+
+    func deleteAll() throws {
+        for countdown in countdowns {
+            try delete(countdown)
+        }
+    }
 
     func delete(_ countdown: Countdown) throws {
         let id = countdown.id

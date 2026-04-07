@@ -44,4 +44,15 @@ extension View {
             self.buttonStyle(.borderedProminent)
         }
     }
+
+    /// Black-tinted circular Liquid Glass on iOS 26+, dark circle fallback on earlier OS.
+    /// Use inside a Button — omits .interactive() to avoid a double-ring with Button's own highlight.
+    @ViewBuilder
+    func blackGlassCircle() -> some View {
+        if #available(iOS 26, *) {
+            self.glassEffect(.regular.tint(.black), in: .circle)
+        } else {
+            self.background(Color.black.opacity(0.85), in: Circle())
+        }
+    }
 }

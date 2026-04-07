@@ -25,7 +25,7 @@ struct CountdownWidgetView: View {
 
     private var smallView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Top row: big number + "Days / untill" label
+            // Top row: big number + "Days / untill"
             HStack(alignment: .top, spacing: 4) {
                 if let countdown = entry.countdown {
                     Group {
@@ -61,24 +61,25 @@ struct CountdownWidgetView: View {
 
             Spacer()
 
-            // Bottom: date + progress bar + title
             if let countdown = entry.countdown {
-                Text(countdown.targetDate, format: dateFormat)
-                    .font(.system(.caption, design: .rounded, weight: .medium))
-                    .foregroundStyle(fgSecondary)
+                Text(countdown.title)
+                    .font(.system(.headline, design: .rounded, weight: .semibold))
+                    .foregroundStyle(fgPrimary)
+                    .lineLimit(2)
+                    .truncationMode(.tail)
                     .padding(.bottom, 6)
 
                 progressBar(progress: countdown.barProgress)
 
-                Text(countdown.title)
-                    .font(.system(.subheadline, design: .rounded, weight: .semibold))
-                    .foregroundStyle(fgPrimary)
-                    .lineLimit(2)
-                    .truncationMode(.tail)
-                    .padding(.top, 4)
+                Text(countdown.targetDate.smartFormatted)
+                    .font(.system(.caption, design: .rounded, weight: .medium))
+                    .foregroundStyle(fgSecondary)
+                    .padding(.top, 6)
             }
         }
-        .padding(6)
+        .padding(.horizontal, 2)
+        .padding(.top, 2)
+        .padding(.bottom, 6)
         .containerBackground(for: .widget) { containerBackground }
     }
 
@@ -122,24 +123,25 @@ struct CountdownWidgetView: View {
 
             Spacer()
 
-            // Bottom: date + progress bar + title
             if let countdown = entry.countdown {
-                Text(countdown.targetDate, format: dateFormat)
-                    .font(.system(.caption, design: .rounded, weight: .medium))
-                    .foregroundStyle(fgSecondary)
-                    .padding(.bottom, 6)
-
-                progressBar(progress: countdown.barProgress)
-
                 Text(countdown.title)
-                    .font(.system(.subheadline, design: .rounded, weight: .semibold))
+                    .font(.system(.headline, design: .rounded, weight: .semibold))
                     .foregroundStyle(fgPrimary)
                     .lineLimit(2)
                     .truncationMode(.tail)
-                    .padding(.top, 4)
+                    .padding(.bottom, 8)
+
+                progressBar(progress: countdown.barProgress)
+
+                Text(countdown.targetDate.smartFormatted)
+                    .font(.system(.subheadline, design: .rounded, weight: .medium))
+                    .foregroundStyle(fgSecondary)
+                    .padding(.top, 6)
             }
         }
-        .padding(6)
+        .padding(.horizontal, 2)
+        .padding(.top, 2)
+        .padding(.bottom, 6)
         .containerBackground(for: .widget) { containerBackground }
     }
 
@@ -251,9 +253,6 @@ struct CountdownWidgetView: View {
         }
     }
 
-    private var dateFormat: Date.FormatStyle {
-        .dateTime.day(.twoDigits).month(.twoDigits).year(.defaultDigits)
-    }
 
     private func progressBar(progress: Double) -> some View {
         GeometryReader { geo in
@@ -288,3 +287,4 @@ struct CountdownWidgetView: View {
 } timeline: {
     CountdownEntry(date: .now, countdown: .placeholder)
 }
+

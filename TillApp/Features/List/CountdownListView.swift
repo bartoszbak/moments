@@ -6,6 +6,7 @@ struct CountdownListView: View {
 
     @State private var showingAddSheet = false
     @State private var editingCountdown: Countdown?
+    @State private var showingDevMenu = false
 
     var body: some View {
         NavigationStack {
@@ -36,30 +37,62 @@ struct CountdownListView: View {
                 }
             }
             .listStyle(.insetGrouped)
-            .navigationTitle("Countdowns")
+            .navigationTitle("Till")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showingDevMenu = true
+                    } label: {
+                        Image(systemName: "curlybraces")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.primary)
+                    }
+                }
+            }
             .overlay {
                 if repository.countdowns.isEmpty {
                     ContentUnavailableView {
-                        Label("No Countdowns", systemImage: "timer")
+                        Label("No Countdowns", systemImage: "app.badge")
                     } description: {
-                        Text("Tap + to add your first countdown")
+                        Text("")
                     } actions: {
-                        Button("Add Countdown") { showingAddSheet = true }
+                        Button("Add new") { showingAddSheet = true }
                             .adaptiveGlassProminentButtonStyle()
+                            .padding(.bottom, 16)
                     }
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showingAddSheet = true
-                    } label: {
+        }
+        .overlay(alignment: .bottomTrailing) {
+            if !repository.countdowns.isEmpty {
+            Button {
+                showingAddSheet = true
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            } label: {
+                Group {
+                    if #available(iOS 26, *) {
                         Image(systemName: "plus")
-                            .fontWeight(.semibold)
+                            .font(.title2.weight(.semibold))
+                            .frame(width: 56, height: 56)
+                            .glassEffect(.regular.interactive(), in: .circle)
+                    } else {
+                        Image(systemName: "plus")
+                            .font(.title2.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .frame(width: 56, height: 56)
+                            .background(.ultraThinMaterial, in: Circle())
+                            .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 4)
                     }
-                    .adaptiveGlassButtonStyle()
                 }
             }
+            .buttonStyle(.plain)
+            .padding(.trailing, 20)
+            .padding(.bottom, 0)
+            }
+        }
+        .sheet(isPresented: $showingDevMenu) {
+            DeveloperMenuView()
         }
         .sheet(isPresented: $showingAddSheet) {
             AddCountdownView()

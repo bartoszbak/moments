@@ -20,7 +20,7 @@ A clean, minimal iOS countdown app. Add events, see how many days remain, and pu
 1. Clone the repo
 2. Open `TillApp.xcodeproj` in Xcode
 3. Set your development team in Signing & Capabilities for both the **TillApp** and **TillAppWidgetExtension** targets
-4. Ensure the App Group `group.com.tillapp.TillApp` is enabled on both targets
+4. Ensure the App Group `group.com.tillappcounter.TillApp` is enabled on both targets
 5. Build and run
 
 ## Architecture

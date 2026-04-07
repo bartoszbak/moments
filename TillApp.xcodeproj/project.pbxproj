@@ -11,7 +11,9 @@
 		182F370370E1937FD226573C /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743A5F36759D0FAF9FC312A1 /* ColorPalette.swift */; };
 		20E7F8F12FE2A9740A026983 /* TillAppWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7248535AC65F4D5A01D14706 /* TillAppWidgetBundle.swift */; };
 		21B8D9ADBA4160A3B9F81030 /* SelectCountdownIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C278AC33D2A0528B3D880746 /* SelectCountdownIntent.swift */; };
+		21EC6860FB5708BB272C9CF0 /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158F1BD2A575D68A8234B496 /* Date+SmartFormat.swift */; };
 		2744DDC21016A57F7C767C51 /* EditCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C58FCE12709F9EBFB8854C /* EditCountdownView.swift */; };
+		2A10EAA4915F6F1B0D8B8D81 /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158F1BD2A575D68A8234B496 /* Date+SmartFormat.swift */; };
 		3499A7D9EA4A65C46EE123FD /* CountdownRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5AB3326C401C746A46C153B /* CountdownRepository.swift */; };
 		3A0C0BADD738F2316BB967AE /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35972B7006B54128E8E34193 /* SharedDataStore.swift */; };
 		43FB1660E36AD33E7B6CB72A /* ProgressStartPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF84AFCF89DF8198F77A0699 /* ProgressStartPickerSection.swift */; };
@@ -30,6 +32,7 @@
 		AA77D3D99E90CA1D661CA05D /* Countdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060DE9B31C877CEB7918C37B /* Countdown.swift */; };
 		AB672F9A8BB7BE65948241F4 /* CountdownListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E978FB3602B5D33B0D92F4 /* CountdownListView.swift */; };
 		B0809688FC48D15BF32ED2F4 /* TillAppWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C1C8344A09A0C2239ACB229B /* TillAppWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B805A1DEF79D8B3E79F6CBD5 /* DeveloperMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E085731BCDAB4A19728D310 /* DeveloperMenuView.swift */; };
 		C2915FEA057737C608C1831A /* TillAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0983F9C14715C82A1245A41A /* TillAppApp.swift */; };
 		C5F3CA47E68437C07A60F86A /* WidgetCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76E950F560E90D719DA5AD0 /* WidgetCountdown.swift */; };
 		C817D064FDFF4173FE1B3495 /* ImageStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2D9AEBC3C5C26259CCCDFA /* ImageStorageService.swift */; };
@@ -67,6 +70,7 @@
 		060DE9B31C877CEB7918C37B /* Countdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Countdown.swift; sourceTree = "<group>"; };
 		0983F9C14715C82A1245A41A /* TillAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TillAppApp.swift; sourceTree = "<group>"; };
 		0B070EA8FE958E37EC91E99B /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		158F1BD2A575D68A8234B496 /* Date+SmartFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+SmartFormat.swift"; sourceTree = "<group>"; };
 		22EF982CEF1A03E1286ECE6C /* AddCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCountdownView.swift; sourceTree = "<group>"; };
 		2755582EB932003B011BCA65 /* CountdownRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownRowView.swift; sourceTree = "<group>"; };
 		2A0A18863E66054E293904C2 /* View+Glass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Glass.swift"; sourceTree = "<group>"; };
@@ -75,17 +79,18 @@
 		646D88BCB49136660C83DFB2 /* CountdownAppEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownAppEntity.swift; sourceTree = "<group>"; };
 		7248535AC65F4D5A01D14706 /* TillAppWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TillAppWidgetBundle.swift; sourceTree = "<group>"; };
 		743A5F36759D0FAF9FC312A1 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
+		7E085731BCDAB4A19728D310 /* DeveloperMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMenuView.swift; sourceTree = "<group>"; };
 		83E978FB3602B5D33B0D92F4 /* CountdownListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownListView.swift; sourceTree = "<group>"; };
 		851091D66AFFBD7CCF94D62A /* CountdownEntity+Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CountdownEntity+Mapping.swift"; sourceTree = "<group>"; };
 		8A8F0B0B618E17DA7D537740 /* TillApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TillApp.xcdatamodel; sourceTree = "<group>"; };
 		94889C08DC49F011604F63F9 /* BackgroundPickerSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPickerSection.swift; sourceTree = "<group>"; };
 		97C965144DDFF4DC1AFF5A01 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		9CFD29C70A79D8584C7BD966 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
-		A1072B874B5368C85D4D7694 /* TillApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TillApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1072B874B5368C85D4D7694 /* TillApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TillApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5AB3326C401C746A46C153B /* CountdownRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownRepository.swift; sourceTree = "<group>"; };
 		B8658F94492BD637BD879A3E /* CountdownWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownWidgetView.swift; sourceTree = "<group>"; };
 		BC2D9AEBC3C5C26259CCCDFA /* ImageStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorageService.swift; sourceTree = "<group>"; };
-		C1C8344A09A0C2239ACB229B /* TillAppWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = TillAppWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1C8344A09A0C2239ACB229B /* TillAppWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TillAppWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C278AC33D2A0528B3D880746 /* SelectCountdownIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCountdownIntent.swift; sourceTree = "<group>"; };
 		C37C6122ADA038F7310E2214 /* CountdownProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownProvider.swift; sourceTree = "<group>"; };
 		D1980F5FB9C12A48EB6CA67D /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
@@ -147,6 +152,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		78EBE6581CE17BAEBA8F0778 /* Developer */ = {
+			isa = PBXGroup;
+			children = (
+				7E085731BCDAB4A19728D310 /* DeveloperMenuView.swift */,
+			);
+			path = Developer;
+			sourceTree = "<group>";
+		};
 		79389518D0163EE50DEC3EEC = {
 			isa = PBXGroup;
 			children = (
@@ -171,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				0B070EA8FE958E37EC91E99B /* Color+Hex.swift */,
+				158F1BD2A575D68A8234B496 /* Date+SmartFormat.swift */,
 				35972B7006B54128E8E34193 /* SharedDataStore.swift */,
 				F76E950F560E90D719DA5AD0 /* WidgetCountdown.swift */,
 			);
@@ -181,6 +195,7 @@
 			isa = PBXGroup;
 			children = (
 				E59A0E710BFD5967821F471F /* Add */,
+				78EBE6581CE17BAEBA8F0778 /* Developer */,
 				D499C6172A950D7322C48DB2 /* List */,
 			);
 			path = Features;
@@ -295,11 +310,9 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					855C7D77DAB3B9058CAB5834 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					90F8F4CE0E467235CD0D4B4B = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -338,6 +351,8 @@
 				AB672F9A8BB7BE65948241F4 /* CountdownListView.swift in Sources */,
 				3499A7D9EA4A65C46EE123FD /* CountdownRepository.swift in Sources */,
 				DC0EF4DBF3A2DD5B518226E4 /* CountdownRowView.swift in Sources */,
+				21EC6860FB5708BB272C9CF0 /* Date+SmartFormat.swift in Sources */,
+				B805A1DEF79D8B3E79F6CBD5 /* DeveloperMenuView.swift in Sources */,
 				2744DDC21016A57F7C767C51 /* EditCountdownView.swift in Sources */,
 				C817D064FDFF4173FE1B3495 /* ImageStorageService.swift in Sources */,
 				F8BB03FFB125F8AE18D09A02 /* PersistenceController.swift in Sources */,
@@ -359,6 +374,7 @@
 				825E93AAEF38A879C2BC7CD6 /* CountdownAppEntity.swift in Sources */,
 				91A94FB58F358F84F37A238B /* CountdownProvider.swift in Sources */,
 				78E0EE702F3CB8FF2AEDD55F /* CountdownWidgetView.swift in Sources */,
+				2A10EAA4915F6F1B0D8B8D81 /* Date+SmartFormat.swift in Sources */,
 				21B8D9ADBA4160A3B9F81030 /* SelectCountdownIntent.swift in Sources */,
 				3A0C0BADD738F2316BB967AE /* SharedDataStore.swift in Sources */,
 				20E7F8F12FE2A9740A026983 /* TillAppWidgetBundle.swift in Sources */,
@@ -382,6 +398,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TillAppWidgetExtension/TillAppWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillAppWidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -389,7 +406,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tillapp.TillApp.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tillappcounter.TillApp.widget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -402,6 +419,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TillAppWidgetExtension/TillAppWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillAppWidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -409,7 +427,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tillapp.TillApp.widget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tillappcounter.TillApp.widget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -424,13 +442,14 @@
 				CODE_SIGN_ENTITLEMENTS = TillApp/TillApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tillapp.TillApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tillappcounter.TillApp;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -565,13 +584,14 @@
 				CODE_SIGN_ENTITLEMENTS = TillApp/TillApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tillapp.TillApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tillappcounter.TillApp;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -20,7 +20,7 @@ struct CountdownRowView: View {
                     .font(.body.weight(.medium))
                     .foregroundStyle(.primary)
                     .lineLimit(1)
-                Text(countdown.targetDate.formatted(date: .abbreviated, time: .omitted))
+                Text(countdown.targetDate.smartFormatted)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
