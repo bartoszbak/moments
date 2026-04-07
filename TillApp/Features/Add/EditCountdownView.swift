@@ -13,6 +13,9 @@ struct EditCountdownView: View {
     @State private var startPercentage: Double = 1.0
     @State private var hasLoaded = false
     @State private var showDeleteConfirmation = false
+    @State private var photoChanged = false
+    @State private var existingImagePath: String? = nil
+    @State private var existingThumbPath: String? = nil
 
     private var countdown: Countdown? {
         repository.countdowns.first { $0.id == countdownID }
@@ -31,7 +34,7 @@ struct EditCountdownView: View {
                             .foregroundStyle(.orange).font(.caption)
                     }
                 }
-                BackgroundPickerSection(selection: $background)
+                BackgroundPickerSection(selection: $background, onNewPhotoSelected: { photoChanged = true })
                 ProgressStartPickerSection(value: $startPercentage)
                 Section {
                     Button(role: .destructive) {
@@ -71,6 +74,8 @@ struct EditCountdownView: View {
                 } else if let thumbURL = countdown.thumbnailImageURL,
                           let image = UIImage(contentsOfFile: thumbURL.path) {
                     background = .photo(image)
+                    existingImagePath = countdown.backgroundImageURL?.path
+                    existingThumbPath = thumbURL.path
                 }
                 startPercentage = countdown.startPercentage
                 hasLoaded = true
@@ -90,9 +95,17 @@ struct EditCountdownView: View {
 
         switch background {
         case .photo(let image):
-            if let paths = ImageStorageService.save(image: image, id: countdown.id) {
-                imagePath = paths.backgroundPath
-                thumbPath = paths.thumbnailPath
+            if photoChanged {
+                if let paths = ImageStorageService.save(image: image, id: countdown.id) {
+                    imagePath = paths.backgroundPath
+                    thumbPath = paths.thumbnailPath
+                    colorIndex = .some(nil)
+                    colorHex = .some(nil)
+                }
+            } else {
+                // Photo unchanged — preserve existing paths, don't re-save thumbnail as background
+                imagePath = existingImagePath
+                thumbPath = existingThumbPath
                 colorIndex = .some(nil)
                 colorHex = .some(nil)
             }

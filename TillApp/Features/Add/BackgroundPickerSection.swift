@@ -10,6 +10,7 @@ enum BackgroundSelection {
 
 struct BackgroundPickerSection: View {
     @Binding var selection: BackgroundSelection
+    var onNewPhotoSelected: (() -> Void)? = nil
     @State private var photoItem: PhotosPickerItem?
     @State private var customColor: Color = .accentColor
 
@@ -133,7 +134,10 @@ struct BackgroundPickerSection: View {
         Task {
             if let data = try? await item.loadTransferable(type: Data.self),
                let image = UIImage(data: data) {
-                await MainActor.run { selection = .photo(image) }
+                await MainActor.run {
+                    selection = .photo(image)
+                    onNewPhotoSelected?()
+                }
             }
         }
     }

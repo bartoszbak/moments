@@ -134,7 +134,7 @@ struct CountdownWidgetView: View {
                 progressBar(progress: countdown.barProgress)
 
                 Text(countdown.targetDate.smartFormatted)
-                    .font(.system(.subheadline, design: .rounded, weight: .medium))
+                    .font(.system(.caption, design: .rounded, weight: .medium))
                     .foregroundStyle(fgSecondary)
                     .padding(.top, 6)
             }
