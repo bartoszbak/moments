@@ -167,18 +167,9 @@ struct CountdownListView: View {
                 }
             }
         } label: {
-            Group {
-                if selectedFilter == .all {
-                    Image(systemName: "line.3.horizontal.decrease")
-                        .font(.system(size: 17, weight: .semibold))
-                        .frame(width: 48, height: 48)
-                } else {
-                    Label(selectedFilter.title, systemImage: "line.3.horizontal.decrease")
-                        .font(.system(size: 17, weight: .semibold))
-                        .padding(.horizontal, 16)
-                        .frame(height: 48)
-                }
-            }
+            Image(systemName: selectedFilter == .all ? "line.3.horizontal.decrease" : "line.3.horizontal.decrease.circle.fill")
+                .font(.system(size: 17, weight: .semibold))
+                .frame(width: 48, height: 48)
         }
         .adaptiveGlassButtonStyle()
         .accessibilityLabel("Filter countdowns")

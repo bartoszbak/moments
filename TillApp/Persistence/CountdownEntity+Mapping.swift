@@ -10,6 +10,7 @@ final class CountdownEntity: NSManagedObject {
     @NSManaged var backgroundColorIndex: Int16
     @NSManaged var backgroundColorHex: String?
     @NSManaged var startPercentage: Double
+    @NSManaged var showDate: Bool
     @NSManaged var createdDate: Date?
 
     @nonobjc static func fetchRequest() -> NSFetchRequest<CountdownEntity> {
@@ -27,7 +28,8 @@ final class CountdownEntity: NSManagedObject {
             backgroundColorIndex: backgroundColorIndex >= 0 ? Int(backgroundColorIndex) : nil,
             backgroundColorHex: backgroundColorHex,
             createdDate: createdDate,
-            startPercentage: startPercentage > 0 ? startPercentage : 1.0
+            startPercentage: startPercentage > 0 ? startPercentage : 1.0,
+            showDate: showDate
         )
     }
 }

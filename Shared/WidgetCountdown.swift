@@ -8,6 +8,7 @@ struct WidgetCountdown: Codable, Identifiable {
     let backgroundColorHex: String?
     let backgroundImagePath: String?
     let startPercentage: Double
+    let showDate: Bool
 
     var isExpired: Bool { targetDate <= Date() }
     var isToday: Bool { Calendar.current.isDateInToday(targetDate) }
@@ -50,6 +51,7 @@ extension WidgetCountdown {
         createdDate: Date().addingTimeInterval(-14 * 86400),
         backgroundColorHex: nil,
         backgroundImagePath: nil,
-        startPercentage: 1.0
+        startPercentage: 1.0,
+        showDate: true
     )
 }

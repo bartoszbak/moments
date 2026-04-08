@@ -72,7 +72,8 @@ struct BackgroundPickerSection: View {
         }
         .labelsHidden()
         .accessibilityLabel("Custom color")
-        .onChange(of: customColor) { _, c in
+        .onChange(of: customColor) { old, c in
+            guard old != c else { return }
             selection = .custom(c)
             photoItem = nil
         }

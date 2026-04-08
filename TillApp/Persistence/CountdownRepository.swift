@@ -54,7 +54,8 @@ final class CountdownRepository: NSObject, ObservableObject {
                 createdDate: countdown.createdDate,
                 backgroundColorHex: countdown.backgroundColorHex,
                 backgroundImagePath: sharedImagePath,
-                startPercentage: countdown.startPercentage
+                startPercentage: countdown.startPercentage,
+                showDate: countdown.showDate
             )
         }
         SharedDataStore.save(widgetData)
@@ -129,7 +130,8 @@ final class CountdownRepository: NSObject, ObservableObject {
         thumbnailImagePath: String? = nil,
         backgroundColorIndex: Int? = nil,
         backgroundColorHex: String? = nil,
-        startPercentage: Double = 1.0
+        startPercentage: Double = 1.0,
+        showDate: Bool = true
     ) throws {
         let context = backgroundContext
         let colorIndex = backgroundColorIndex
@@ -144,6 +146,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.backgroundColorIndex = colorIndex.map { Int16($0) } ?? -1
             entity.backgroundColorHex = colorHex
             entity.startPercentage = startPercentage
+            entity.showDate = showDate
             entity.createdDate = Date()
             try context.save()
         }
@@ -155,28 +158,35 @@ final class CountdownRepository: NSObject, ObservableObject {
         _ countdown: Countdown,
         title: String? = nil,
         targetDate: Date? = nil,
-        backgroundImagePath: String? = nil,
-        thumbnailImagePath: String? = nil,
+        backgroundImagePath: String?? = nil,
+        thumbnailImagePath: String?? = nil,
         backgroundColorIndex: Int?? = nil,
         backgroundColorHex: String?? = nil,
-        startPercentage: Double? = nil
+        startPercentage: Double? = nil,
+        showDate: Bool? = nil
     ) throws {
         let id = countdown.id
         let context = backgroundContext
         let newColorIndex = backgroundColorIndex
         let newColorHex = backgroundColorHex
+        let newImagePath = backgroundImagePath
+        let newThumbPath = thumbnailImagePath
         try context.performAndWait {
             let request = CountdownEntity.fetchRequest()
             request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
             request.fetchLimit = 1
             guard let entity = try context.fetch(request).first else { return }
             if let title { entity.title = title }
-            if let targetDate { entity.targetDate = targetDate }
-            if let backgroundImagePath { entity.backgroundImagePath = backgroundImagePath }
-            if let thumbnailImagePath { entity.thumbnailImagePath = thumbnailImagePath }
+            if let targetDate {
+                entity.targetDate = targetDate
+                entity.createdDate = Date()
+            }
+            if let newImagePath { entity.backgroundImagePath = newImagePath }
+            if let newThumbPath { entity.thumbnailImagePath = newThumbPath }
             if let newColorIndex { entity.backgroundColorIndex = newColorIndex.map { Int16($0) } ?? -1 }
             if let newColorHex { entity.backgroundColorHex = newColorHex }
             if let startPercentage { entity.startPercentage = startPercentage }
+            if let showDate { entity.showDate = showDate }
             try context.save()
         }
     }

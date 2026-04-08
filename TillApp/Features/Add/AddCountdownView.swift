@@ -9,10 +9,9 @@ struct AddCountdownView: View {
     @State private var targetDate = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
-    @State private var allowPastDate = false
+    @State private var showDate: Bool = true
     @State private var isCreating = false
     @State private var showTitleError = false
-    @State private var showPastDateWarning = false
 
     private var isValid: Bool {
         !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -32,19 +31,13 @@ struct AddCountdownView: View {
                     }
                 }
                 Section("Target Date") {
-                    Toggle("Allow Past Date", isOn: $allowPastDate)
-                    if allowPastDate {
-                        DatePicker("Date & Time", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
-                    } else {
-                        DatePicker("Date & Time", selection: $targetDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-                    }
-                    if showPastDateWarning {
-                        Label("Past dates are allowed and will show days since", systemImage: "clock.badge.exclamationmark.fill")
-                            .foregroundStyle(.orange).font(.caption)
-                    }
+                    DatePicker("Date & Time", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
                 }
                 BackgroundPickerSection(selection: $background)
                 ProgressStartPickerSection(value: $startPercentage)
+                Section {
+                    Toggle("Show Date on Widget", isOn: $showDate)
+                }
             }
             .navigationTitle("New Countdown")
             .navigationBarTitleDisplayMode(.inline)
@@ -54,13 +47,6 @@ struct AddCountdownView: View {
                     Button("Create", action: create)
                         .disabled(!isValid || isCreating).fontWeight(.semibold)
                 }
-            }
-            .onChange(of: targetDate) { _, date in showPastDateWarning = date < Date() }
-            .onChange(of: allowPastDate) { _, isEnabled in
-                if !isEnabled, targetDate < Date() {
-                    targetDate = Date()
-                }
-                showPastDateWarning = isEnabled && targetDate < Date()
             }
         }
     }
@@ -95,7 +81,8 @@ struct AddCountdownView: View {
                 title: trimmed, targetDate: targetDate,
                 backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
                 backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
-                startPercentage: startPercentage
+                startPercentage: startPercentage,
+                showDate: showDate
             )
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             dismiss()

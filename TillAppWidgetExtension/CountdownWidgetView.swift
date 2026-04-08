@@ -76,15 +76,15 @@ struct CountdownWidgetView: View {
                     progressBar(progress: countdown.barProgress)
                 }
 
-                Text(countdown.targetDate.smartFormatted)
-                    .font(.system(.caption, design: .rounded, weight: .medium))
-                    .foregroundStyle(fgSecondary)
-                    .padding(.top, countdown.isExpired ? 0 : 6)
+                if countdown.showDate {
+                    Text(countdown.targetDate.smartFormatted)
+                        .font(.system(.caption, design: .rounded, weight: .medium))
+                        .foregroundStyle(fgSecondary)
+                        .padding(.top, countdown.isExpired ? 0 : 6)
+                }
             }
         }
-        .padding(.horizontal, 2)
-        .padding(.top, 2)
-        .padding(.bottom, 6)
+        .padding(1)
         .containerBackground(for: .widget) { containerBackground }
     }
 
@@ -143,15 +143,15 @@ struct CountdownWidgetView: View {
                     progressBar(progress: countdown.barProgress)
                 }
 
-                Text(countdown.targetDate.smartFormatted)
-                    .font(.system(.caption, design: .rounded, weight: .medium))
-                    .foregroundStyle(fgSecondary)
-                    .padding(.top, countdown.isExpired ? 0 : 6)
+                if countdown.showDate {
+                    Text(countdown.targetDate.smartFormatted)
+                        .font(.system(.caption, design: .rounded, weight: .medium))
+                        .foregroundStyle(fgSecondary)
+                        .padding(.top, countdown.isExpired ? 0 : 6)
+                }
             }
         }
-        .padding(.horizontal, 2)
-        .padding(.top, 2)
-        .padding(.bottom, 6)
+        .padding(1)
         .containerBackground(for: .widget) { containerBackground }
     }
 
@@ -243,11 +243,12 @@ struct CountdownWidgetView: View {
     }
 
     private var containerBackground: some View {
-        Group {
+        ZStack {
             if let image = backgroundImage {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
+                Color.black.opacity(0.3)
             } else if let color = resolvedBackgroundColor {
                 color
             } else {

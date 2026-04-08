@@ -11,7 +11,7 @@ struct EditCountdownView: View {
     @State private var targetDate = Date()
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
-    @State private var allowPastDate = false
+    @State private var showDate: Bool = true
     @State private var hasLoaded = false
     @State private var showDeleteConfirmation = false
     @State private var photoChanged = false
@@ -29,19 +29,13 @@ struct EditCountdownView: View {
                     TextField("Countdown name", text: $title)
                 }
                 Section("Target Date") {
-                    Toggle("Allow Past Date", isOn: $allowPastDate)
-                    if allowPastDate {
-                        DatePicker("Date & Time", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
-                    } else {
-                        DatePicker("Date & Time", selection: $targetDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-                    }
-                    if allowPastDate && targetDate < Date() {
-                        Label("Past dates are allowed and will show days since", systemImage: "clock.badge.exclamationmark.fill")
-                            .foregroundStyle(.orange).font(.caption)
-                    }
+                    DatePicker("Date & Time", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
                 }
                 BackgroundPickerSection(selection: $background, onNewPhotoSelected: { photoChanged = true })
                 ProgressStartPickerSection(value: $startPercentage)
+                Section {
+                    Toggle("Show Date on Widget", isOn: $showDate)
+                }
                 Section {
                     Button(role: .destructive) {
                         showDeleteConfirmation = true
@@ -72,7 +66,6 @@ struct EditCountdownView: View {
                 guard !hasLoaded, let countdown else { return }
                 title = countdown.title
                 targetDate = countdown.targetDate
-                allowPastDate = countdown.targetDate < Date()
                 if let idx = countdown.backgroundColorIndex {
                     background = .preset(idx)
                 } else if let hex = countdown.backgroundColorHex,
@@ -85,12 +78,8 @@ struct EditCountdownView: View {
                     existingThumbPath = thumbURL.path
                 }
                 startPercentage = countdown.startPercentage
+                showDate = countdown.showDate
                 hasLoaded = true
-            }
-            .onChange(of: allowPastDate) { _, isEnabled in
-                if !isEnabled, targetDate < Date() {
-                    targetDate = Date()
-                }
             }
         }
     }
@@ -100,8 +89,8 @@ struct EditCountdownView: View {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
-        var imagePath: String?
-        var thumbPath: String?
+        var imagePath: String?? = nil
+        var thumbPath: String?? = nil
         var colorIndex: Int?? = nil
         var colorHex: String?? = nil
 
@@ -109,33 +98,51 @@ struct EditCountdownView: View {
         case .photo(let image):
             if photoChanged {
                 if let paths = ImageStorageService.save(image: image, id: countdown.id) {
-                    imagePath = paths.backgroundPath
-                    thumbPath = paths.thumbnailPath
+                    imagePath = .some(paths.backgroundPath)
+                    thumbPath = .some(paths.thumbnailPath)
                     colorIndex = .some(nil)
                     colorHex = .some(nil)
                 }
             } else {
-                // Photo unchanged — preserve existing paths, don't re-save thumbnail as background
-                imagePath = existingImagePath
-                thumbPath = existingThumbPath
+                // Photo unchanged — preserve existing paths
+                imagePath = .some(existingImagePath)
+                thumbPath = .some(existingThumbPath)
                 colorIndex = .some(nil)
                 colorHex = .some(nil)
             }
         case .preset(let idx):
             colorIndex = .some(idx)
             colorHex = .some(ColorPalette.presets[idx].hexString)
+            if existingImagePath != nil || existingThumbPath != nil {
+                if let p = existingImagePath { try? FileManager.default.removeItem(atPath: p) }
+                if let p = existingThumbPath { try? FileManager.default.removeItem(atPath: p) }
+                imagePath = .some(nil)
+                thumbPath = .some(nil)
+            }
         case .custom(let color):
             colorIndex = .some(nil)
             colorHex = .some(color.hexString)
+            if existingImagePath != nil || existingThumbPath != nil {
+                if let p = existingImagePath { try? FileManager.default.removeItem(atPath: p) }
+                if let p = existingThumbPath { try? FileManager.default.removeItem(atPath: p) }
+                imagePath = .some(nil)
+                thumbPath = .some(nil)
+            }
         case .none:
-            break
+            if existingImagePath != nil || existingThumbPath != nil {
+                if let p = existingImagePath { try? FileManager.default.removeItem(atPath: p) }
+                if let p = existingThumbPath { try? FileManager.default.removeItem(atPath: p) }
+                imagePath = .some(nil)
+                thumbPath = .some(nil)
+            }
         }
 
         try? repository.update(
             countdown, title: trimmed, targetDate: targetDate,
             backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
             backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
-            startPercentage: startPercentage
+            startPercentage: startPercentage,
+            showDate: showDate
         )
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         dismiss()
