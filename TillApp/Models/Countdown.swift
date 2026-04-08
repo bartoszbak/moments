@@ -11,17 +11,22 @@ struct Countdown: Identifiable, Hashable {
     let createdDate: Date
     var startPercentage: Double      // progress bar starting fill (0.5 – 1.0)
     var showDate: Bool               // whether to show the target date in the widget
+    var calendarEventIdentifier: String?
 
     func timeRemaining(from now: Date) -> TimeInterval {
-        max(0, targetDate.timeIntervalSince(now))
+        let startOfNow = Calendar.current.startOfDay(for: now)
+        let startOfTarget = Calendar.current.startOfDay(for: targetDate)
+        return max(0, startOfTarget.timeIntervalSince(startOfNow))
     }
 
     func isToday(at now: Date, calendar: Calendar = .current) -> Bool {
         calendar.isDate(targetDate, inSameDayAs: now)
     }
 
-    func isExpired(at now: Date) -> Bool {
-        targetDate <= now
+    func isExpired(at now: Date, calendar: Calendar = .current) -> Bool {
+        let startOfNow = calendar.startOfDay(for: now)
+        let startOfTarget = calendar.startOfDay(for: targetDate)
+        return startOfTarget < startOfNow
     }
 
     func daysUntil(from now: Date, calendar: Calendar = .current) -> Int {
@@ -39,7 +44,6 @@ struct Countdown: Identifiable, Hashable {
     }
 
     func components(from now: Date) -> (days: Int, hours: Int, minutes: Int, seconds: Int) {
-        let total = Int(timeRemaining(from: now))
-        return (total / 86400, (total % 86400) / 3600, (total % 3600) / 60, total % 60)
+        (daysUntil(from: now), 0, 0, 0)
     }
 }

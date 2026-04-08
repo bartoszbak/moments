@@ -6,6 +6,10 @@ struct EditCountdownView: View {
 
     @EnvironmentObject private var repository: CountdownRepository
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+
+    @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
 
     @State private var title = ""
     @State private var targetDate = Date()
@@ -29,13 +33,11 @@ struct EditCountdownView: View {
                     TextField("Countdown name", text: $title)
                 }
                 Section("Target Date") {
-                    DatePicker("Date & Time", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
+                    TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
+                    Toggle("Show Date on Widget", isOn: $showDate)
                 }
                 BackgroundPickerSection(selection: $background, onNewPhotoSelected: { photoChanged = true })
                 ProgressStartPickerSection(value: $startPercentage)
-                Section {
-                    Toggle("Show Date on Widget", isOn: $showDate)
-                }
                 Section {
                     Button(role: .destructive) {
                         showDeleteConfirmation = true
@@ -48,6 +50,7 @@ struct EditCountdownView: View {
                     }
                 }
             }
+            .tint(interfaceTintColor)
             .alert("Delete this countdown?", isPresented: $showDeleteConfirmation) {
                 Button("Delete", role: .destructive, action: delete)
                 Button("Cancel", role: .cancel) { }
@@ -65,7 +68,7 @@ struct EditCountdownView: View {
             .onAppear {
                 guard !hasLoaded, let countdown else { return }
                 title = countdown.title
-                targetDate = countdown.targetDate
+                targetDate = Calendar.current.startOfDay(for: countdown.targetDate)
                 if let idx = countdown.backgroundColorIndex {
                     background = .preset(idx)
                 } else if let hex = countdown.backgroundColorHex,
@@ -82,6 +85,7 @@ struct EditCountdownView: View {
                 hasLoaded = true
             }
         }
+        .preferredColorScheme(preferredColorScheme)
     }
 
     private func save() {
@@ -138,7 +142,9 @@ struct EditCountdownView: View {
         }
 
         try? repository.update(
-            countdown, title: trimmed, targetDate: targetDate,
+            countdown,
+            title: trimmed,
+            targetDate: Calendar.current.startOfDay(for: targetDate),
             backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
             backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
             startPercentage: startPercentage,
@@ -153,5 +159,17 @@ struct EditCountdownView: View {
         try? repository.delete(countdown)
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         dismiss()
+    }
+
+    private var preferredColorScheme: ColorScheme? {
+        AppTheme.preferredColorScheme(for: appearanceSetting)
+    }
+
+    private var effectiveColorScheme: ColorScheme {
+        preferredColorScheme ?? colorScheme
+    }
+
+    private var interfaceTintColor: Color {
+        AppTheme.interfaceTintColor(from: interfaceTintHex, for: effectiveColorScheme)
     }
 }

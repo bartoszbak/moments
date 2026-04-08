@@ -3,12 +3,19 @@ import SwiftUI
 struct CountdownListView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @EnvironmentObject private var timerManager: TimerManager
+    @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
+    @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
     @State private var showingAddSheet = false
     @State private var editingCountdown: Countdown?
-    @State private var showingDevMenu = false
+    @State private var showingSettings = false
     @State private var selectedFilter: CountdownFilter = .all
+
+    private var isShowingPrimaryEmptyState: Bool {
+        repository.countdowns.isEmpty || isShowingEmptyStatePreview
+    }
 
     private var isShowingEmptyStatePreview: Bool {
         showEmptyStatePreview && !repository.countdowns.isEmpty
@@ -55,19 +62,22 @@ struct CountdownListView: View {
                         } label: {
                             Label("Edit", systemImage: "pencil")
                         }
-                        .tint(.blue)
+                        .tint(interfaceTintColor)
                     }
                 }
             }
             .listStyle(.insetGrouped)
-            .navigationTitle("Till")
-            .navigationBarTitleDisplayMode(.large)
+            .scrollContentBackground(isShowingPrimaryEmptyState ? .hidden : .visible)
+            .background(Color(.systemBackground))
+            .tint(interfaceTintColor)
+            .navigationTitle(isShowingPrimaryEmptyState ? "" : "Till")
+            .navigationBarTitleDisplayMode(isShowingPrimaryEmptyState ? .inline : .large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        showingDevMenu = true
+                        showingSettings = true
                     } label: {
-                        Image(systemName: "curlybraces")
+                        Image(systemName: "plus.minus.capsule")
                             .fontWeight(.semibold)
                             .foregroundStyle(.primary)
                     }
@@ -81,8 +91,13 @@ struct CountdownListView: View {
                     }
                 }
             }
+            .safeAreaInset(edge: .bottom) {
+                if isShowingPrimaryEmptyState {
+                    emptyStateButton
+                }
+            }
             .overlay {
-                if repository.countdowns.isEmpty || isShowingEmptyStatePreview {
+                if isShowingPrimaryEmptyState {
                     emptyLibraryView
                 } else if filteredCountdowns.isEmpty {
                     ContentUnavailableView {
@@ -96,8 +111,8 @@ struct CountdownListView: View {
         .onChange(of: selectedFilter) {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         }
-        .sheet(isPresented: $showingDevMenu) {
-            DeveloperMenuView()
+        .sheet(isPresented: $showingSettings) {
+            SettingsView()
         }
         .sheet(isPresented: $showingAddSheet) {
             AddCountdownView()
@@ -139,24 +154,40 @@ struct CountdownListView: View {
     }
 
     private var emptyLibraryView: some View {
-        VStack(spacing: 10) {
-            Image(systemName: "app.badge")
-                .font(.system(size: 38, weight: .regular))
-                .foregroundStyle(.secondary)
+        VStack(spacing: 16) {
+            Spacer()
 
-            Text("No Countdowns")
+            Image("EmptyState")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 110, height: 110)
+
+            Text("No events to wait\nor reflect on")
                 .font(.title3.weight(.semibold))
+                .multilineTextAlignment(.center)
                 .foregroundStyle(.primary)
 
-            Button("Add new") {
-                showingAddSheet = true
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            }
-            .controlSize(.large)
-            .adaptiveGlassProminentButtonStyle()
+            Spacer()
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 32)
+        .padding(.top, 24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+    }
+
+    private var emptyStateButton: some View {
+        Button("Add first event") {
+            showingAddSheet = true
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        }
+        .font(.headline)
+        .frame(maxWidth: .infinity)
+        .frame(height: 52)
+        .tint(interfaceTintColor)
+        .adaptiveGlassProminentButtonStyle()
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
+        .background(Color.clear)
     }
 
     private var filterMenuButton: some View {
@@ -184,8 +215,26 @@ struct CountdownListView: View {
                 .font(.system(size: 17, weight: .semibold))
                 .frame(width: 48, height: 48)
         }
+        .id(themeRefreshKey)
+        .tint(interfaceTintColor)
         .adaptiveGlassProminentButtonStyle()
         .accessibilityLabel("Add countdown")
+    }
+
+    private var interfaceTintColor: Color {
+        AppTheme.interfaceTintColor(from: interfaceTintHex, for: effectiveColorScheme)
+    }
+
+    private var preferredColorScheme: ColorScheme? {
+        AppTheme.preferredColorScheme(for: appearanceSetting)
+    }
+
+    private var effectiveColorScheme: ColorScheme {
+        preferredColorScheme ?? colorScheme
+    }
+
+    private var themeRefreshKey: String {
+        "\(appearanceSetting)-\(interfaceTintHex)-\(effectiveColorScheme == .dark ? "dark" : "light")"
     }
 }
 

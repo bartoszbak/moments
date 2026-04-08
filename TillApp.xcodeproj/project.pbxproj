@@ -37,6 +37,8 @@
 		C2915FEA057737C608C1831A /* TillAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0983F9C14715C82A1245A41A /* TillAppApp.swift */; };
 		C5F3CA47E68437C07A60F86A /* WidgetCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76E950F560E90D719DA5AD0 /* WidgetCountdown.swift */; };
 		C817D064FDFF4173FE1B3495 /* ImageStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC2D9AEBC3C5C26259CCCDFA /* ImageStorageService.swift */; };
+		CF8AA3E62924DAF95A4D72E8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 706D76FF5B323516A5A6D900 /* SettingsView.swift */; };
+		D5A445373E8460F3AD281735 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29601286A2B72E5210989C2B /* CalendarService.swift */; };
 		D87933F24669DF6E120AAA85 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1980F5FB9C12A48EB6CA67D /* TimerManager.swift */; };
 		DC0EF4DBF3A2DD5B518226E4 /* CountdownRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755582EB932003B011BCA65 /* CountdownRowView.swift */; };
 		F3E6DDC6A3F507CCE88A6CD1 /* CountdownEntity+Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851091D66AFFBD7CCF94D62A /* CountdownEntity+Mapping.swift */; };
@@ -79,12 +81,15 @@
 		35972B7006B54128E8E34193 /* SharedDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataStore.swift; sourceTree = "<group>"; };
 		4A8B9FA41CD9B60C12866E64 /* TillApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TillApp.entitlements; sourceTree = "<group>"; };
 		646D88BCB49136660C83DFB2 /* CountdownAppEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownAppEntity.swift; sourceTree = "<group>"; };
+		706D76FF5B323516A5A6D900 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		7248535AC65F4D5A01D14706 /* TillAppWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TillAppWidgetBundle.swift; sourceTree = "<group>"; };
 		743A5F36759D0FAF9FC312A1 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		7E085731BCDAB4A19728D310 /* DeveloperMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMenuView.swift; sourceTree = "<group>"; };
 		83E978FB3602B5D33B0D92F4 /* CountdownListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownListView.swift; sourceTree = "<group>"; };
 		851091D66AFFBD7CCF94D62A /* CountdownEntity+Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CountdownEntity+Mapping.swift"; sourceTree = "<group>"; };
 		8A8F0B0B618E17DA7D537740 /* TillApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TillApp.xcdatamodel; sourceTree = "<group>"; };
+		91F4B4CD12B0B2944FFDE443 /* TillApp 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 3.xcdatamodel"; sourceTree = "<group>"; };
+		A16D4E0C0B6B47CF83B9271F /* TillApp 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 2.xcdatamodel"; sourceTree = "<group>"; };
 		94889C08DC49F011604F63F9 /* BackgroundPickerSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPickerSection.swift; sourceTree = "<group>"; };
 		97C965144DDFF4DC1AFF5A01 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		9CFD29C70A79D8584C7BD966 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
@@ -95,6 +100,7 @@
 		C1C8344A09A0C2239ACB229B /* TillAppWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TillAppWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C278AC33D2A0528B3D880746 /* SelectCountdownIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCountdownIntent.swift; sourceTree = "<group>"; };
 		C37C6122ADA038F7310E2214 /* CountdownProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownProvider.swift; sourceTree = "<group>"; };
+		29601286A2B72E5210989C2B /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
 		D1980F5FB9C12A48EB6CA67D /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
 		D5AF5C02E4780B9DF75CFAC1 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		DD72742A11253E67616E1C8F /* TillAppWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TillAppWidgetExtension.entitlements; sourceTree = "<group>"; };
@@ -139,6 +145,7 @@
 		3A77FDB25DE70CA6B94F0DA1 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				29601286A2B72E5210989C2B /* CalendarService.swift */,
 				BC2D9AEBC3C5C26259CCCDFA /* ImageStorageService.swift */,
 				D1980F5FB9C12A48EB6CA67D /* TimerManager.swift */,
 			);
@@ -199,6 +206,7 @@
 				E59A0E710BFD5967821F471F /* Add */,
 				78EBE6581CE17BAEBA8F0778 /* Developer */,
 				D499C6172A950D7322C48DB2 /* List */,
+				F0C9611C3313D563FFAA18FC /* Settings */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -247,6 +255,14 @@
 				FF84AFCF89DF8198F77A0699 /* ProgressStartPickerSection.swift */,
 			);
 			path = Add;
+			sourceTree = "<group>";
+		};
+		F0C9611C3313D563FFAA18FC /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				706D76FF5B323516A5A6D900 /* SettingsView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		F3482FC1002A3CAEB2288C7D /* TillAppWidgetExtension */ = {
@@ -311,7 +327,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					855C7D77DAB3B9058CAB5834 = {
 						ProvisioningStyle = Automatic;
@@ -369,10 +385,12 @@
 				21EC6860FB5708BB272C9CF0 /* Date+SmartFormat.swift in Sources */,
 				B805A1DEF79D8B3E79F6CBD5 /* DeveloperMenuView.swift in Sources */,
 				2744DDC21016A57F7C767C51 /* EditCountdownView.swift in Sources */,
+				D5A445373E8460F3AD281735 /* CalendarService.swift in Sources */,
 				C817D064FDFF4173FE1B3495 /* ImageStorageService.swift in Sources */,
 				F8BB03FFB125F8AE18D09A02 /* PersistenceController.swift in Sources */,
 				43FB1660E36AD33E7B6CB72A /* ProgressStartPickerSection.swift in Sources */,
 				4572E3CB6E92802F9FD3A52B /* SharedDataStore.swift in Sources */,
+				CF8AA3E62924DAF95A4D72E8 /* SettingsView.swift in Sources */,
 				7C02586524F7A7DE7EBE085D /* TillApp.xcdatamodeld in Sources */,
 				C2915FEA057737C608C1831A /* TillAppApp.swift in Sources */,
 				D87933F24669DF6E120AAA85 /* TimerManager.swift in Sources */,
@@ -413,7 +431,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TillAppWidgetExtension/TillAppWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillAppWidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -434,7 +451,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = TillAppWidgetExtension/TillAppWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillAppWidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -458,7 +474,6 @@
 				CODE_SIGN_ENTITLEMENTS = TillApp/TillApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Till;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -478,6 +493,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -509,9 +525,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -532,6 +549,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -542,6 +560,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -573,9 +592,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -589,6 +609,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -603,7 +624,6 @@
 				CODE_SIGN_ENTITLEMENTS = TillApp/TillApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Till;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -656,8 +676,10 @@
 			isa = XCVersionGroup;
 			children = (
 				8A8F0B0B618E17DA7D537740 /* TillApp.xcdatamodel */,
+				A16D4E0C0B6B47CF83B9271F /* TillApp 2.xcdatamodel */,
+				91F4B4CD12B0B2944FFDE443 /* TillApp 3.xcdatamodel */,
 			);
-			currentVersion = 8A8F0B0B618E17DA7D537740 /* TillApp.xcdatamodel */;
+			currentVersion = 91F4B4CD12B0B2944FFDE443 /* TillApp 3.xcdatamodel */;
 			path = TillApp.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

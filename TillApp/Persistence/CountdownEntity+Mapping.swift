@@ -11,6 +11,7 @@ final class CountdownEntity: NSManagedObject {
     @NSManaged var backgroundColorHex: String?
     @NSManaged var startPercentage: Double
     @NSManaged var showDate: Bool
+    @NSManaged var calendarEventIdentifier: String?
     @NSManaged var createdDate: Date?
 
     @nonobjc static func fetchRequest() -> NSFetchRequest<CountdownEntity> {
@@ -19,17 +20,19 @@ final class CountdownEntity: NSManagedObject {
 
     func toCountdown() -> Countdown? {
         guard let id, let title, let targetDate, let createdDate else { return nil }
+        let normalizedTargetDate = Calendar.current.startOfDay(for: targetDate)
         return Countdown(
             id: id,
             title: title,
-            targetDate: targetDate,
+            targetDate: normalizedTargetDate,
             backgroundImageURL: backgroundImagePath.map { URL(fileURLWithPath: $0) },
             thumbnailImageURL: thumbnailImagePath.map { URL(fileURLWithPath: $0) },
             backgroundColorIndex: backgroundColorIndex >= 0 ? Int(backgroundColorIndex) : nil,
             backgroundColorHex: backgroundColorHex,
             createdDate: createdDate,
             startPercentage: startPercentage > 0 ? startPercentage : 1.0,
-            showDate: showDate
+            showDate: showDate,
+            calendarEventIdentifier: calendarEventIdentifier
         )
     }
 }

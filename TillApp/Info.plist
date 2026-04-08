@@ -24,6 +24,8 @@
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose a background photo for your countdown.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>TillApp creates calendar events on your countdown dates so you never miss an important day.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

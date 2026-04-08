@@ -12,14 +12,13 @@ struct BackgroundPickerSection: View {
     @Binding var selection: BackgroundSelection
     var onNewPhotoSelected: (() -> Void)? = nil
     @State private var photoItem: PhotosPickerItem?
-    @State private var customColor: Color = .accentColor
+    @State private var customColor = ColorPalette.presets.first?.color ?? .blue
 
     private let swatchSize: CGFloat = 40
 
     var body: some View {
         Section(
-            header: Text("Widget Background"),
-            footer: Text("Shown behind your countdown on the home screen widget.")
+            header: Text("Widget Background")
         ) {
             colorRow
             photoPicker
@@ -116,33 +115,43 @@ struct BackgroundPickerSection: View {
     // MARK: - Photo Picker
 
     private var photoPicker: some View {
-        PhotosPicker(selection: $photoItem, matching: .images) {
-            HStack(spacing: 14) {
-                if case .photo(let image) = selection {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 36, height: 36)
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    Text("Edit")
-                        .font(.body).foregroundStyle(.primary)
-                    Spacer()
-                    Button {
-                        selection = .none
-                        photoItem = nil
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.red)
-                            .font(.title3)
-                    }
-                    .buttonStyle(.plain)
-                } else {
-                    Label("Choose Photo", systemImage: "photo.on.rectangle.angled")
-                        .font(.body)
-                        .foregroundStyle(.primary)
+        HStack(spacing: 14) {
+            if case .photo(let image) = selection {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 36, height: 36)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+                PhotosPicker(selection: $photoItem, matching: .images) {
+                    photoActionLink(title: "Edit")
+                }
+
+                Spacer()
+
+                Button {
+                    selection = .none
+                    photoItem = nil
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.red)
+                        .font(.title3)
+                }
+                .padding(.trailing, 10)
+                .buttonStyle(.plain)
+            } else {
+                PhotosPicker(selection: $photoItem, matching: .images) {
+                    photoActionLink(title: "Choose Photo")
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func photoActionLink(title: String) -> some View {
+        Text(title)
+            .font(.body.weight(.medium))
+            .foregroundStyle(.tint)
     }
 
     // MARK: - Load Photo

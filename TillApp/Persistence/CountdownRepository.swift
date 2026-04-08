@@ -10,6 +10,7 @@ final class CountdownRepository: NSObject, ObservableObject {
 
     private let viewContext: NSManagedObjectContext
     private let backgroundContext: NSManagedObjectContext
+    private let calendarService = CalendarService.shared
     private var fetchedResultsController: NSFetchedResultsController<CountdownEntity>!
 
     init(viewContext: NSManagedObjectContext, backgroundContext: NSManagedObjectContext) {
@@ -41,11 +42,18 @@ final class CountdownRepository: NSObject, ObservableObject {
         let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.tillappcounter.TillApp")
         let widgetData = countdowns.map { countdown -> WidgetCountdown in
             var sharedImagePath: String? = nil
-            if let thumbURL = countdown.thumbnailImageURL, let groupURL {
+            if let groupURL {
                 let dest = groupURL.appendingPathComponent("widget_\(countdown.id.uuidString).jpg")
-                try? FileManager.default.removeItem(at: dest)
-                try? FileManager.default.copyItem(at: thumbURL, to: dest)
-                sharedImagePath = dest.path
+                if let thumbURL = countdown.thumbnailImageURL,
+                   FileManager.default.fileExists(atPath: thumbURL.path)
+                {
+                    try? FileManager.default.removeItem(at: dest)
+                    try? FileManager.default.copyItem(at: thumbURL, to: dest)
+                    sharedImagePath = dest.path
+                } else if FileManager.default.fileExists(atPath: dest.path) {
+                    // Keep the existing shared thumbnail if the original path is temporarily unavailable.
+                    sharedImagePath = dest.path
+                }
             }
             return WidgetCountdown(
                 id: countdown.id,
@@ -58,6 +66,23 @@ final class CountdownRepository: NSObject, ObservableObject {
                 showDate: countdown.showDate
             )
         }
+
+        if let groupURL {
+            let activeFileNames = Set(countdowns.map { "widget_\($0.id.uuidString).jpg" })
+            let contents = (try? FileManager.default.contentsOfDirectory(
+                at: groupURL,
+                includingPropertiesForKeys: nil
+            )) ?? []
+
+            for fileURL in contents
+            where fileURL.lastPathComponent.hasPrefix("widget_")
+                && fileURL.pathExtension == "jpg"
+                && !activeFileNames.contains(fileURL.lastPathComponent)
+            {
+                try? FileManager.default.removeItem(at: fileURL)
+            }
+        }
+
         SharedDataStore.save(widgetData)
         WidgetCenter.shared.reloadAllTimelines()
     }
@@ -109,7 +134,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             let entity = CountdownEntity(context: context)
             entity.id = UUID()
             entity.title = item.title
-            entity.targetDate = item.targetDate
+            entity.targetDate = normalizedTargetDate(item.targetDate)
             entity.backgroundColorIndex = Int16(item.backgroundColorIndex)
             entity.backgroundColorHex = ColorPalette.presets[item.backgroundColorIndex].hexString
             entity.startPercentage = 1.0
@@ -124,6 +149,7 @@ final class CountdownRepository: NSObject, ObservableObject {
     // MARK: - Create
 
     func create(
+        id: UUID = UUID(),
         title: String,
         targetDate: Date,
         backgroundImagePath: String? = nil,
@@ -136,19 +162,43 @@ final class CountdownRepository: NSObject, ObservableObject {
         let context = backgroundContext
         let colorIndex = backgroundColorIndex
         let colorHex = backgroundColorHex
+        let createdDate = Date()
+        let normalizedDate = normalizedTargetDate(targetDate)
         try context.performAndWait {
             let entity = CountdownEntity(context: context)
-            entity.id = UUID()
+            entity.id = id
             entity.title = title
-            entity.targetDate = targetDate
+            entity.targetDate = normalizedDate
             entity.backgroundImagePath = backgroundImagePath
             entity.thumbnailImagePath = thumbnailImagePath
             entity.backgroundColorIndex = colorIndex.map { Int16($0) } ?? -1
             entity.backgroundColorHex = colorHex
             entity.startPercentage = startPercentage
             entity.showDate = showDate
-            entity.createdDate = Date()
+            entity.createdDate = createdDate
             try context.save()
+        }
+
+        guard isCalendarIntegrationEnabled else { return }
+
+        let countdown = Countdown(
+            id: id,
+            title: title,
+            targetDate: normalizedDate,
+            backgroundImageURL: backgroundImagePath.map { URL(fileURLWithPath: $0) },
+            thumbnailImageURL: thumbnailImagePath.map { URL(fileURLWithPath: $0) },
+            backgroundColorIndex: backgroundColorIndex,
+            backgroundColorHex: backgroundColorHex,
+            createdDate: createdDate,
+            startPercentage: startPercentage,
+            showDate: showDate,
+            calendarEventIdentifier: nil
+        )
+
+        Task { @MainActor in
+            if let eventIdentifier = await calendarService.createEvent(for: countdown) {
+                try? self.updateCalendarIdentifier(id: id, eventIdentifier: eventIdentifier)
+            }
         }
     }
 
@@ -171,15 +221,17 @@ final class CountdownRepository: NSObject, ObservableObject {
         let newColorHex = backgroundColorHex
         let newImagePath = backgroundImagePath
         let newThumbPath = thumbnailImagePath
+        let normalizedDate = targetDate.map(normalizedTargetDate)
+        let updatedCreatedDate = normalizedDate == nil ? countdown.createdDate : Date()
         try context.performAndWait {
             let request = CountdownEntity.fetchRequest()
             request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
             request.fetchLimit = 1
             guard let entity = try context.fetch(request).first else { return }
             if let title { entity.title = title }
-            if let targetDate {
-                entity.targetDate = targetDate
-                entity.createdDate = Date()
+            if let normalizedDate {
+                entity.targetDate = normalizedDate
+                entity.createdDate = updatedCreatedDate
             }
             if let newImagePath { entity.backgroundImagePath = newImagePath }
             if let newThumbPath { entity.thumbnailImagePath = newThumbPath }
@@ -188,6 +240,44 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let startPercentage { entity.startPercentage = startPercentage }
             if let showDate { entity.showDate = showDate }
             try context.save()
+        }
+
+        let updatedCountdown = Countdown(
+            id: countdown.id,
+            title: title ?? countdown.title,
+            targetDate: normalizedDate ?? countdown.targetDate,
+            backgroundImageURL: resolvedFileURL(
+                existing: countdown.backgroundImageURL,
+                update: backgroundImagePath
+            ),
+            thumbnailImageURL: resolvedFileURL(
+                existing: countdown.thumbnailImageURL,
+                update: thumbnailImagePath
+            ),
+            backgroundColorIndex: resolvedValue(
+                existing: countdown.backgroundColorIndex,
+                update: backgroundColorIndex
+            ),
+            backgroundColorHex: resolvedValue(
+                existing: countdown.backgroundColorHex,
+                update: backgroundColorHex
+            ),
+            createdDate: updatedCreatedDate,
+            startPercentage: startPercentage ?? countdown.startPercentage,
+            showDate: showDate ?? countdown.showDate,
+            calendarEventIdentifier: countdown.calendarEventIdentifier
+        )
+
+        if let eventIdentifier = countdown.calendarEventIdentifier {
+            Task { @MainActor in
+                await calendarService.updateEvent(identifier: eventIdentifier, for: updatedCountdown)
+            }
+        } else if isCalendarIntegrationEnabled {
+            Task { @MainActor in
+                if let eventIdentifier = await calendarService.createEvent(for: updatedCountdown) {
+                    try? self.updateCalendarIdentifier(id: countdown.id, eventIdentifier: eventIdentifier)
+                }
+            }
         }
     }
 
@@ -201,6 +291,7 @@ final class CountdownRepository: NSObject, ObservableObject {
 
     func delete(_ countdown: Countdown) throws {
         let id = countdown.id
+        let calendarEventIdentifier = countdown.calendarEventIdentifier
         let context = backgroundContext
         try context.performAndWait {
             let request = CountdownEntity.fetchRequest()
@@ -216,6 +307,42 @@ final class CountdownRepository: NSObject, ObservableObject {
             context.delete(entity)
             try context.save()
         }
+
+        if let calendarEventIdentifier {
+            Task { @MainActor in
+                await calendarService.deleteEvent(identifier: calendarEventIdentifier)
+            }
+        }
+    }
+
+    private func updateCalendarIdentifier(id: UUID, eventIdentifier: String?) throws {
+        let context = backgroundContext
+        try context.performAndWait {
+            let request = CountdownEntity.fetchRequest()
+            request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+            request.fetchLimit = 1
+            guard let entity = try context.fetch(request).first else { return }
+            entity.calendarEventIdentifier = eventIdentifier
+            try context.save()
+        }
+    }
+
+    private var isCalendarIntegrationEnabled: Bool {
+        UserDefaults.standard.bool(forKey: AppSettingsKeys.calendarIntegrationEnabled)
+    }
+
+    private func resolvedValue<T>(existing: T?, update: T??) -> T? {
+        guard let update else { return existing }
+        return update
+    }
+
+    private func resolvedFileURL(existing: URL?, update: String??) -> URL? {
+        guard let update else { return existing }
+        return update.map { URL(fileURLWithPath: $0) }
+    }
+
+    private func normalizedTargetDate(_ date: Date) -> Date {
+        Calendar.current.startOfDay(for: date)
     }
 }
 

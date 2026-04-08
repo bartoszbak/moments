@@ -6,8 +6,10 @@ enum ImageStorageService {
     static let thumbnailsDirectory: URL = makeDirectory(named: "thumbnails")
 
     private static func makeDirectory(named name: String) -> URL {
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let dir = docs.appendingPathComponent(name, isDirectory: true)
+        let baseDirectory =
+            FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedDataStore.groupID)
+            ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let dir = baseDirectory.appendingPathComponent(name, isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }
@@ -46,9 +48,18 @@ enum ImageStorageService {
 
 private extension UIImage {
     func resized(to size: CGSize) -> UIImage {
+        let scale = max(size.width / self.size.width, size.height / self.size.height)
+        let scaledSize = CGSize(
+            width: self.size.width * scale,
+            height: self.size.height * scale
+        )
+        let origin = CGPoint(
+            x: (size.width - scaledSize.width) / 2,
+            y: (size.height - scaledSize.height) / 2
+        )
         let renderer = UIGraphicsImageRenderer(size: size)
         return renderer.image { _ in
-            draw(in: CGRect(origin: .zero, size: size))
+            draw(in: CGRect(origin: origin, size: scaledSize))
         }
     }
 }

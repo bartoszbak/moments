@@ -1,12 +1,37 @@
 import SwiftUI
 import PhotosUI
 
+struct TargetDatePickerRow: View {
+    @Binding var targetDate: Date
+    let tintColor: Color
+
+    var body: some View {
+        LabeledContent("Date") {
+            DatePicker(
+                "",
+                selection: $targetDate,
+                displayedComponents: .date
+            )
+            .labelsHidden()
+            .datePickerStyle(.compact)
+            .foregroundStyle(tintColor)
+            .font(.body)
+        }
+    }
+}
+
 struct AddCountdownView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+
+    @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
 
     @State private var title = ""
-    @State private var targetDate = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+    @State private var targetDate = Calendar.current.startOfDay(
+        for: Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+    )
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
     @State private var showDate: Bool = true
@@ -31,14 +56,13 @@ struct AddCountdownView: View {
                     }
                 }
                 Section("Target Date") {
-                    DatePicker("Date & Time", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
+                    TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
+                    Toggle("Show Date on Widget", isOn: $showDate)
                 }
                 BackgroundPickerSection(selection: $background)
                 ProgressStartPickerSection(value: $startPercentage)
-                Section {
-                    Toggle("Show Date on Widget", isOn: $showDate)
-                }
             }
+            .tint(interfaceTintColor)
             .navigationTitle("New Countdown")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -49,12 +73,14 @@ struct AddCountdownView: View {
                 }
             }
         }
+        .preferredColorScheme(preferredColorScheme)
     }
 
     private func create() {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { showTitleError = true; return }
         isCreating = true
+        let newID = UUID()
 
         var imagePath: String?
         var thumbPath: String?
@@ -63,7 +89,7 @@ struct AddCountdownView: View {
 
         switch background {
         case .photo(let image):
-            if let paths = ImageStorageService.save(image: image, id: UUID()) {
+            if let paths = ImageStorageService.save(image: image, id: newID) {
                 imagePath = paths.backgroundPath
                 thumbPath = paths.thumbnailPath
             }
@@ -78,7 +104,9 @@ struct AddCountdownView: View {
 
         do {
             try repository.create(
-                title: trimmed, targetDate: targetDate,
+                id: newID,
+                title: trimmed,
+                targetDate: Calendar.current.startOfDay(for: targetDate),
                 backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
                 backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
                 startPercentage: startPercentage,
@@ -87,5 +115,17 @@ struct AddCountdownView: View {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             dismiss()
         } catch { isCreating = false }
+    }
+
+    private var preferredColorScheme: ColorScheme? {
+        AppTheme.preferredColorScheme(for: appearanceSetting)
+    }
+
+    private var effectiveColorScheme: ColorScheme {
+        preferredColorScheme ?? colorScheme
+    }
+
+    private var interfaceTintColor: Color {
+        AppTheme.interfaceTintColor(from: interfaceTintHex, for: effectiveColorScheme)
     }
 }

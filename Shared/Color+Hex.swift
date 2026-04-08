@@ -1,6 +1,8 @@
 import SwiftUI
 import UIKit
 
+private let defaultInterfaceTintHex = "#0A84FF"
+
 extension Color {
     init?(hex: String) {
         var h = hex.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -22,5 +24,57 @@ extension Color {
                       Int((r * 255).rounded()),
                       Int((g * 255).rounded()),
                       Int((b * 255).rounded()))
+    }
+
+    var relativeLuminance: Double {
+        let resolved = UIColor(self).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
+        guard resolved.getRed(&r, green: &g, blue: &b, alpha: nil) else { return 1 }
+
+        func linearize(_ component: CGFloat) -> Double {
+            let value = Double(component)
+            if value <= 0.04045 {
+                return value / 12.92
+            }
+
+            return pow((value + 0.055) / 1.055, 2.4)
+        }
+
+        return (0.2126 * linearize(r)) + (0.7152 * linearize(g)) + (0.0722 * linearize(b))
+    }
+
+    var prefersLightForeground: Bool {
+        relativeLuminance < 0.45
+    }
+
+    var requiresDarkModeTintOverride: Bool {
+        relativeLuminance < 0.18
+    }
+}
+
+enum AppTheme {
+    static func preferredColorScheme(for appearance: String) -> ColorScheme? {
+        switch appearance {
+        case "light":
+            return .light
+        case "dark":
+            return .dark
+        default:
+            return nil
+        }
+    }
+
+    static func baseInterfaceTintColor(from hex: String) -> Color {
+        Color(hex: hex) ?? Color(hex: defaultInterfaceTintHex) ?? .blue
+    }
+
+    static func interfaceTintColor(from hex: String, for colorScheme: ColorScheme) -> Color {
+        let baseColor = baseInterfaceTintColor(from: hex)
+
+        if colorScheme == .dark && baseColor.requiresDarkModeTintOverride {
+            return .white
+        }
+
+        return baseColor
     }
 }

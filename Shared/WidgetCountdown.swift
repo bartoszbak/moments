@@ -10,7 +10,10 @@ struct WidgetCountdown: Codable, Identifiable {
     let startPercentage: Double
     let showDate: Bool
 
-    var isExpired: Bool { targetDate <= Date() }
+    var isExpired: Bool {
+        let calendar = Calendar.current
+        return calendar.startOfDay(for: targetDate) < calendar.startOfDay(for: Date())
+    }
     var isToday: Bool { Calendar.current.isDateInToday(targetDate) }
 
     var daysUntil: Int {

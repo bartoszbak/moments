@@ -10,5 +10,6 @@
         <attribute name="thumbnailImagePath" optional="YES" attributeType="String"/>
         <attribute name="targetDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" attributeType="String" defaultValueString=""/>
+        <attribute name="showDate" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
     </entity>
 </model>

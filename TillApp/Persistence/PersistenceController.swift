@@ -7,9 +7,12 @@ final class PersistenceController {
 
     private init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "TillApp")
+        let description = container.persistentStoreDescriptions.first
         if inMemory {
-            container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
+            description?.url = URL(fileURLWithPath: "/dev/null")
         }
+        description?.setOption(true as NSNumber, forKey: NSMigratePersistentStoresAutomaticallyOption)
+        description?.setOption(true as NSNumber, forKey: NSInferMappingModelAutomaticallyOption)
         container.loadPersistentStores { _, error in
             if let error {
                 fatalError("Core Data failed to load: \(error.localizedDescription)")
