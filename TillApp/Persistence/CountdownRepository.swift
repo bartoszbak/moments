@@ -6,6 +6,8 @@ import WidgetKit
 final class CountdownRepository: NSObject, ObservableObject {
     @Published private(set) var countdowns: [Countdown] = []
 
+    private static let initialSeedDefaultsKey = "countdowns.initialSeed.v1"
+
     private let viewContext: NSManagedObjectContext
     private let backgroundContext: NSManagedObjectContext
     private var fetchedResultsController: NSFetchedResultsController<CountdownEntity>!
@@ -31,6 +33,7 @@ final class CountdownRepository: NSObject, ObservableObject {
 
         try? fetchedResultsController.performFetch()
         syncCountdowns()
+        ensureInitialSeedIfNeeded()
     }
 
     private func syncCountdowns() {
@@ -56,6 +59,65 @@ final class CountdownRepository: NSObject, ObservableObject {
         }
         SharedDataStore.save(widgetData)
         WidgetCenter.shared.reloadAllTimelines()
+    }
+
+    private func ensureInitialSeedIfNeeded() {
+        let defaults = UserDefaults.standard
+        let defaultsKey = Self.initialSeedDefaultsKey
+
+        guard !defaults.bool(forKey: defaultsKey) else { return }
+
+        guard countdowns.isEmpty else {
+            defaults.set(true, forKey: defaultsKey)
+            return
+        }
+
+        do {
+            try seedInitialCountdowns()
+            defaults.set(true, forKey: defaultsKey)
+            try? fetchedResultsController.performFetch()
+            syncCountdowns()
+        } catch {
+            assertionFailure("Failed to seed initial countdowns: \(error)")
+        }
+    }
+
+    func seedFreshInstallData() throws {
+        try seedCountdowns(items: initialSeedItems(now: Date()))
+    }
+
+    private func seedInitialCountdowns() throws {
+        try seedCountdowns(items: initialSeedItems(now: Date()))
+    }
+
+    private func initialSeedItems(now: Date) -> [(title: String, targetDate: Date, backgroundColorIndex: Int)] {
+        let calendar = Calendar.current
+
+        return [
+            ("Picnic", calendar.date(byAdding: .day, value: 7, to: now)!, 0),
+            ("Weekend Treasure Hunt", calendar.date(byAdding: .day, value: 14, to: now)!, 1),
+            ("The Super Duper Neighborhood Picnic With Way Too Many Snacks", calendar.date(byAdding: .day, value: 21, to: now)!, 2),
+        ]
+    }
+
+    private func seedCountdowns(items: [(title: String, targetDate: Date, backgroundColorIndex: Int)]) throws {
+        let now = Date()
+        let context = viewContext
+
+        for item in items {
+            let entity = CountdownEntity(context: context)
+            entity.id = UUID()
+            entity.title = item.title
+            entity.targetDate = item.targetDate
+            entity.backgroundColorIndex = Int16(item.backgroundColorIndex)
+            entity.backgroundColorHex = ColorPalette.presets[item.backgroundColorIndex].hexString
+            entity.startPercentage = 1.0
+            entity.createdDate = now
+        }
+
+        if context.hasChanges {
+            try context.save()
+        }
     }
 
     // MARK: - Create

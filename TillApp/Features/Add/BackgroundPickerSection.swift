@@ -14,6 +14,8 @@ struct BackgroundPickerSection: View {
     @State private var photoItem: PhotosPickerItem?
     @State private var customColor: Color = .accentColor
 
+    private let swatchSize: CGFloat = 40
+
     var body: some View {
         Section(
             header: Text("Widget Background"),
@@ -31,10 +33,11 @@ struct BackgroundPickerSection: View {
     // MARK: - Color Grid
 
     private let columns = Array(repeating: GridItem(.flexible()), count: 7)
+    private let pickerPresetIndices = Array(ColorPalette.presets.indices)
 
     private var colorRow: some View {
         LazyVGrid(columns: columns, spacing: 10) {
-            ForEach(0..<ColorPalette.presets.count, id: \.self) { presetButton(index: $0) }
+            ForEach(pickerPresetIndices, id: \.self) { presetButton(index: $0) }
             customPickerButton
         }
         .padding(.vertical, 8)
@@ -48,14 +51,11 @@ struct BackgroundPickerSection: View {
             if isSelected { selection = .none } else { selection = .preset(index) }
             photoItem = nil
         }) {
-            ZStack {
-                Circle().fill(p.color)
-                if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(.caption.bold())
-                        .foregroundStyle(p.usesLightText ? Color.white : Color.black)
-                }
-            }
+            swatchFill(
+                color: p.color,
+                isSelected: isSelected,
+                borderColor: .white
+            )
         }
     }
 
@@ -63,22 +63,40 @@ struct BackgroundPickerSection: View {
     private var customPickerButton: some View {
         let isSelected = { if case .custom = selection { return true }; return false }()
         return ColorPicker(selection: $customColor, supportsOpacity: false) {
-            ZStack {
-                Circle().fill(isSelected ? customColor : Color.secondary.opacity(0.2))
-                if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(.caption.bold())
-                        .foregroundStyle(customColor.luminance < 0.5 ? Color.white : Color.black)
-                }
-            }
-            .frame(width: 36, height: 36)
-            .overlay(Circle().strokeBorder(isSelected ? Color.primary : .clear, lineWidth: 2))
+            swatchFill(
+                color: isSelected ? customColor : Color.secondary.opacity(0.2),
+                isSelected: isSelected,
+                borderColor: customColor.selectionIndicatorColor
+            )
+            .frame(width: swatchSize, height: swatchSize)
         }
         .labelsHidden()
+        .accessibilityLabel("Custom color")
         .onChange(of: customColor) { _, c in
             selection = .custom(c)
             photoItem = nil
         }
+    }
+
+    private func swatchFill(
+        color: Color,
+        isSelected: Bool,
+        borderColor: Color
+    ) -> some View {
+        ZStack {
+            Circle()
+                .fill(color)
+
+            if isSelected {
+                selectionBorder(for: borderColor)
+            }
+        }
+    }
+
+    private func selectionBorder(for color: Color) -> some View {
+        Circle()
+            .strokeBorder(color, lineWidth: 2)
+            .padding(3)
     }
 
     // Generic swatch button wrapper
@@ -89,8 +107,7 @@ struct BackgroundPickerSection: View {
     ) -> some View {
         Button(action: action) {
             label()
-                .frame(width: 36, height: 36)
-                .overlay(Circle().strokeBorder(isSelected ? Color.primary : .clear, lineWidth: 2))
+                .frame(width: swatchSize, height: swatchSize)
         }
         .buttonStyle(.plain)
     }
@@ -151,5 +168,17 @@ private extension Color {
         var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
         ui.getRed(&r, green: &g, blue: &b, alpha: nil)
         return 0.2126 * Double(r) + 0.7152 * Double(g) + 0.0722 * Double(b)
+    }
+
+    var selectionIndicatorColor: Color {
+        luminance > 0.92 ? .black : .white
+    }
+
+    var needsLightSelectionBackground: Bool {
+        luminance > 0.93
+    }
+
+    var selectionBorderColor: Color {
+        needsLightSelectionBackground ? .white : selectionIndicatorColor
     }
 }

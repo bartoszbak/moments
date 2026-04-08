@@ -4,6 +4,7 @@ struct DeveloperMenuView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @Environment(\.dismiss) private var dismiss
 
+    @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @State private var statusMessage: String? = nil
 
     var body: some View {
@@ -13,6 +14,7 @@ struct DeveloperMenuView: View {
                 // MARK: - Seed Data
 
                 Section {
+                    Button("Seed Fresh Install Data") { seedFreshInstallData() }
                     Button("Seed All States") { seed(.allStates) }
                     Button("Seed Expired Events") { seed(.expired) }
                     Button("Seed Upcoming Events") { seed(.upcoming) }
@@ -32,6 +34,16 @@ struct DeveloperMenuView: View {
                     }
                 } header: {
                     Text("Danger Zone")
+                }
+
+                // MARK: - Preview
+
+                Section {
+                    Toggle("Show Empty State", isOn: $showEmptyStatePreview)
+                } header: {
+                    Text("Preview")
+                } footer: {
+                    Text("Forces the home screen empty state without deleting stored countdowns.")
                 }
 
                 // MARK: - Info
@@ -141,4 +153,17 @@ struct DeveloperMenuView: View {
             statusMessage = nil
         }
     }
+
+    private func seedFreshInstallData() {
+        do {
+            try repository.seedFreshInstallData()
+            flash("Added 3 fresh install items")
+        } catch {
+            flash("Failed to seed fresh install data")
+        }
+    }
+}
+
+enum DeveloperSettingsKeys {
+    static let showEmptyStatePreview = "developer.showEmptyStatePreview"
 }

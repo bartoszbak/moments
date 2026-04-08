@@ -9,12 +9,26 @@ struct WidgetCountdown: Codable, Identifiable {
     let backgroundImagePath: String?
     let startPercentage: Double
 
-    var daysRemaining: Int {
-        max(0, Int(targetDate.timeIntervalSinceNow) / 86400)
+    var isExpired: Bool { targetDate <= Date() }
+    var isToday: Bool { Calendar.current.isDateInToday(targetDate) }
+
+    var daysUntil: Int {
+        guard !isToday else { return 0 }
+        let calendar = Calendar.current
+        let now = Date()
+        let startOfNow = calendar.startOfDay(for: now)
+        let startOfTarget = calendar.startOfDay(for: targetDate)
+        return max(0, calendar.dateComponents([.day], from: startOfNow, to: startOfTarget).day ?? 0)
     }
 
-    var isExpired: Bool { targetDate <= Date() }
-    var isToday: Bool { !isExpired && daysRemaining == 0 }
+    var daysSince: Int {
+        guard !isToday else { return 0 }
+        let calendar = Calendar.current
+        let now = Date()
+        let startOfNow = calendar.startOfDay(for: now)
+        let startOfTarget = calendar.startOfDay(for: targetDate)
+        return max(0, calendar.dateComponents([.day], from: startOfTarget, to: startOfNow).day ?? 0)
+    }
 
     /// 0.0 (just created) → 1.0 (reached target)
     var progress: Double {

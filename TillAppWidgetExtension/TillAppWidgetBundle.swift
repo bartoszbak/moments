@@ -20,7 +20,7 @@ struct CountdownWidget: Widget {
             CountdownWidgetView(entry: entry)
         }
         .configurationDisplayName("Countdown")
-        .description("See how many days until your event.")
+        .description("See how many days until or since your event.")
         .supportedFamilies([
             .systemSmall,
             .systemMedium,

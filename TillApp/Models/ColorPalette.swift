@@ -4,8 +4,6 @@ struct PaletteColor {
     let color: Color
     let lightness: Double
     let hexString: String
-
-    var usesLightText: Bool { lightness < 0.55 }
 }
 
 enum ColorPalette {
@@ -15,7 +13,7 @@ enum ColorPalette {
         .make(l: 0.85,  c: 0.16,  h: 250),   // periwinkle
         .make(l: 0.85,  c: 0.16,  h: 320),   // pink
         .make(l: 0.20,  c: 0.003, h: 240),   // near black
-        .make(l: 0.98,  c: 0.001, h: 240),   // near white
+        .make(l: 0.961, c: 0.078, h:  75),   // pale yellow
     ]
 }
 

@@ -25,38 +25,41 @@ struct CountdownWidgetView: View {
 
     private var smallView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Top row: big number + "Days / untill"
+            // Top row: big number + relation label
             HStack(alignment: .top, spacing: 4) {
                 if let countdown = entry.countdown {
-                    Group {
-                        if countdown.isExpired {
-                            Text("✓")
-                        } else {
-                            Text(countdown.isToday ? "0" : "\(countdown.daysRemaining)")
-                        }
+                    Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .foregroundStyle(fgPrimary)
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, -4)
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("Days")
+                        Text(relationLabel(for: countdown))
                     }
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(fgPrimary)
-                    .minimumScaleFactor(0.4)
-                    .lineLimit(1)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, -4)
+                    .font(.system(.caption, design: .rounded, weight: .medium))
+                    .foregroundStyle(fgSecondary)
                 } else {
                     Text("—")
                         .font(.system(size: 32, weight: .bold, design: .rounded))
                         .foregroundStyle(fgPrimary)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, -7)
-                }
 
-                Spacer()
+                    Spacer()
 
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text("Days")
-                    Text("untill")
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("Days")
+                        Text("until")
+                    }
+                    .font(.system(.caption, design: .rounded, weight: .medium))
+                    .foregroundStyle(fgSecondary)
                 }
-                .font(.system(.caption, design: .rounded, weight: .medium))
-                .foregroundStyle(fgSecondary)
             }
 
             Spacer()
@@ -69,12 +72,14 @@ struct CountdownWidgetView: View {
                     .truncationMode(.tail)
                     .padding(.bottom, 6)
 
-                progressBar(progress: countdown.barProgress)
+                if !countdown.isExpired {
+                    progressBar(progress: countdown.barProgress)
+                }
 
                 Text(countdown.targetDate.smartFormatted)
                     .font(.system(.caption, design: .rounded, weight: .medium))
                     .foregroundStyle(fgSecondary)
-                    .padding(.top, 6)
+                    .padding(.top, countdown.isExpired ? 0 : 6)
             }
         }
         .padding(.horizontal, 2)
@@ -87,38 +92,41 @@ struct CountdownWidgetView: View {
 
     private var mediumView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Top row: big number + "Days / untill"
+            // Top row: big number + relation label
             HStack(alignment: .top, spacing: 4) {
                 if let countdown = entry.countdown {
-                    Group {
-                        if countdown.isExpired {
-                            Text("✓")
-                        } else {
-                            Text(countdown.isToday ? "0" : "\(countdown.daysRemaining)")
-                        }
+                    Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .foregroundStyle(fgPrimary)
+                        .minimumScaleFactor(0.4)
+                        .lineLimit(1)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.top, -7)
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("Days")
+                        Text(relationLabel(for: countdown))
                     }
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(fgPrimary)
-                    .minimumScaleFactor(0.4)
-                    .lineLimit(1)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, -7)
+                    .font(.system(.caption, design: .rounded, weight: .medium))
+                    .foregroundStyle(fgSecondary)
                 } else {
                     Text("—")
                         .font(.system(size: 32, weight: .bold, design: .rounded))
                         .foregroundStyle(fgPrimary)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.top, -7)
-                }
 
-                Spacer()
+                    Spacer()
 
-                VStack(alignment: .trailing, spacing: 0) {
-                    Text("Days")
-                    Text("untill")
+                    VStack(alignment: .trailing, spacing: 0) {
+                        Text("Days")
+                        Text("until")
+                    }
+                    .font(.system(.caption, design: .rounded, weight: .medium))
+                    .foregroundStyle(fgSecondary)
                 }
-                .font(.system(.caption, design: .rounded, weight: .medium))
-                .foregroundStyle(fgSecondary)
             }
 
             Spacer()
@@ -131,12 +139,14 @@ struct CountdownWidgetView: View {
                     .truncationMode(.tail)
                     .padding(.bottom, 8)
 
-                progressBar(progress: countdown.barProgress)
+                if !countdown.isExpired {
+                    progressBar(progress: countdown.barProgress)
+                }
 
                 Text(countdown.targetDate.smartFormatted)
                     .font(.system(.caption, design: .rounded, weight: .medium))
                     .foregroundStyle(fgSecondary)
-                    .padding(.top, 6)
+                    .padding(.top, countdown.isExpired ? 0 : 6)
             }
         }
         .padding(.horizontal, 2)
@@ -150,14 +160,11 @@ struct CountdownWidgetView: View {
     private var accessoryCircularView: some View {
         VStack(spacing: 0) {
             if let countdown = entry.countdown {
-                if countdown.isExpired {
-                    Image(systemName: "checkmark.circle")
-                        .font(.title2)
-                } else if countdown.isToday {
+                if countdown.isToday {
                     Text("0")
                         .font(.system(.title2, design: .rounded, weight: .bold))
                 } else {
-                    Text("\(countdown.daysRemaining)")
+                    Text("\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
                         .font(.system(.title2, design: .rounded, weight: .bold))
                         .minimumScaleFactor(0.5)
                     Text("d")
@@ -269,9 +276,13 @@ struct CountdownWidgetView: View {
     }
 
     private func daysLabel(for countdown: WidgetCountdown) -> String {
-        if countdown.isExpired { return "Done" }
         if countdown.isToday { return "Today" }
-        return "\(countdown.daysRemaining) days"
+        if countdown.isExpired { return "\(countdown.daysSince) days since" }
+        return "\(countdown.daysUntil) days until"
+    }
+
+    private func relationLabel(for countdown: WidgetCountdown) -> String {
+        countdown.isExpired && !countdown.isToday ? "since" : "until"
     }
 
 }
@@ -287,4 +298,3 @@ struct CountdownWidgetView: View {
 } timeline: {
     CountdownEntry(date: .now, countdown: .placeholder)
 }
-

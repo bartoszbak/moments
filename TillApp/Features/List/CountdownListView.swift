@@ -4,14 +4,37 @@ struct CountdownListView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @EnvironmentObject private var timerManager: TimerManager
 
+    @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @State private var showingAddSheet = false
     @State private var editingCountdown: Countdown?
     @State private var showingDevMenu = false
+    @State private var selectedFilter: CountdownFilter = .all
+
+    private var isShowingEmptyStatePreview: Bool {
+        showEmptyStatePreview && !repository.countdowns.isEmpty
+    }
+
+    private var displayedCountdowns: [Countdown] {
+        isShowingEmptyStatePreview ? [] : filteredCountdowns
+    }
+
+    private var filteredCountdowns: [Countdown] {
+        repository.countdowns.filter { countdown in
+            switch selectedFilter {
+            case .all:
+                true
+            case .past:
+                countdown.isExpired(at: timerManager.currentTime)
+            case .upcoming:
+                !countdown.isExpired(at: timerManager.currentTime)
+            }
+        }
+    }
 
     var body: some View {
         NavigationStack {
             List {
-                ForEach(repository.countdowns) { countdown in
+                ForEach(displayedCountdowns) { countdown in
                     CountdownRowView(
                         countdown: countdown,
                         currentTime: timerManager.currentTime
@@ -49,47 +72,29 @@ struct CountdownListView: View {
                             .foregroundStyle(.primary)
                     }
                 }
+
+                if !repository.countdowns.isEmpty && !isShowingEmptyStatePreview {
+                    ToolbarItemGroup(placement: .bottomBar) {
+                        filterMenuButton
+                        Spacer()
+                        addButton
+                    }
+                }
             }
             .overlay {
-                if repository.countdowns.isEmpty {
+                if repository.countdowns.isEmpty || isShowingEmptyStatePreview {
+                    emptyLibraryView
+                } else if filteredCountdowns.isEmpty {
                     ContentUnavailableView {
-                        Label("No Countdowns", systemImage: "app.badge")
+                        Label(emptyStateTitle, systemImage: "app.badge")
                     } description: {
-                        Text("")
-                    } actions: {
-                        Button("Add new") { showingAddSheet = true }
-                            .adaptiveGlassProminentButtonStyle()
-                            .padding(.bottom, 16)
+                        Text(emptyStateDescription)
                     }
                 }
             }
         }
-        .overlay(alignment: .bottomTrailing) {
-            if !repository.countdowns.isEmpty {
-            Button {
-                showingAddSheet = true
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            } label: {
-                Group {
-                    if #available(iOS 26, *) {
-                        Image(systemName: "plus")
-                            .font(.title2.weight(.semibold))
-                            .frame(width: 56, height: 56)
-                            .glassEffect(.regular.interactive(), in: .circle)
-                    } else {
-                        Image(systemName: "plus")
-                            .font(.title2.weight(.semibold))
-                            .foregroundStyle(.primary)
-                            .frame(width: 56, height: 56)
-                            .background(.ultraThinMaterial, in: Circle())
-                            .shadow(color: .black.opacity(0.15), radius: 12, x: 0, y: 4)
-                    }
-                }
-            }
-            .buttonStyle(.plain)
-            .padding(.trailing, 20)
-            .padding(.bottom, 0)
-            }
+        .onChange(of: selectedFilter) {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
         }
         .sheet(isPresented: $showingDevMenu) {
             DeveloperMenuView()
@@ -105,6 +110,110 @@ struct CountdownListView: View {
     private func delete(_ countdown: Countdown) {
         try? repository.delete(countdown)
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+    }
+
+    private var emptyStateTitle: String {
+        switch selectedFilter {
+        case .all:
+            "No Countdowns"
+        case .past:
+            "No Past Countdowns"
+        case .upcoming:
+            "No Upcoming Countdowns"
+        }
+    }
+
+    private var emptyStateDescription: String {
+        if repository.countdowns.isEmpty {
+            return ""
+        }
+
+        switch selectedFilter {
+        case .all:
+            return ""
+        case .past:
+            return "Change the filter to see upcoming countdowns."
+        case .upcoming:
+            return "Change the filter to see past countdowns."
+        }
+    }
+
+    private var emptyLibraryView: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "app.badge")
+                .font(.system(size: 38, weight: .regular))
+                .foregroundStyle(.secondary)
+
+            Text("No Countdowns")
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.primary)
+
+            Button("Add new") {
+                showingAddSheet = true
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            }
+            .controlSize(.large)
+            .adaptiveGlassProminentButtonStyle()
+        }
+        .padding(.horizontal, 24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+    }
+
+    private var filterMenuButton: some View {
+        Menu {
+            Picker("Filter", selection: $selectedFilter) {
+                ForEach(CountdownFilter.allCases) { filter in
+                    Text(filter.title).tag(filter)
+                }
+            }
+        } label: {
+            Group {
+                if selectedFilter == .all {
+                    Image(systemName: "line.3.horizontal.decrease")
+                        .font(.system(size: 17, weight: .semibold))
+                        .frame(width: 48, height: 48)
+                } else {
+                    Label(selectedFilter.title, systemImage: "line.3.horizontal.decrease")
+                        .font(.system(size: 17, weight: .semibold))
+                        .padding(.horizontal, 16)
+                        .frame(height: 48)
+                }
+            }
+        }
+        .adaptiveGlassButtonStyle()
+        .accessibilityLabel("Filter countdowns")
+    }
+
+    private var addButton: some View {
+        Button {
+            showingAddSheet = true
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 17, weight: .semibold))
+                .frame(width: 48, height: 48)
+        }
+        .adaptiveGlassProminentButtonStyle()
+        .accessibilityLabel("Add countdown")
+    }
+}
+
+private enum CountdownFilter: String, CaseIterable, Identifiable {
+    case all
+    case past
+    case upcoming
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .all:
+            "All"
+        case .past:
+            "Past"
+        case .upcoming:
+            "Upcoming"
+        }
     }
 }
 

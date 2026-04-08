@@ -4,12 +4,10 @@ struct CountdownRowView: View {
     let countdown: Countdown
     let currentTime: Date
 
-    private var daysRemaining: Int {
-        Int(countdown.timeRemaining(from: currentTime)) / 86400
-    }
-
     private var isExpired: Bool { countdown.isExpired(at: currentTime) }
-    private var isToday: Bool { !isExpired && daysRemaining == 0 }
+    private var isToday: Bool { countdown.isToday(at: currentTime) }
+    private var daysUntil: Int { countdown.daysUntil(from: currentTime) }
+    private var daysSince: Int { countdown.daysSince(from: currentTime) }
 
     var body: some View {
         HStack(spacing: 16) {
@@ -35,21 +33,28 @@ struct CountdownRowView: View {
 
     @ViewBuilder
     private var dayBadge: some View {
-        if isExpired {
-            Text("Done")
-                .font(.caption.bold())
-                .foregroundStyle(.secondary)
-        } else if isToday {
+        if isToday {
             Text("Today")
                 .font(.caption.bold())
                 .foregroundStyle(.orange)
+        } else if isExpired {
+            VStack(spacing: 0) {
+                Text("\(daysSince)")
+                    .font(.system(.title2, design: .rounded, weight: .bold))
+                    .monospacedDigit()
+                    .contentTransition(.numericText(countsDown: false))
+                    .animation(.default, value: daysSince)
+                Text("since")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
         } else {
             VStack(spacing: 0) {
-                Text("\(daysRemaining)")
+                Text("\(daysUntil)")
                     .font(.system(.title2, design: .rounded, weight: .bold))
                     .monospacedDigit()
                     .contentTransition(.numericText(countsDown: true))
-                    .animation(.default, value: daysRemaining)
+                    .animation(.default, value: daysUntil)
                 Text("days")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
@@ -60,8 +65,8 @@ struct CountdownRowView: View {
     // MARK: - Accessibility
 
     private var accessibilityLabel: String {
-        if isExpired { return "\(countdown.title), completed" }
         if isToday { return "\(countdown.title), today" }
-        return "\(countdown.title), \(daysRemaining) days remaining"
+        if isExpired { return "\(countdown.title), \(daysSince) days since" }
+        return "\(countdown.title), \(daysUntil) days until"
     }
 }

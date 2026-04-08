@@ -11,6 +11,7 @@ struct EditCountdownView: View {
     @State private var targetDate = Date()
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
+    @State private var allowPastDate = false
     @State private var hasLoaded = false
     @State private var showDeleteConfirmation = false
     @State private var photoChanged = false
@@ -28,9 +29,14 @@ struct EditCountdownView: View {
                     TextField("Countdown name", text: $title)
                 }
                 Section("Target Date") {
-                    DatePicker("Date & Time", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
-                    if targetDate < Date() {
-                        Label("This date is in the past", systemImage: "clock.badge.exclamationmark.fill")
+                    Toggle("Allow Past Date", isOn: $allowPastDate)
+                    if allowPastDate {
+                        DatePicker("Date & Time", selection: $targetDate, displayedComponents: [.date, .hourAndMinute])
+                    } else {
+                        DatePicker("Date & Time", selection: $targetDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                    }
+                    if allowPastDate && targetDate < Date() {
+                        Label("Past dates are allowed and will show days since", systemImage: "clock.badge.exclamationmark.fill")
                             .foregroundStyle(.orange).font(.caption)
                     }
                 }
@@ -66,6 +72,7 @@ struct EditCountdownView: View {
                 guard !hasLoaded, let countdown else { return }
                 title = countdown.title
                 targetDate = countdown.targetDate
+                allowPastDate = countdown.targetDate < Date()
                 if let idx = countdown.backgroundColorIndex {
                     background = .preset(idx)
                 } else if let hex = countdown.backgroundColorHex,
@@ -79,6 +86,11 @@ struct EditCountdownView: View {
                 }
                 startPercentage = countdown.startPercentage
                 hasLoaded = true
+            }
+            .onChange(of: allowPastDate) { _, isEnabled in
+                if !isEnabled, targetDate < Date() {
+                    targetDate = Date()
+                }
             }
         }
     }

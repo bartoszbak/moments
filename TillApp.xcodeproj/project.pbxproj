@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0F383D468C71AB5DFB6F05CF /* View+Glass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A0A18863E66054E293904C2 /* View+Glass.swift */; };
+		148C1F7A9B3E4C21A7D5E601 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 148C1F7A9B3E4C21A7D5E600 /* Assets.xcassets */; };
 		182F370370E1937FD226573C /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 743A5F36759D0FAF9FC312A1 /* ColorPalette.swift */; };
 		20E7F8F12FE2A9740A026983 /* TillAppWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7248535AC65F4D5A01D14706 /* TillAppWidgetBundle.swift */; };
 		21B8D9ADBA4160A3B9F81030 /* SelectCountdownIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C278AC33D2A0528B3D880746 /* SelectCountdownIntent.swift */; };
@@ -70,6 +71,7 @@
 		060DE9B31C877CEB7918C37B /* Countdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Countdown.swift; sourceTree = "<group>"; };
 		0983F9C14715C82A1245A41A /* TillAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TillAppApp.swift; sourceTree = "<group>"; };
 		0B070EA8FE958E37EC91E99B /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		148C1F7A9B3E4C21A7D5E600 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		158F1BD2A575D68A8234B496 /* Date+SmartFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+SmartFormat.swift"; sourceTree = "<group>"; };
 		22EF982CEF1A03E1286ECE6C /* AddCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCountdownView.swift; sourceTree = "<group>"; };
 		2755582EB932003B011BCA65 /* CountdownRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownRowView.swift; sourceTree = "<group>"; };
@@ -213,6 +215,7 @@
 		CDC21294B4F24D921071195B /* TillApp */ = {
 			isa = PBXGroup;
 			children = (
+				148C1F7A9B3E4C21A7D5E600 /* Assets.xcassets */,
 				EF8F2D4D3401E92639E73ECC /* Info.plist */,
 				4A8B9FA41CD9B60C12866E64 /* TillApp.entitlements */,
 				0983F9C14715C82A1245A41A /* TillAppApp.swift */,
@@ -286,6 +289,7 @@
 			buildConfigurationList = 4A808978EE88EF883A655BB1 /* Build configuration list for PBXNativeTarget "TillApp" */;
 			buildPhases = (
 				430D37894DFDAB2EAAE5C1D0 /* Sources */,
+				148C1F7A9B3E4C21A7D5E602 /* Resources */,
 				8121A951AF637E81781F9BBE /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -336,6 +340,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		148C1F7A9B3E4C21A7D5E602 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				148C1F7A9B3E4C21A7D5E601 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		430D37894DFDAB2EAAE5C1D0 /* Sources */ = {
@@ -439,16 +454,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = TillApp/TillApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Till;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tillappcounter.TillApp;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
@@ -581,16 +599,19 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = TillApp/TillApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = TillApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Till;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tillappcounter.TillApp;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
