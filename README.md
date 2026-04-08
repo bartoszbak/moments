@@ -1,4 +1,4 @@
-<img width="1024" height="1024" alt="cIcon-iOS-Default-1024x1024@1x" src="https://github.com/user-attachments/assets/7886a206-48be-43f1-938b-97ae82db3976" />
+<img width="128" height="128" alt="cIcon-iOS-Default-1024x1024@1x" src="https://github.com/user-attachments/assets/7886a206-48be-43f1-938b-97ae82db3976" />
 
 # Till
 
