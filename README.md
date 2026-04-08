@@ -1,3 +1,5 @@
+<img width="1024" height="1024" alt="cIcon-iOS-Default-1024x1024@1x" src="https://github.com/user-attachments/assets/7886a206-48be-43f1-938b-97ae82db3976" />
+
 # Till
 
 A clean, minimal iOS countdown app. Add events, see how many days remain, and put a live countdown on your home screen.
