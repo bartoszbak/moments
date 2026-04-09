@@ -16,6 +16,9 @@ struct EditCountdownView: View {
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
     @State private var showDate: Bool = true
+    @State private var showSymbol: Bool = false
+    @State private var sfSymbolName: String? = nil
+    @State private var showSymbolPicker = false
     @State private var hasLoaded = false
     @State private var showDeleteConfirmation = false
     @State private var photoChanged = false
@@ -35,6 +38,25 @@ struct EditCountdownView: View {
                 Section("Target Date") {
                     TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
                     Toggle("Show Date on Widget", isOn: $showDate)
+                    Toggle("Add a Symbol", isOn: $showSymbol.animation())
+                        .onChange(of: showSymbol) { _, enabled in
+                            if !enabled { sfSymbolName = nil }
+                        }
+                    if showSymbol {
+                        Button { showSymbolPicker = true } label: {
+                            LabeledContent("Symbol") {
+                                if let name = sfSymbolName {
+                                    Image(systemName: name)
+                                        .font(.title3)
+                                        .foregroundStyle(interfaceTintColor)
+                                } else {
+                                    Text("Choose…")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .foregroundStyle(.primary)
+                    }
                 }
                 BackgroundPickerSection(selection: $background, onNewPhotoSelected: { photoChanged = true })
                 ProgressStartPickerSection(value: $startPercentage)
@@ -51,6 +73,9 @@ struct EditCountdownView: View {
                 }
             }
             .tint(interfaceTintColor)
+            .sheet(isPresented: $showSymbolPicker) {
+                SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: interfaceTintColor)
+            }
             .alert("Delete this countdown?", isPresented: $showDeleteConfirmation) {
                 Button("Delete", role: .destructive, action: delete)
                 Button("Cancel", role: .cancel) { }
@@ -82,6 +107,8 @@ struct EditCountdownView: View {
                 }
                 startPercentage = countdown.startPercentage
                 showDate = countdown.showDate
+                sfSymbolName = countdown.sfSymbolName
+                showSymbol = countdown.sfSymbolName != nil
                 hasLoaded = true
             }
         }
@@ -148,7 +175,8 @@ struct EditCountdownView: View {
             backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
             backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
             startPercentage: startPercentage,
-            showDate: showDate
+            showDate: showDate,
+            sfSymbolName: .some(sfSymbolName)
         )
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
         dismiss()

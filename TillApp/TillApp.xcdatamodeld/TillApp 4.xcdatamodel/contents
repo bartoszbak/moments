@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22522" systemVersion="23A344" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CountdownEntity" representedClassName="CountdownEntity" syncable="YES" codeGenerationType="none">
+        <attribute name="backgroundColorHex" optional="YES" attributeType="String"/>
+        <attribute name="startPercentage" optional="YES" attributeType="Double" defaultValueString="1" usesScalarValueType="YES"/>
+        <attribute name="backgroundColorIndex" optional="YES" attributeType="Integer 16" defaultValueString="-1"/>
+        <attribute name="backgroundImagePath" optional="YES" attributeType="String"/>
+        <attribute name="calendarEventIdentifier" optional="YES" attributeType="String"/>
+        <attribute name="createdDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="thumbnailImagePath" optional="YES" attributeType="String"/>
+        <attribute name="targetDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="title" attributeType="String" defaultValueString=""/>
+        <attribute name="showDate" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="sfSymbolName" optional="YES" attributeType="String"/>
+    </entity>
+</model>

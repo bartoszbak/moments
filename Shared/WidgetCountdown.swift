@@ -9,6 +9,7 @@ struct WidgetCountdown: Codable, Identifiable {
     let backgroundImagePath: String?
     let startPercentage: Double
     let showDate: Bool
+    let sfSymbolName: String?
 
     var isExpired: Bool {
         let calendar = Calendar.current
@@ -55,6 +56,7 @@ extension WidgetCountdown {
         backgroundColorHex: nil,
         backgroundImagePath: nil,
         startPercentage: 1.0,
-        showDate: true
+        showDate: true,
+        sfSymbolName: nil
     )
 }

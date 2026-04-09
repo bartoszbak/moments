@@ -35,6 +35,9 @@ struct AddCountdownView: View {
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
     @State private var showDate: Bool = true
+    @State private var showSymbol: Bool = false
+    @State private var sfSymbolName: String? = nil
+    @State private var showSymbolPicker = false
     @State private var isCreating = false
     @State private var showTitleError = false
 
@@ -58,6 +61,25 @@ struct AddCountdownView: View {
                 Section("Target Date") {
                     TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
                     Toggle("Show Date on Widget", isOn: $showDate)
+                    Toggle("Add a Symbol", isOn: $showSymbol.animation())
+                        .onChange(of: showSymbol) { _, enabled in
+                            if !enabled { sfSymbolName = nil }
+                        }
+                    if showSymbol {
+                        Button { showSymbolPicker = true } label: {
+                            LabeledContent("Symbol") {
+                                if let name = sfSymbolName {
+                                    Image(systemName: name)
+                                        .font(.title3)
+                                        .foregroundStyle(interfaceTintColor)
+                                } else {
+                                    Text("Choose…")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .foregroundStyle(.primary)
+                    }
                 }
                 BackgroundPickerSection(selection: $background)
                 ProgressStartPickerSection(value: $startPercentage)
@@ -72,6 +94,9 @@ struct AddCountdownView: View {
                         .disabled(!isValid || isCreating).fontWeight(.semibold)
                 }
             }
+        }
+        .sheet(isPresented: $showSymbolPicker) {
+            SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: interfaceTintColor)
         }
         .preferredColorScheme(preferredColorScheme)
     }
@@ -110,7 +135,8 @@ struct AddCountdownView: View {
                 backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
                 backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
                 startPercentage: startPercentage,
-                showDate: showDate
+                showDate: showDate,
+                sfSymbolName: sfSymbolName
             )
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             dismiss()

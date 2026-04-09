@@ -11,6 +11,7 @@ struct Countdown: Identifiable, Hashable {
     let createdDate: Date
     var startPercentage: Double      // progress bar starting fill (0.5 – 1.0)
     var showDate: Bool               // whether to show the target date in the widget
+    var sfSymbolName: String?        // optional SF Symbol shown on the widget
     var calendarEventIdentifier: String?
 
     func timeRemaining(from now: Date) -> TimeInterval {

@@ -179,9 +179,10 @@ struct CountdownListView: View {
             showingAddSheet = true
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         }
-        .font(.headline)
+        .font(.title3.weight(.semibold))
+        .controlSize(.large)
         .frame(maxWidth: .infinity)
-        .frame(height: 52)
+        .frame(height: 64)
         .tint(interfaceTintColor)
         .adaptiveGlassProminentButtonStyle()
         .padding(.horizontal, 24)

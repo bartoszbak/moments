@@ -63,7 +63,8 @@ final class CountdownRepository: NSObject, ObservableObject {
                 backgroundColorHex: countdown.backgroundColorHex,
                 backgroundImagePath: sharedImagePath,
                 startPercentage: countdown.startPercentage,
-                showDate: countdown.showDate
+                showDate: countdown.showDate,
+                sfSymbolName: countdown.sfSymbolName
             )
         }
 
@@ -157,7 +158,8 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundColorIndex: Int? = nil,
         backgroundColorHex: String? = nil,
         startPercentage: Double = 1.0,
-        showDate: Bool = true
+        showDate: Bool = true,
+        sfSymbolName: String? = nil
     ) throws {
         let context = backgroundContext
         let colorIndex = backgroundColorIndex
@@ -175,6 +177,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.backgroundColorHex = colorHex
             entity.startPercentage = startPercentage
             entity.showDate = showDate
+            entity.sfSymbolName = sfSymbolName
             entity.createdDate = createdDate
             try context.save()
         }
@@ -192,6 +195,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             createdDate: createdDate,
             startPercentage: startPercentage,
             showDate: showDate,
+            sfSymbolName: sfSymbolName,
             calendarEventIdentifier: nil
         )
 
@@ -213,7 +217,8 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundColorIndex: Int?? = nil,
         backgroundColorHex: String?? = nil,
         startPercentage: Double? = nil,
-        showDate: Bool? = nil
+        showDate: Bool? = nil,
+        sfSymbolName: String?? = nil
     ) throws {
         let id = countdown.id
         let context = backgroundContext
@@ -239,6 +244,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let newColorHex { entity.backgroundColorHex = newColorHex }
             if let startPercentage { entity.startPercentage = startPercentage }
             if let showDate { entity.showDate = showDate }
+            if let sfSymbolName { entity.sfSymbolName = sfSymbolName }
             try context.save()
         }
 
@@ -265,6 +271,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             createdDate: updatedCreatedDate,
             startPercentage: startPercentage ?? countdown.startPercentage,
             showDate: showDate ?? countdown.showDate,
+            sfSymbolName: sfSymbolName != nil ? sfSymbolName! : countdown.sfSymbolName,
             calendarEventIdentifier: countdown.calendarEventIdentifier
         )
 

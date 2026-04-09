@@ -25,25 +25,45 @@ struct CountdownWidgetView: View {
 
     private var smallView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Top row: big number + relation label
+            // Top row: big number (+ subtitle when symbol shown) + label or symbol
             HStack(alignment: .top, spacing: 4) {
                 if let countdown = entry.countdown {
-                    Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundStyle(fgPrimary)
-                        .minimumScaleFactor(0.4)
-                        .lineLimit(1)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, -4)
+                    if let symbol = countdown.sfSymbolName {
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                                .font(.system(size: 24, weight: .bold, design: .rounded))
+                                .foregroundStyle(fgPrimary)
+                                .minimumScaleFactor(0.4)
+                                .lineLimit(1)
+                            Text(countdown.isExpired && !countdown.isToday ? "Days since" : "Days until")
+                                .font(.system(.caption, design: .rounded))
+                                .foregroundStyle(fgSecondary)
+                        }
 
-                    Spacer()
+                        Spacer()
 
-                    VStack(alignment: .trailing, spacing: 0) {
-                        Text("Days")
-                        Text(relationLabel(for: countdown))
+                        Image(systemName: symbol)
+                            .font(.system(.title3, weight: .semibold))
+                            .foregroundStyle(fgSecondary)
+                            .padding(.top, 4)
+                    } else {
+                        Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundStyle(fgPrimary)
+                            .minimumScaleFactor(0.4)
+                            .lineLimit(1)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.top, -4)
+
+                        Spacer()
+
+                        VStack(alignment: .trailing, spacing: 0) {
+                            Text("Days")
+                            Text(relationLabel(for: countdown))
+                        }
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(fgSecondary)
                     }
-                    .font(.system(.caption, design: .rounded, weight: .medium))
-                    .foregroundStyle(fgSecondary)
                 } else {
                     Text("—")
                         .font(.system(size: 32, weight: .bold, design: .rounded))
@@ -57,7 +77,7 @@ struct CountdownWidgetView: View {
                         Text("Days")
                         Text("until")
                     }
-                    .font(.system(.caption, design: .rounded, weight: .medium))
+                    .font(.system(.caption, design: .rounded))
                     .foregroundStyle(fgSecondary)
                 }
             }
@@ -78,7 +98,7 @@ struct CountdownWidgetView: View {
 
                 if countdown.showDate {
                     Text(countdown.targetDate.smartFormatted)
-                        .font(.system(.caption, design: .rounded, weight: .medium))
+                        .font(.system(.caption, design: .rounded))
                         .foregroundStyle(fgSecondary)
                         .padding(.top, countdown.isExpired ? 0 : 6)
                 }
@@ -92,25 +112,45 @@ struct CountdownWidgetView: View {
 
     private var mediumView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Top row: big number + relation label
+            // Top row: big number + label or symbol
             HStack(alignment: .top, spacing: 4) {
                 if let countdown = entry.countdown {
-                    Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .foregroundStyle(fgPrimary)
-                        .minimumScaleFactor(0.4)
-                        .lineLimit(1)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, -7)
+                    if let symbol = countdown.sfSymbolName {
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                                .font(.system(size: 24, weight: .bold, design: .rounded))
+                                .foregroundStyle(fgPrimary)
+                                .minimumScaleFactor(0.4)
+                                .lineLimit(1)
+                            Text(countdown.isExpired && !countdown.isToday ? "Days since" : "Days until")
+                                .font(.system(.caption, design: .rounded))
+                                .foregroundStyle(fgSecondary)
+                        }
 
-                    Spacer()
+                        Spacer()
 
-                    VStack(alignment: .trailing, spacing: 0) {
-                        Text("Days")
-                        Text(relationLabel(for: countdown))
+                        Image(systemName: symbol)
+                            .font(.system(.title3, weight: .semibold))
+                            .foregroundStyle(fgSecondary)
+                            .padding(.top, 4)
+                    } else {
+                        Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundStyle(fgPrimary)
+                            .minimumScaleFactor(0.4)
+                            .lineLimit(1)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.top, -7)
+
+                        Spacer()
+
+                        VStack(alignment: .trailing, spacing: 0) {
+                            Text("Days")
+                            Text(relationLabel(for: countdown))
+                        }
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(fgSecondary)
                     }
-                    .font(.system(.caption, design: .rounded, weight: .medium))
-                    .foregroundStyle(fgSecondary)
                 } else {
                     Text("—")
                         .font(.system(size: 32, weight: .bold, design: .rounded))
@@ -124,7 +164,7 @@ struct CountdownWidgetView: View {
                         Text("Days")
                         Text("until")
                     }
-                    .font(.system(.caption, design: .rounded, weight: .medium))
+                    .font(.system(.caption, design: .rounded))
                     .foregroundStyle(fgSecondary)
                 }
             }
@@ -145,7 +185,7 @@ struct CountdownWidgetView: View {
 
                 if countdown.showDate {
                     Text(countdown.targetDate.smartFormatted)
-                        .font(.system(.caption, design: .rounded, weight: .medium))
+                        .font(.system(.caption, design: .rounded))
                         .foregroundStyle(fgSecondary)
                         .padding(.top, countdown.isExpired ? 0 : 6)
                 }

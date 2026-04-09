@@ -11,6 +11,7 @@ final class CountdownEntity: NSManagedObject {
     @NSManaged var backgroundColorHex: String?
     @NSManaged var startPercentage: Double
     @NSManaged var showDate: Bool
+    @NSManaged var sfSymbolName: String?
     @NSManaged var calendarEventIdentifier: String?
     @NSManaged var createdDate: Date?
 
@@ -32,6 +33,7 @@ final class CountdownEntity: NSManagedObject {
             createdDate: createdDate,
             startPercentage: startPercentage > 0 ? startPercentage : 1.0,
             showDate: showDate,
+            sfSymbolName: sfSymbolName,
             calendarEventIdentifier: calendarEventIdentifier
         )
     }

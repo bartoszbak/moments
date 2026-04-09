@@ -43,6 +43,7 @@
 		DC0EF4DBF3A2DD5B518226E4 /* CountdownRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2755582EB932003B011BCA65 /* CountdownRowView.swift */; };
 		F3E6DDC6A3F507CCE88A6CD1 /* CountdownEntity+Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 851091D66AFFBD7CCF94D62A /* CountdownEntity+Mapping.swift */; };
 		F8BB03FFB125F8AE18D09A02 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CFD29C70A79D8584C7BD966 /* PersistenceController.swift */; };
+		DD1234ABCDEF5678901234AB /* SFSymbolPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC1234ABCDEF5678901234AB /* SFSymbolPickerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +110,8 @@
 		F7C58FCE12709F9EBFB8854C /* EditCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCountdownView.swift; sourceTree = "<group>"; };
 		FE7EC32305026F8DDCA55DCF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FF84AFCF89DF8198F77A0699 /* ProgressStartPickerSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStartPickerSection.swift; sourceTree = "<group>"; };
+		CC1234ABCDEF5678901234AB /* SFSymbolPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbolPickerView.swift; sourceTree = "<group>"; };
+		EE1234ABCDEF5678901234AB /* TillApp 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 4.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -253,6 +256,7 @@
 				94889C08DC49F011604F63F9 /* BackgroundPickerSection.swift */,
 				F7C58FCE12709F9EBFB8854C /* EditCountdownView.swift */,
 				FF84AFCF89DF8198F77A0699 /* ProgressStartPickerSection.swift */,
+				CC1234ABCDEF5678901234AB /* SFSymbolPickerView.swift */,
 			);
 			path = Add;
 			sourceTree = "<group>";
@@ -389,6 +393,7 @@
 				C817D064FDFF4173FE1B3495 /* ImageStorageService.swift in Sources */,
 				F8BB03FFB125F8AE18D09A02 /* PersistenceController.swift in Sources */,
 				43FB1660E36AD33E7B6CB72A /* ProgressStartPickerSection.swift in Sources */,
+				DD1234ABCDEF5678901234AB /* SFSymbolPickerView.swift in Sources */,
 				4572E3CB6E92802F9FD3A52B /* SharedDataStore.swift in Sources */,
 				CF8AA3E62924DAF95A4D72E8 /* SettingsView.swift in Sources */,
 				7C02586524F7A7DE7EBE085D /* TillApp.xcdatamodeld in Sources */,
@@ -678,8 +683,9 @@
 				8A8F0B0B618E17DA7D537740 /* TillApp.xcdatamodel */,
 				A16D4E0C0B6B47CF83B9271F /* TillApp 2.xcdatamodel */,
 				91F4B4CD12B0B2944FFDE443 /* TillApp 3.xcdatamodel */,
+				EE1234ABCDEF5678901234AB /* TillApp 4.xcdatamodel */,
 			);
-			currentVersion = 91F4B4CD12B0B2944FFDE443 /* TillApp 3.xcdatamodel */;
+			currentVersion = EE1234ABCDEF5678901234AB /* TillApp 4.xcdatamodel */;
 			path = TillApp.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
