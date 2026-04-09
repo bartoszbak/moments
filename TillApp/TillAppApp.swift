@@ -44,6 +44,7 @@ private struct AppThemeRootView: View {
         CountdownListView()
             .tint(interfaceTintColor)
             .toggleStyle(AppSwitchToggleStyle(tint: interfaceTintColor, colorScheme: colorScheme))
+            .fontDesign(.rounded)
     }
 
     private var interfaceTintColor: Color {

@@ -179,16 +179,13 @@ struct CountdownListView: View {
             showingAddSheet = true
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         }
-        .font(.title3.weight(.semibold))
         .controlSize(.large)
         .frame(maxWidth: .infinity)
-        .frame(height: 64)
         .tint(interfaceTintColor)
         .adaptiveGlassProminentButtonStyle()
         .padding(.horizontal, 24)
         .padding(.top, 12)
         .padding(.bottom, 8)
-        .background(Color.clear)
     }
 
     private var filterMenuButton: some View {

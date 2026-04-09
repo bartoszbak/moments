@@ -85,7 +85,7 @@ struct SFSymbolPickerView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 24, pinnedViews: []) {
+                LazyVStack(alignment: .leading, spacing: 24) {
                     ForEach(displayCategories, id: \.name) { category in
                         VStack(alignment: .leading, spacing: 10) {
                             Text(category.name)
@@ -116,16 +116,13 @@ struct SFSymbolPickerView: View {
                 }
                 .padding(.vertical, 16)
             }
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search symbols")
+            .searchable(text: $searchText, prompt: "Search symbols")
             .navigationTitle("Choose Symbol")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(.secondary)
-                            .font(.title3)
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark")
                     }
                 }
             }
@@ -142,12 +139,13 @@ private struct SymbolCell: View {
     var body: some View {
         Button(action: action) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(isSelected ? tintColor.opacity(0.15) : Color(.secondarySystemGroupedBackground))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .strokeBorder(isSelected ? tintColor : Color.clear, lineWidth: 2)
-                    )
+                Color(.secondarySystemGroupedBackground)
+
+                if isSelected {
+                    Circle()
+                        .fill(tintColor.opacity(0.2))
+                        .padding(6)
+                }
 
                 Image(systemName: symbol)
                     .font(.title2)
