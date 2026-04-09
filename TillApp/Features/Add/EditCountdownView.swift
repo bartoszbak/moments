@@ -1,6 +1,4 @@
 import SwiftUI
-import PhotosUI
-
 struct EditCountdownView: View {
     let countdownID: UUID
 
@@ -9,7 +7,6 @@ struct EditCountdownView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
-    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
 
     @State private var title = ""
     @State private var targetDate = Date()
@@ -37,28 +34,17 @@ struct EditCountdownView: View {
                 }
                 Section("Target Date") {
                     TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
-                    Toggle("Show Date on Widget", isOn: $showDate)
-                    Toggle("Add a Symbol", isOn: $showSymbol.animation())
-                        .onChange(of: showSymbol) { _, enabled in
-                            if !enabled { sfSymbolName = nil }
-                        }
-                    if showSymbol {
-                        Button { showSymbolPicker = true } label: {
-                            LabeledContent("Symbol") {
-                                if let name = sfSymbolName {
-                                    Image(systemName: name)
-                                        .font(.title3)
-                                        .foregroundStyle(interfaceTintColor)
-                                } else {
-                                    Text("Choose…")
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                        .foregroundStyle(.primary)
-                    }
                 }
-                BackgroundPickerSection(selection: $background, onNewPhotoSelected: { photoChanged = true })
+                BackgroundPickerSection(
+                    selection: $background,
+                    onNewPhotoSelected: { photoChanged = true }
+                )
+                WidgetOptionsSection(
+                    showDate: $showDate,
+                    showSymbol: $showSymbol,
+                    sfSymbolName: $sfSymbolName,
+                    showSymbolPicker: $showSymbolPicker
+                )
                 ProgressStartPickerSection(value: $startPercentage)
                 Section {
                     Button(role: .destructive) {
@@ -76,18 +62,22 @@ struct EditCountdownView: View {
             .sheet(isPresented: $showSymbolPicker) {
                 SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: interfaceTintColor)
             }
-            .alert("Delete this countdown?", isPresented: $showDeleteConfirmation) {
+            .alert("Delete this moment?", isPresented: $showDeleteConfirmation) {
                 Button("Delete", role: .destructive, action: delete)
                 Button("Cancel", role: .cancel) { }
             }
-            .navigationTitle("Edit Countdown")
+            .navigationTitle("Edit Moment")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                        .foregroundStyle(toolbarButtonColor)
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: save)
                         .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         .fontWeight(.semibold)
+                        .foregroundStyle(toolbarButtonColor)
                 }
             }
             .onAppear {
@@ -198,6 +188,10 @@ struct EditCountdownView: View {
     }
 
     private var interfaceTintColor: Color {
-        AppTheme.interfaceTintColor(from: interfaceTintHex, for: effectiveColorScheme)
+        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
+    }
+
+    private var toolbarButtonColor: Color {
+        effectiveColorScheme == .dark ? .white : .black
     }
 }

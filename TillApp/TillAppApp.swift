@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 @main
 struct TillAppApp: App {
@@ -9,6 +10,8 @@ struct TillAppApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        AppTypography.configure()
+
         let persistence = PersistenceController.shared
         _repository = StateObject(wrappedValue: CountdownRepository(
             viewContext: persistence.container.viewContext,
@@ -36,19 +39,56 @@ struct TillAppApp: App {
     }
 }
 
+private enum AppTypography {
+    static func configure() {
+        let largeTitleFont = UIFont.preferredRoundedFont(forTextStyle: .largeTitle, weight: .bold)
+        let titleFont = UIFont.preferredRoundedFont(forTextStyle: .headline, weight: .semibold)
+
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.configureWithDefaultBackground()
+        navigationBarAppearance.largeTitleTextAttributes = [.font: largeTitleFont]
+        navigationBarAppearance.titleTextAttributes = [.font: titleFont]
+
+        UINavigationBar.appearance().standardAppearance = navigationBarAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navigationBarAppearance
+        UINavigationBar.appearance().compactAppearance = navigationBarAppearance
+    }
+}
+
+private extension UIFont {
+    static func preferredRoundedFont(forTextStyle textStyle: TextStyle, weight: Weight) -> UIFont {
+        let baseFont = preferredFont(forTextStyle: textStyle)
+        let systemFont = UIFont.systemFont(ofSize: baseFont.pointSize, weight: weight)
+
+        guard let roundedDescriptor = systemFont.fontDescriptor.withDesign(.rounded) else {
+            return systemFont
+        }
+
+        return UIFont(descriptor: roundedDescriptor, size: systemFont.pointSize)
+    }
+}
+
 private struct AppThemeRootView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
+    @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
 
     var body: some View {
         CountdownListView()
             .tint(interfaceTintColor)
-            .toggleStyle(AppSwitchToggleStyle(tint: interfaceTintColor, colorScheme: colorScheme))
+            .toggleStyle(AppSwitchToggleStyle(tint: interfaceTintColor, colorScheme: effectiveColorScheme))
             .fontDesign(.rounded)
     }
 
     private var interfaceTintColor: Color {
-        AppTheme.interfaceTintColor(from: interfaceTintHex, for: colorScheme)
+        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
+    }
+
+    private var preferredColorScheme: ColorScheme? {
+        AppTheme.preferredColorScheme(for: appearanceSetting)
+    }
+
+    private var effectiveColorScheme: ColorScheme {
+        preferredColorScheme ?? colorScheme
     }
 }
 
@@ -99,7 +139,9 @@ private struct AppSwitchToggleStyle: ToggleStyle {
             return tint
         }
 
-        return Color(uiColor: colorScheme == .dark ? .secondarySystemFill : .tertiarySystemFill)
+        return colorScheme == .dark
+            ? Color.black.opacity(0.88)
+            : Color(uiColor: .tertiarySystemFill)
     }
 
     private func trackBorderColor(isOn: Bool) -> Color {
@@ -111,10 +153,6 @@ private struct AppSwitchToggleStyle: ToggleStyle {
     }
 
     private func knobColor(isOn: Bool) -> Color {
-        if colorScheme == .dark, isOn {
-            return Color.black.opacity(0.82)
-        }
-
         return Color.white
     }
 }

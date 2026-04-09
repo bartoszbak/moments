@@ -7,11 +7,14 @@ struct CountdownListView: View {
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
-    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
     @State private var showingAddSheet = false
     @State private var editingCountdown: Countdown?
     @State private var showingSettings = false
     @State private var selectedFilter: CountdownFilter = .all
+    private let gridColumns = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
+    ]
 
     private var isShowingPrimaryEmptyState: Bool {
         repository.countdowns.isEmpty || isShowingEmptyStatePreview
@@ -40,37 +43,18 @@ struct CountdownListView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(displayedCountdowns) { countdown in
-                    CountdownRowView(
-                        countdown: countdown,
-                        currentTime: timerManager.currentTime
-                    )
-                    .id(countdown.id)
-                    .contentShape(Rectangle())
-                    .onTapGesture { editingCountdown = countdown }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(role: .destructive) {
-                            delete(countdown)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
-                    }
-                    .swipeActions(edge: .leading) {
-                        Button {
-                            editingCountdown = countdown
-                        } label: {
-                            Label("Edit", systemImage: "pencil")
-                        }
-                        .tint(interfaceTintColor)
-                    }
+            ScrollView {
+                if !displayedCountdowns.isEmpty {
+                    countdownGrid
+                } else {
+                    Color.clear
+                        .frame(maxWidth: .infinity, minHeight: 1)
                 }
             }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(isShowingPrimaryEmptyState ? .hidden : .visible)
+            .scrollIndicators(.hidden)
             .background(Color(.systemBackground))
             .tint(interfaceTintColor)
-            .navigationTitle(isShowingPrimaryEmptyState ? "" : "Till")
+            .navigationTitle(isShowingPrimaryEmptyState ? "" : "Moments")
             .navigationBarTitleDisplayMode(isShowingPrimaryEmptyState ? .inline : .large)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -79,7 +63,7 @@ struct CountdownListView: View {
                     } label: {
                         Image(systemName: "plus.minus.capsule")
                             .fontWeight(.semibold)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(settingsButtonColor)
                     }
                 }
 
@@ -125,6 +109,41 @@ struct CountdownListView: View {
     private func delete(_ countdown: Countdown) {
         try? repository.delete(countdown)
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+    }
+
+    @ViewBuilder
+    private var countdownGrid: some View {
+        if #available(iOS 26, *) {
+            GlassEffectContainer(spacing: 16) {
+                tileGridContent
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            .padding(.bottom, 92)
+        } else {
+            tileGridContent
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 92)
+        }
+    }
+
+    private var tileGridContent: some View {
+        LazyVGrid(columns: gridColumns, spacing: 16) {
+            ForEach(displayedCountdowns) { countdown in
+                Button {
+                    openCountdown(countdown)
+                } label: {
+                    CountdownTileView(
+                        countdown: countdown,
+                        currentTime: timerManager.currentTime
+                    )
+                }
+                .buttonStyle(.plain)
+                .id(countdown.id)
+                .contentShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            }
+        }
     }
 
     private var emptyStateTitle: String {
@@ -176,8 +195,7 @@ struct CountdownListView: View {
 
     private var emptyStateButton: some View {
         Button("Add first event") {
-            showingAddSheet = true
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            presentAddCountdown()
         }
         .controlSize(.large)
         .frame(maxWidth: .infinity)
@@ -198,6 +216,7 @@ struct CountdownListView: View {
         } label: {
             Image(systemName: selectedFilter == .all ? "line.3.horizontal.decrease" : "line.3.horizontal.decrease.circle.fill")
                 .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(settingsButtonColor)
                 .frame(width: 48, height: 48)
         }
         .adaptiveGlassButtonStyle()
@@ -206,21 +225,21 @@ struct CountdownListView: View {
 
     private var addButton: some View {
         Button {
-            showingAddSheet = true
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            presentAddCountdown()
         } label: {
             Image(systemName: "plus")
                 .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(addButtonSymbolColor)
                 .frame(width: 48, height: 48)
         }
         .id(themeRefreshKey)
-        .tint(interfaceTintColor)
+        .tint(addButtonBackgroundColor)
         .adaptiveGlassProminentButtonStyle()
         .accessibilityLabel("Add countdown")
     }
 
     private var interfaceTintColor: Color {
-        AppTheme.interfaceTintColor(from: interfaceTintHex, for: effectiveColorScheme)
+        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
     }
 
     private var preferredColorScheme: ColorScheme? {
@@ -232,7 +251,29 @@ struct CountdownListView: View {
     }
 
     private var themeRefreshKey: String {
-        "\(appearanceSetting)-\(interfaceTintHex)-\(effectiveColorScheme == .dark ? "dark" : "light")"
+        "\(appearanceSetting)-\(effectiveColorScheme == .dark ? "dark" : "light")"
+    }
+
+    private var settingsButtonColor: Color {
+        effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var addButtonBackgroundColor: Color {
+        effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var addButtonSymbolColor: Color {
+        effectiveColorScheme == .dark ? .black : .white
+    }
+
+    private func presentAddCountdown() {
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        showingAddSheet = true
+    }
+
+    private func openCountdown(_ countdown: Countdown) {
+        UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+        editingCountdown = countdown
     }
 }
 

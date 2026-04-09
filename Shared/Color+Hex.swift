@@ -68,6 +68,10 @@ enum AppTheme {
         Color(hex: hex) ?? Color(hex: defaultInterfaceTintHex) ?? .blue
     }
 
+    static func defaultInterfaceTintColor(for colorScheme: ColorScheme) -> Color {
+        interfaceTintColor(from: defaultInterfaceTintHex, for: colorScheme)
+    }
+
     static func interfaceTintColor(from hex: String, for colorScheme: ColorScheme) -> Color {
         let baseColor = baseInterfaceTintColor(from: hex)
 

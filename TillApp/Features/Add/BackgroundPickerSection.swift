@@ -10,6 +10,7 @@ enum BackgroundSelection {
 
 struct BackgroundPickerSection: View {
     @Binding var selection: BackgroundSelection
+    @Environment(\.colorScheme) private var colorScheme
     var onNewPhotoSelected: (() -> Void)? = nil
     @State private var photoItem: PhotosPickerItem?
     @State private var customColor = ColorPalette.presets.first?.color ?? .blue
@@ -18,7 +19,8 @@ struct BackgroundPickerSection: View {
 
     var body: some View {
         Section(
-            header: Text("Widget Background")
+            header: Text("Widget Background"),
+            footer: Text("Photo will have priority over color.")
         ) {
             colorRow
             photoPicker
@@ -53,7 +55,7 @@ struct BackgroundPickerSection: View {
             swatchFill(
                 color: p.color,
                 isSelected: isSelected,
-                borderColor: .white
+                borderColor: selectionBorderColor(for: p.color)
             )
         }
     }
@@ -65,7 +67,7 @@ struct BackgroundPickerSection: View {
             swatchFill(
                 color: isSelected ? customColor : Color.secondary.opacity(0.2),
                 isSelected: isSelected,
-                borderColor: customColor.selectionIndicatorColor
+                borderColor: selectionBorderColor(for: customColor)
             )
             .frame(width: swatchSize, height: swatchSize)
         }
@@ -97,6 +99,14 @@ struct BackgroundPickerSection: View {
         Circle()
             .strokeBorder(color, lineWidth: 2)
             .padding(3)
+    }
+
+    private func selectionBorderColor(for color: Color) -> Color {
+        if colorScheme == .dark {
+            return Color(uiColor: .secondarySystemGroupedBackground)
+        }
+
+        return color.luminance > 0.92 ? .black : .white
     }
 
     // Generic swatch button wrapper
@@ -170,6 +180,43 @@ struct BackgroundPickerSection: View {
     }
 }
 
+struct WidgetOptionsSection: View {
+    @Binding var showDate: Bool
+    @Binding var showSymbol: Bool
+    @Binding var sfSymbolName: String?
+    @Binding var showSymbolPicker: Bool
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        Section {
+            Toggle("Show Date on Widget", isOn: $showDate)
+            Toggle("Add a Symbol", isOn: $showSymbol.animation())
+                .onChange(of: showSymbol) { _, enabled in
+                    if !enabled { sfSymbolName = nil }
+                }
+            if showSymbol {
+                Button { showSymbolPicker = true } label: {
+                    LabeledContent("Symbol") {
+                        if let name = sfSymbolName {
+                            Image(systemName: name)
+                                .font(.title3)
+                                .foregroundStyle(symbolButtonColor)
+                        } else {
+                            Text("Choose…")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .foregroundStyle(.primary)
+            }
+        }
+    }
+
+    private var symbolButtonColor: Color {
+        colorScheme == .dark ? .white : .black
+    }
+}
+
 // MARK: - Color luminance helper for text contrast
 
 private extension Color {
@@ -178,17 +225,5 @@ private extension Color {
         var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
         ui.getRed(&r, green: &g, blue: &b, alpha: nil)
         return 0.2126 * Double(r) + 0.7152 * Double(g) + 0.0722 * Double(b)
-    }
-
-    var selectionIndicatorColor: Color {
-        luminance > 0.92 ? .black : .white
-    }
-
-    var needsLightSelectionBackground: Bool {
-        luminance > 0.93
-    }
-
-    var selectionBorderColor: Color {
-        needsLightSelectionBackground ? .white : selectionIndicatorColor
     }
 }

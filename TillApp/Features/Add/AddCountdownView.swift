@@ -1,6 +1,4 @@
 import SwiftUI
-import PhotosUI
-
 struct TargetDatePickerRow: View {
     @Binding var targetDate: Date
     let tintColor: Color
@@ -26,7 +24,6 @@ struct AddCountdownView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
-    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
 
     @State private var title = ""
     @State private var targetDate = Calendar.current.startOfDay(
@@ -60,38 +57,31 @@ struct AddCountdownView: View {
                 }
                 Section("Target Date") {
                     TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
-                    Toggle("Show Date on Widget", isOn: $showDate)
-                    Toggle("Add a Symbol", isOn: $showSymbol.animation())
-                        .onChange(of: showSymbol) { _, enabled in
-                            if !enabled { sfSymbolName = nil }
-                        }
-                    if showSymbol {
-                        Button { showSymbolPicker = true } label: {
-                            LabeledContent("Symbol") {
-                                if let name = sfSymbolName {
-                                    Image(systemName: name)
-                                        .font(.title3)
-                                        .foregroundStyle(interfaceTintColor)
-                                } else {
-                                    Text("Choose…")
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                        .foregroundStyle(.primary)
-                    }
                 }
-                BackgroundPickerSection(selection: $background)
+                BackgroundPickerSection(
+                    selection: $background
+                )
+                WidgetOptionsSection(
+                    showDate: $showDate,
+                    showSymbol: $showSymbol,
+                    sfSymbolName: $sfSymbolName,
+                    showSymbolPicker: $showSymbolPicker
+                )
                 ProgressStartPickerSection(value: $startPercentage)
             }
             .tint(interfaceTintColor)
-            .navigationTitle("New Countdown")
+            .navigationTitle("Add a Moment")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                        .foregroundStyle(toolbarButtonColor)
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Create", action: create)
-                        .disabled(!isValid || isCreating).fontWeight(.semibold)
+                        .disabled(!isValid || isCreating)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(toolbarButtonColor)
                 }
             }
         }
@@ -152,6 +142,10 @@ struct AddCountdownView: View {
     }
 
     private var interfaceTintColor: Color {
-        AppTheme.interfaceTintColor(from: interfaceTintHex, for: effectiveColorScheme)
+        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
+    }
+
+    private var toolbarButtonColor: Color {
+        effectiveColorScheme == .dark ? .white : .black
     }
 }

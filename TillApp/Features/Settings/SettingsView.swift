@@ -7,7 +7,6 @@ struct SettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
-    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
     @AppStorage(AppSettingsKeys.calendarIntegrationEnabled) private var isCalendarIntegrationEnabled = AppSettingsDefaults.calendarIntegrationEnabled
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
 
@@ -26,31 +25,16 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Appearance")
-                } footer: {
-                    Text("System follows the device setting. Changes apply immediately.")
                 }
 
                 Section {
-                    ColorPicker("UI Color", selection: interfaceTintBinding, supportsOpacity: false)
-
-                    Button("Reset to Default") {
-                        interfaceTintHex = AppSettingsDefaults.interfaceTintHex
-                    }
-                    .foregroundStyle(interfaceTintColor)
-                } header: {
-                    Text("Interface Color")
-                } footer: {
-                    Text("Used for links, controls, and action highlights throughout the app.")
-                }
-
-                Section {
-                    Toggle("Add event to Calendar", isOn: $isCalendarIntegrationEnabled)
+                    Toggle("Add moments to Calendar", isOn: $isCalendarIntegrationEnabled)
                         .tint(interfaceTintColor)
                 } header: {
                     Text("Calendar")
                 } footer: {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Added events will be added to your Apple Calendar.")
+                        Text("Moments will appear as events in your Apple calendar.")
                         calendarFooter
                     }
                 }
@@ -72,21 +56,16 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
+                        .foregroundStyle(doneButtonColor)
                 }
             }
         }
+        .id(appearanceSetting)
         .preferredColorScheme(preferredColorScheme)
     }
 
-    private var interfaceTintBinding: Binding<Color> {
-        Binding(
-            get: { interfaceTintColor },
-            set: { interfaceTintHex = $0.hexString }
-        )
-    }
-
     private var interfaceTintColor: Color {
-        AppTheme.interfaceTintColor(from: interfaceTintHex, for: effectiveColorScheme)
+        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
     }
 
     private var preferredColorScheme: ColorScheme? {
@@ -95,6 +74,10 @@ struct SettingsView: View {
 
     private var effectiveColorScheme: ColorScheme {
         preferredColorScheme ?? colorScheme
+    }
+
+    private var doneButtonColor: Color {
+        effectiveColorScheme == .dark ? .white : .black
     }
 
     @ViewBuilder
