@@ -181,7 +181,7 @@ struct CountdownListView: View {
                 .scaledToFit()
                 .frame(width: 110, height: 110)
 
-            Text("No events to wait\nor reflect on")
+            Text("No moments to wait for\nor reflect on")
                 .font(.title3.weight(.semibold))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.primary)
@@ -197,9 +197,11 @@ struct CountdownListView: View {
         Button("Add first event") {
             presentAddCountdown()
         }
+        .id(themeRefreshKey)
         .controlSize(.large)
         .frame(maxWidth: .infinity)
-        .tint(interfaceTintColor)
+        .tint(addButtonBackgroundColor)
+        .foregroundStyle(addButtonSymbolColor)
         .adaptiveGlassProminentButtonStyle()
         .padding(.horizontal, 24)
         .padding(.top, 12)
