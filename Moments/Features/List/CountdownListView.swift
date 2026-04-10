@@ -6,10 +6,13 @@ struct CountdownListView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
+    @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @AppStorage(AppSettingsKeys.hasSeenIntroSheet) private var hasSeenIntroSheet = AppSettingsDefaults.hasSeenIntroSheet
     @State private var showingAddSheet = false
     @State private var editingCountdown: Countdown?
     @State private var showingSettings = false
+    @State private var showingIntroSheet = false
     @State private var selectedFilter: CountdownFilter = .all
     private let gridColumns = [
         GridItem(.flexible(), spacing: 16),
@@ -95,8 +98,22 @@ struct CountdownListView: View {
         .onChange(of: selectedFilter) {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         }
+        .onChange(of: forceIntroSheetOnLaunch) { _, isEnabled in
+            if isEnabled {
+                showingIntroSheet = true
+            }
+        }
+        .task {
+            showingIntroSheet = !hasSeenIntroSheet || forceIntroSheetOnLaunch
+        }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
+        }
+        .sheet(isPresented: $showingIntroSheet) {
+            IntroSheetView {
+                hasSeenIntroSheet = true
+                showingIntroSheet = false
+            }
         }
         .sheet(isPresented: $showingAddSheet) {
             AddCountdownView()

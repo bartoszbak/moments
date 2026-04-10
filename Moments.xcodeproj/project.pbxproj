@@ -11,6 +11,7 @@
 		079F0B8954153ED7FFA38977 /* View+Glass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC72310E38EBEF64CC174FF /* View+Glass.swift */; };
 		0B8A6D770A4E8F0AB235FE7A /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A454604EA8126CA30C88E46A /* Color+Hex.swift */; };
 		0BECF6ADAB031B9AE4330C96 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F2FD4B2E62CCE92B56AE89 /* SettingsView.swift */; };
+		0C6A38A3F3A94AB4B5A5A5A5 /* IntroSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9F44D2A4B64729B8C2D3E4 /* IntroSheetView.swift */; };
 		0F4DD98EDE53A53DF745848E /* CountdownRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F1DB9AD5C5C99F9CD502E6 /* CountdownRepository.swift */; };
 		101945C06C7DAD4A4D717B31 /* EditCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C893FD9BAC0B25110AE1FA17 /* EditCountdownView.swift */; };
 		1715BBD8EA7CA50A9BF9E0A8 /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81644C993BB4FF389537E4C4 /* SharedDataStore.swift */; };
@@ -77,6 +78,7 @@
 		1661F8FD807EB75471F4EC72 /* Moments.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Moments.entitlements; sourceTree = "<group>"; };
 		16B8E850029658CE606FCFD8 /* CountdownEntity+Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CountdownEntity+Mapping.swift"; sourceTree = "<group>"; };
 		16DD7DFA0319BC50C9174291 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1C9F44D2A4B64729B8C2D3E4 /* IntroSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroSheetView.swift; sourceTree = "<group>"; };
 		1F1FE3C03AE21E0C2F0563E3 /* ImageStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorageService.swift; sourceTree = "<group>"; };
 		1F322964288F951F948ED9E3 /* TillApp 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 3.xcdatamodel"; sourceTree = "<group>"; };
 		22F1DB9AD5C5C99F9CD502E6 /* CountdownRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownRepository.swift; sourceTree = "<group>"; };
@@ -187,9 +189,18 @@
 				4E24DB1387747FC2016E010B /* Add */,
 				5697348DA675B5EE968A647B /* Developer */,
 				CBFEAF0587D95E8D1AE836B7 /* List */,
+				8A5B2F27DA584E6DA8A7F3D9 /* Onboarding */,
 				EC06996EA6ADC5587688DF18 /* Settings */,
 			);
 			path = Features;
+			sourceTree = "<group>";
+		};
+		8A5B2F27DA584E6DA8A7F3D9 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				1C9F44D2A4B64729B8C2D3E4 /* IntroSheetView.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		90B2584EB416A0E5BE988059 /* Services */ = {
@@ -407,6 +418,7 @@
 				75BCBA4F15CCDA388777BC3A /* DeveloperMenuView.swift in Sources */,
 				101945C06C7DAD4A4D717B31 /* EditCountdownView.swift in Sources */,
 				8FD3EE9907EE0F6EA1A98943 /* ImageStorageService.swift in Sources */,
+				0C6A38A3F3A94AB4B5A5A5A5 /* IntroSheetView.swift in Sources */,
 				6768E6FC173F385292FDC5EB /* Moments.xcdatamodeld in Sources */,
 				666B2CDFDDECBB03B29C1C9C /* MomentsApp.swift in Sources */,
 				4C2BA38CE636B3E4A6F5A197 /* PersistenceController.swift in Sources */,

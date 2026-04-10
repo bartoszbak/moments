@@ -5,6 +5,7 @@ struct DeveloperMenuView: View {
     @Environment(\.dismiss) private var dismiss
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
+    @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
     @State private var statusMessage: String? = nil
 
     var body: some View {
@@ -40,10 +41,11 @@ struct DeveloperMenuView: View {
 
                 Section {
                     Toggle("Show Empty State", isOn: $showEmptyStatePreview)
+                    Toggle("Force Intro Sheet on Launch", isOn: $forceIntroSheetOnLaunch)
                 } header: {
                     Text("Preview")
                 } footer: {
-                    Text("Forces the home screen empty state without deleting stored countdowns.")
+                    Text("Use these to force preview flows without changing stored countdowns.")
                 }
 
                 // MARK: - Info
@@ -166,4 +168,5 @@ struct DeveloperMenuView: View {
 
 enum DeveloperSettingsKeys {
     static let showEmptyStatePreview = "developer.showEmptyStatePreview"
+    static let forceIntroSheetOnLaunch = "developer.forceIntroSheetOnLaunch"
 }

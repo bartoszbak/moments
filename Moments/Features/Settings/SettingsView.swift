@@ -9,6 +9,7 @@ struct SettingsView: View {
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
     @AppStorage(AppSettingsKeys.calendarIntegrationEnabled) private var isCalendarIntegrationEnabled = AppSettingsDefaults.calendarIntegrationEnabled
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
+    @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
 
     @StateObject private var calendarService = CalendarService.shared
     @State private var isReconcilingCalendarToggle = false
@@ -107,6 +108,7 @@ struct SettingsView: View {
             Button("Seed Upcoming Events") { seed(.upcoming) }
             Button("Stress Test (30 items)") { seed(.stress) }
             Toggle("Show Empty State", isOn: $showEmptyStatePreview)
+            Toggle("Force Intro Sheet on Launch", isOn: $forceIntroSheetOnLaunch)
 
             Button("Delete All Countdowns", role: .destructive) {
                 try? repository.deleteAll()
@@ -259,10 +261,12 @@ enum AppSettingsKeys {
     static let appearance = "settings.appearance"
     static let interfaceTintHex = "settings.interfaceTintHex"
     static let calendarIntegrationEnabled = "settings.calendarIntegration.enabled"
+    static let hasSeenIntroSheet = "settings.hasSeenIntroSheet"
 }
 
 enum AppSettingsDefaults {
     static let appearance = "system"
     static let interfaceTintHex = "#0A84FF"
     static let calendarIntegrationEnabled = false
+    static let hasSeenIntroSheet = false
 }
