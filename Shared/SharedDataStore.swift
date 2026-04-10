@@ -1,7 +1,7 @@
 import Foundation
 
 enum SharedDataStore {
-    static let groupID = "group.com.tillappcounter.TillApp"
+    static let groupID = "group.com.tillappcounter.Moments"
     private static let key = "widget_countdowns"
 
     private static var defaults: UserDefaults? {

@@ -12,8 +12,8 @@ Two features implemented together:
 
 | File | Purpose |
 |------|---------|
-| `TillApp/Features/Settings/SettingsView.swift` | Form-based sheet (mirrors DeveloperMenuView pattern) with appearance picker + calendar toggle |
-| `TillApp/Services/CalendarService.swift` | EventKit singleton — request permission, create/update/delete events |
+| `Moments/Features/Settings/SettingsView.swift` | Form-based sheet (mirrors DeveloperMenuView pattern) with appearance picker + calendar toggle |
+| `Moments/Services/CalendarService.swift` | EventKit singleton — request permission, create/update/delete events |
 
 ---
 
@@ -21,13 +21,13 @@ Two features implemented together:
 
 | File | Change |
 |------|--------|
-| `TillApp/Features/List/CountdownListView.swift` | Add gear icon button in toolbar + `.sheet` for `SettingsView` |
-| `TillApp/TillAppApp.swift` | `@AppStorage("settings.appearance")` → `.preferredColorScheme()` on root view (reactive, no restart needed) |
-| `TillApp/Models/Countdown.swift` | Add `var calendarEventIdentifier: String?` |
-| `TillApp/Persistence/CountdownEntity+Mapping.swift` | Map new Core Data attribute in `toCountdown()` |
-| `TillApp/Persistence/CountdownRepository.swift` | Hook `CalendarService` into create/update/delete |
-| `TillApp/Persistence/PersistenceController.swift` | Explicit lightweight migration options |
-| `TillApp/Info.plist` | Add `NSCalendarsFullAccessUsageDescription` (iOS 17+ key) |
+| `Moments/Features/List/CountdownListView.swift` | Add gear icon button in toolbar + `.sheet` for `SettingsView` |
+| `Moments/MomentsApp.swift` | `@AppStorage("settings.appearance")` → `.preferredColorScheme()` on root view (reactive, no restart needed) |
+| `Moments/Models/Countdown.swift` | Add `var calendarEventIdentifier: String?` |
+| `Moments/Persistence/CountdownEntity+Mapping.swift` | Map new Core Data attribute in `toCountdown()` |
+| `Moments/Persistence/CountdownRepository.swift` | Hook `CalendarService` into create/update/delete |
+| `Moments/Persistence/PersistenceController.swift` | Explicit lightweight migration options |
+| `Moments/Info.plist` | Add `NSCalendarsFullAccessUsageDescription` (iOS 17+ key) |
 
 ---
 
@@ -81,7 +81,7 @@ func currentAuthorizationStatus() -> EKAuthorizationStatus
 
 `AppStorage` key: `"settings.appearance"` — values: `"system"` (default), `"light"`, `"dark"`
 
-In `TillAppApp.swift`:
+In `MomentsApp.swift`:
 
 ```swift
 @AppStorage("settings.appearance") private var appearanceSetting = "system"
@@ -101,15 +101,15 @@ Applied as `.preferredColorScheme(preferredColorScheme)` on the root `WindowGrou
 
 ## Core Data Migration
 
-### New model version: TillApp 2
+### New model version: Moments 2
 
-1. In Xcode: **Editor → Add Model Version** → name it "TillApp 2"
+1. In Xcode: **Editor → Add Model Version** → name it "Moments 2"
 2. Copy all existing attributes from the current model
 3. Add one new attribute to `CountdownEntity`:
    - Name: `calendarEventIdentifier`
    - Type: `String`
    - Optional: `YES`
-4. Set "TillApp 2" as the current model version
+4. Set "Moments 2" as the current model version
 
 ### Migration strategy
 
@@ -166,7 +166,7 @@ Add the EventKit usage description (iOS 17+ key):
 
 ```xml
 <key>NSCalendarsFullAccessUsageDescription</key>
-<string>TillApp creates calendar events on your countdown dates so you never miss an important day.</string>
+<string>Moments creates calendar events on your countdown dates so you never miss an important day.</string>
 ```
 
 > Note: `NSCalendarsFullAccessUsageDescription` is required for `requestFullAccessToEvents()` (iOS 17+). The older `NSCalendarsUsageDescription` key is for write-only access and is not needed.
@@ -176,7 +176,7 @@ Add the EventKit usage description (iOS 17+ key):
 ## File Structure
 
 ```
-TillApp/
+Moments/
   Features/
     Settings/
       SettingsView.swift                  [NEW]
@@ -192,10 +192,10 @@ TillApp/
     CountdownEntity+Mapping.swift         [MODIFY — new NSManaged property + toCountdown()]
     CountdownRepository.swift             [MODIFY — calendar hooks in create/update/delete]
     PersistenceController.swift           [MODIFY — explicit migration options]
-  TillApp.xcdatamodeld/
-    TillApp.xcdatamodel/                  [existing — do not touch]
-    TillApp 2.xcdatamodel/               [NEW version — add calendarEventIdentifier]
-  TillAppApp.swift                        [MODIFY — preferredColorScheme + @AppStorage]
+  Moments.xcdatamodeld/
+    Moments.xcdatamodel/                  [existing — do not touch]
+    Moments 2.xcdatamodel/               [NEW version — add calendarEventIdentifier]
+  MomentsApp.swift                        [MODIFY — preferredColorScheme + @AppStorage]
   Info.plist                              [MODIFY — NSCalendarsFullAccessUsageDescription]
 ```
 

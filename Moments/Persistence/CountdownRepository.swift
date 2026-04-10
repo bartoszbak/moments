@@ -39,7 +39,7 @@ final class CountdownRepository: NSObject, ObservableObject {
 
     private func syncCountdowns() {
         countdowns = fetchedResultsController.fetchedObjects?.compactMap { $0.toCountdown() } ?? []
-        let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.tillappcounter.TillApp")
+        let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.tillappcounter.Moments")
         let widgetData = countdowns.map { countdown -> WidgetCountdown in
             var sharedImagePath: String? = nil
             if let groupURL {

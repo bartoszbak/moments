@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 @main
-struct TillAppApp: App {
+struct MomentsApp: App {
     @StateObject private var repository: CountdownRepository
     @StateObject private var timerManager = TimerManager()
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance

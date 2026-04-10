@@ -2,7 +2,7 @@ import WidgetKit
 import SwiftUI
 
 @main
-struct TillAppWidgetBundle: WidgetBundle {
+struct MomentsWidgetBundle: WidgetBundle {
     var body: some Widget {
         CountdownWidget()
     }

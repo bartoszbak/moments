@@ -1,4 +1,4 @@
-# Refinement Plan — TillApp
+# Refinement Plan — Moments
 
 **Date:** 2026-04-08
 
@@ -16,21 +16,21 @@ Five concrete defects: one crash-on-launch regression, two silent file leaks, on
 Crash on launch for any user who already has data on disk. Core Data compares the compiled model hash against the persistent store metadata. When the hashes differ and no migration option is provided, `loadPersistentStores` calls `fatalError`.
 
 ### Root cause
-`showDate` was appended directly to the single existing model version (`TillApp.xcdatamodel/contents`). There is only one model version in the `.xcdatamodeld` bundle, so Core Data has no migration path for existing stores.
+`showDate` was appended directly to the single existing model version (`Moments.xcdatamodel/contents`). There is only one model version in the `.xcdatamodeld` bundle, so Core Data has no migration path for existing stores.
 
 ### Xcode GUI steps (cannot be done via file editing alone)
 
-1. Open `TillApp.xcdatamodeld` in the Xcode model editor
-2. Choose **Editor → Add Model Version…** — name it **TillApp 2**
-3. Xcode creates `TillApp 2.xcdatamodel/contents` and updates `.xccurrentversion`
+1. Open `Moments.xcdatamodeld` in the Xcode model editor
+2. Choose **Editor → Add Model Version…** — name it **Moments 2**
+3. Xcode creates `Moments 2.xcdatamodel/contents` and updates `.xccurrentversion`
 4. Confirm `showDate` is present in the new version (copied from source)
-5. Select the **original** `TillApp.xcdatamodel` and **remove** `showDate` from it — leave the nine original attributes
-6. In the inspector, set the **current model version** to **TillApp 2**
+5. Select the **original** `Moments.xcdatamodel` and **remove** `showDate` from it — leave the nine original attributes
+6. In the inspector, set the **current model version** to **Moments 2**
 
 After this:
-- `TillApp.xcdatamodel` — original 9 attributes, no `showDate`
-- `TillApp 2.xcdatamodel` — all 10 attributes including `showDate` (optional Boolean, default YES)
-- `.xccurrentversion` — points to `TillApp 2`
+- `Moments.xcdatamodel` — original 9 attributes, no `showDate`
+- `Moments 2.xcdatamodel` — all 10 attributes including `showDate` (optional Boolean, default YES)
+- `.xccurrentversion` — points to `Moments 2`
 
 ### File edit — `PersistenceController.swift`
 
@@ -53,8 +53,8 @@ container.loadPersistentStores { _, error in
 Adding an optional Boolean attribute with a default value is a lightweight-compatible change — no custom mapping model is needed.
 
 ### Files
-- **Xcode GUI** — `TillApp/TillApp.xcdatamodeld`
-- **File edit** — `TillApp/Persistence/PersistenceController.swift`
+- **Xcode GUI** — `Moments/Moments.xcdatamodeld`
+- **File edit** — `Moments/Persistence/PersistenceController.swift`
 
 ---
 
@@ -105,7 +105,7 @@ private extension UIImage {
 `scale` is the larger of the two axis ratios so the shorter source dimension exactly fills the target and the longer dimension overflows. `origin` is negative on the overflowing axis, centering the crop. `UIGraphicsImageRenderer` clips to its canvas automatically.
 
 ### Files
-- **File edit** — `TillApp/Services/ImageStorageService.swift`
+- **File edit** — `Moments/Services/ImageStorageService.swift`
 
 ---
 
@@ -142,7 +142,7 @@ if let groupURL {
 Insert this block after the `widgetData` array is fully built and before `SharedDataStore.save(widgetData)`. The `hasPrefix("widget_") && pathExtension == "jpg"` guard ensures no other files in the app group are touched (e.g., the JSON written by `SharedDataStore`).
 
 ### Files
-- **File edit** — `TillApp/Persistence/CountdownRepository.swift`
+- **File edit** — `Moments/Persistence/CountdownRepository.swift`
 
 ---
 
@@ -201,8 +201,8 @@ func create(
 ```
 
 ### Files
-- **File edit** — `TillApp/Features/Add/AddCountdownView.swift`
-- **File edit** — `TillApp/Persistence/CountdownRepository.swift`
+- **File edit** — `Moments/Features/Add/AddCountdownView.swift`
+- **File edit** — `Moments/Persistence/CountdownRepository.swift`
 
 ---
 
@@ -212,9 +212,9 @@ func create(
 The appearance toggle in the settings sheet persists a value to `UserDefaults` but nothing reads it. Light/Dark/System selection has zero effect.
 
 ### Root cause
-`TillAppApp.swift` has no `@AppStorage` for `settings.appearance` and no `.preferredColorScheme` modifier on the root view.
+`MomentsApp.swift` has no `@AppStorage` for `settings.appearance` and no `.preferredColorScheme` modifier on the root view.
 
-### Fix — `TillAppApp.swift`
+### Fix — `MomentsApp.swift`
 
 Add the stored property alongside the existing `@StateObject` declarations:
 ```swift
@@ -243,7 +243,7 @@ CountdownListView()
 `@AppStorage` is a `DynamicProperty`, so SwiftUI re-evaluates the body whenever the value changes — appearance updates instantly without restart. `nil` defers to the OS setting, which is the correct default.
 
 ### Files
-- **File edit** — `TillApp/TillAppApp.swift`
+- **File edit** — `Moments/MomentsApp.swift`
 
 ---
 
@@ -262,9 +262,9 @@ CountdownListView()
 
 | File | Issues |
 |------|--------|
-| `TillApp.xcdatamodeld` (Xcode GUI) | 1 |
+| `Moments.xcdatamodeld` (Xcode GUI) | 1 |
 | `Persistence/PersistenceController.swift` | 1 |
 | `Persistence/CountdownRepository.swift` | 3, 4 |
 | `Services/ImageStorageService.swift` | 2 |
 | `Features/Add/AddCountdownView.swift` | 4 |
-| `TillAppApp.swift` | 5 |
+| `MomentsApp.swift` | 5 |

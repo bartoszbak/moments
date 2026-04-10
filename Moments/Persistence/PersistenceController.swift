@@ -6,7 +6,7 @@ final class PersistenceController {
     let container: NSPersistentContainer
 
     private init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "TillApp")
+        container = NSPersistentContainer(name: "Moments")
         let description = container.persistentStoreDescriptions.first
         if inMemory {
             description?.url = URL(fileURLWithPath: "/dev/null")

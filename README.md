@@ -1,6 +1,6 @@
 <img width="128" height="128" alt="till-icon" src="https://github.com/user-attachments/assets/5e7e77b2-506a-4f52-8601-14b3df612aae" />
 
-# Till
+# Moments
 
 A clean, minimal iOS countdown app. Add events, see how many days remain, and put a live countdown on your home screen.
 
@@ -20,9 +20,9 @@ A clean, minimal iOS countdown app. Add events, see how many days remain, and pu
 ## Setup
 
 1. Clone the repo
-2. Open `TillApp.xcodeproj` in Xcode
-3. Set your development team in Signing & Capabilities for both the **TillApp** and **TillAppWidgetExtension** targets
-4. Ensure the App Group `group.com.tillappcounter.TillApp` is enabled on both targets
+2. Open `Moments.xcodeproj` in Xcode
+3. Set your development team in Signing & Capabilities for both the **Moments** and **MomentsWidgetExtension** targets
+4. Ensure the App Group `group.com.tillappcounter.Moments` is enabled on both targets
 5. Build and run
 
 ## Architecture
