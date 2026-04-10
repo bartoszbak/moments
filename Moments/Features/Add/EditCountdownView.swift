@@ -26,6 +26,10 @@ struct EditCountdownView: View {
         repository.countdowns.first { $0.id == countdownID }
     }
 
+    private var showsProgressIndicatorSection: Bool {
+        Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -45,7 +49,9 @@ struct EditCountdownView: View {
                     sfSymbolName: $sfSymbolName,
                     showSymbolPicker: $showSymbolPicker
                 )
-                ProgressStartPickerSection(value: $startPercentage)
+                if showsProgressIndicatorSection {
+                    ProgressStartPickerSection(value: $startPercentage)
+                }
                 Section {
                     Button(role: .destructive) {
                         showDeleteConfirmation = true
@@ -168,14 +174,14 @@ struct EditCountdownView: View {
             showDate: showDate,
             sfSymbolName: .some(sfSymbolName)
         )
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        AppHaptics.impact(.light)
         dismiss()
     }
 
     private func delete() {
         guard let countdown else { return }
         try? repository.delete(countdown)
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        AppHaptics.impact(.medium)
         dismiss()
     }
 

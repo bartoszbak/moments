@@ -82,3 +82,23 @@ enum AppTheme {
         return baseColor
     }
 }
+
+enum AppHaptics {
+    private static let settingsKey = "settings.haptics.enabled"
+    private static let defaultEnabled = true
+
+    private static var isEnabled: Bool {
+        let defaults = UserDefaults.standard
+
+        guard defaults.object(forKey: settingsKey) != nil else {
+            return defaultEnabled
+        }
+
+        return defaults.bool(forKey: settingsKey)
+    }
+
+    static func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
+        guard isEnabled else { return }
+        UIImpactFeedbackGenerator(style: style).impactOccurred()
+    }
+}

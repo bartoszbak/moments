@@ -42,6 +42,10 @@ struct AddCountdownView: View {
         !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    private var showsProgressIndicatorSection: Bool {
+        Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -67,7 +71,9 @@ struct AddCountdownView: View {
                     sfSymbolName: $sfSymbolName,
                     showSymbolPicker: $showSymbolPicker
                 )
-                ProgressStartPickerSection(value: $startPercentage)
+                if showsProgressIndicatorSection {
+                    ProgressStartPickerSection(value: $startPercentage)
+                }
             }
             .tint(interfaceTintColor)
             .navigationTitle("Add a Moment")
@@ -128,7 +134,7 @@ struct AddCountdownView: View {
                 showDate: showDate,
                 sfSymbolName: sfSymbolName
             )
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            AppHaptics.impact(.medium)
             dismiss()
         } catch { isCreating = false }
     }

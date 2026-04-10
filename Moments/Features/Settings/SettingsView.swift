@@ -7,7 +7,9 @@ struct SettingsView: View {
     @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
     @AppStorage(AppSettingsKeys.calendarIntegrationEnabled) private var isCalendarIntegrationEnabled = AppSettingsDefaults.calendarIntegrationEnabled
+    @AppStorage(AppSettingsKeys.hapticsEnabled) private var hapticsEnabled = AppSettingsDefaults.hapticsEnabled
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
 
@@ -24,6 +26,14 @@ struct SettingsView: View {
                         Text("Light").tag("light")
                         Text("Dark").tag("dark")
                     }
+                    ColorPicker("Accent Color", selection: plusButtonColorBinding, supportsOpacity: false)
+
+                    if isUsingCustomPlusButtonColor {
+                        Button("Reset to Default") {
+                            interfaceTintHex = AppSettingsDefaults.interfaceTintHex
+                        }
+                        .foregroundStyle(interfaceTintColor)
+                    }
                 } header: {
                     Text("Appearance")
                 }
@@ -38,6 +48,11 @@ struct SettingsView: View {
                         Text("Moments will appear as events in your Apple calendar.")
                         calendarFooter
                     }
+                }
+
+                Section {
+                    Toggle("Haptic Feedback", isOn: $hapticsEnabled)
+                        .tint(interfaceTintColor)
                 }
 
 #if DEBUG
@@ -63,6 +78,17 @@ struct SettingsView: View {
         }
         .id(appearanceSetting)
         .preferredColorScheme(preferredColorScheme)
+    }
+
+    private var plusButtonColorBinding: Binding<Color> {
+        Binding(
+            get: { AppTheme.baseInterfaceTintColor(from: interfaceTintHex) },
+            set: { interfaceTintHex = $0.hexString }
+        )
+    }
+
+    private var isUsingCustomPlusButtonColor: Bool {
+        interfaceTintHex != AppSettingsDefaults.interfaceTintHex
     }
 
     private var interfaceTintColor: Color {
@@ -261,12 +287,14 @@ enum AppSettingsKeys {
     static let appearance = "settings.appearance"
     static let interfaceTintHex = "settings.interfaceTintHex"
     static let calendarIntegrationEnabled = "settings.calendarIntegration.enabled"
+    static let hapticsEnabled = "settings.haptics.enabled"
     static let hasSeenIntroSheet = "settings.hasSeenIntroSheet"
 }
 
 enum AppSettingsDefaults {
     static let appearance = "system"
-    static let interfaceTintHex = "#0A84FF"
+    static let interfaceTintHex = "#000000"
     static let calendarIntegrationEnabled = false
+    static let hapticsEnabled = true
     static let hasSeenIntroSheet = false
 }

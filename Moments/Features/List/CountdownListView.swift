@@ -8,6 +8,7 @@ struct CountdownListView: View {
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
     @AppStorage(AppSettingsKeys.hasSeenIntroSheet) private var hasSeenIntroSheet = AppSettingsDefaults.hasSeenIntroSheet
     @State private var showingAddSheet = false
     @State private var editingCountdown: Countdown?
@@ -96,7 +97,7 @@ struct CountdownListView: View {
             }
         }
         .onChange(of: selectedFilter) {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            AppHaptics.impact(.light)
         }
         .onChange(of: forceIntroSheetOnLaunch) { _, isEnabled in
             if isEnabled {
@@ -125,7 +126,7 @@ struct CountdownListView: View {
 
     private func delete(_ countdown: Countdown) {
         try? repository.delete(countdown)
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        AppHaptics.impact(.medium)
     }
 
     @ViewBuilder
@@ -217,8 +218,8 @@ struct CountdownListView: View {
         .id(themeRefreshKey)
         .controlSize(.large)
         .frame(maxWidth: .infinity)
-        .tint(addButtonBackgroundColor)
-        .foregroundStyle(addButtonSymbolColor)
+        .tint(primaryActionBackgroundColor)
+        .foregroundStyle(primaryActionForegroundColor)
         .adaptiveGlassProminentButtonStyle()
         .padding(.horizontal, 24)
         .padding(.top, 12)
@@ -270,7 +271,7 @@ struct CountdownListView: View {
     }
 
     private var themeRefreshKey: String {
-        "\(appearanceSetting)-\(effectiveColorScheme == .dark ? "dark" : "light")"
+        "\(appearanceSetting)-\(interfaceTintHex)-\(effectiveColorScheme == .dark ? "dark" : "light")"
     }
 
     private var settingsButtonColor: Color {
@@ -278,20 +279,28 @@ struct CountdownListView: View {
     }
 
     private var addButtonBackgroundColor: Color {
-        effectiveColorScheme == .dark ? .white : .black
+        AppTheme.baseInterfaceTintColor(from: interfaceTintHex)
     }
 
     private var addButtonSymbolColor: Color {
+        addButtonBackgroundColor.prefersLightForeground ? .white : .black
+    }
+
+    private var primaryActionBackgroundColor: Color {
+        effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var primaryActionForegroundColor: Color {
         effectiveColorScheme == .dark ? .black : .white
     }
 
     private func presentAddCountdown() {
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        AppHaptics.impact(.medium)
         showingAddSheet = true
     }
 
     private func openCountdown(_ countdown: Countdown) {
-        UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+        AppHaptics.impact(.soft)
         editingCountdown = countdown
     }
 }
