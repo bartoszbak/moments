@@ -1,0 +1,9 @@
+// Shared build configuration committed to the repository.
+// Local developer secrets can live in Config.xcconfig, which is gitignored.
+#include? "Config.xcconfig"
+
+OPENROUTER_API_KEY =
+OPENROUTER_MODEL = openai/gpt-4o-mini
+
+INFOPLIST_KEY_OPENROUTER_API_KEY = $(OPENROUTER_API_KEY)
+INFOPLIST_KEY_OPENROUTER_MODEL = $(OPENROUTER_MODEL)
