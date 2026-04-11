@@ -3,6 +3,7 @@ import Foundation
 struct Countdown: Identifiable, Hashable {
     let id: UUID
     var title: String
+    var detailsText: String?
     var targetDate: Date
     var backgroundImageURL: URL?
     var thumbnailImageURL: URL?

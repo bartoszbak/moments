@@ -2,7 +2,6 @@ import SwiftUI
 
 struct DeveloperMenuView: View {
     @EnvironmentObject private var repository: CountdownRepository
-    @Environment(\.dismiss) private var dismiss
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
@@ -74,11 +73,6 @@ struct DeveloperMenuView: View {
             }
             .navigationTitle("Developer Menu")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
-                }
-            }
         }
     }
 

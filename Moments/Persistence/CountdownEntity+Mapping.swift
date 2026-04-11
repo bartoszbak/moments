@@ -4,6 +4,7 @@ import CoreData
 final class CountdownEntity: NSManagedObject {
     @NSManaged var id: UUID?
     @NSManaged var title: String?
+    @NSManaged var detailsText: String?
     @NSManaged var targetDate: Date?
     @NSManaged var backgroundImagePath: String?
     @NSManaged var thumbnailImagePath: String?
@@ -28,6 +29,7 @@ final class CountdownEntity: NSManagedObject {
         return Countdown(
             id: id,
             title: title,
+            detailsText: detailsText,
             targetDate: normalizedTargetDate,
             backgroundImageURL: backgroundImagePath.map { URL(fileURLWithPath: $0) },
             thumbnailImageURL: thumbnailImagePath.map { URL(fileURLWithPath: $0) },

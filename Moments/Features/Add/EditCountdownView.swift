@@ -9,6 +9,7 @@ struct EditCountdownView: View {
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
 
     @State private var title = ""
+    @State private var detailsText = ""
     @State private var targetDate = Date()
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
@@ -35,6 +36,14 @@ struct EditCountdownView: View {
             Form {
                 Section("Title") {
                     TextField("Countdown name", text: $title)
+                }
+                Section {
+                    TextField("Optional", text: $detailsText, axis: .vertical)
+                        .lineLimit(3...6)
+                } header: {
+                    Text("Description")
+                } footer: {
+                    Text("Context for intelligence")
                 }
                 Section("Target Date") {
                     TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
@@ -89,6 +98,7 @@ struct EditCountdownView: View {
             .onAppear {
                 guard !hasLoaded, let countdown else { return }
                 title = countdown.title
+                detailsText = countdown.detailsText ?? ""
                 targetDate = Calendar.current.startOfDay(for: countdown.targetDate)
                 if let idx = countdown.backgroundColorIndex {
                     background = .preset(idx)
@@ -114,7 +124,14 @@ struct EditCountdownView: View {
     private func save() {
         guard let countdown else { return }
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedDetails = detailsText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
+        let normalizedTargetDate = Calendar.current.startOfDay(for: targetDate)
+        let normalizedDetails = trimmedDetails.isEmpty ? nil : trimmedDetails
+        let invalidatesReflection =
+            trimmed != countdown.title ||
+            normalizedTargetDate != Calendar.current.startOfDay(for: countdown.targetDate) ||
+            normalizedDetails != countdown.detailsText
 
         var imagePath: String?? = nil
         var thumbPath: String?? = nil
@@ -167,12 +184,16 @@ struct EditCountdownView: View {
         try? repository.update(
             countdown,
             title: trimmed,
-            targetDate: Calendar.current.startOfDay(for: targetDate),
+            detailsText: .some(normalizedDetails),
+            targetDate: normalizedTargetDate,
             backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
             backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
             startPercentage: startPercentage,
             showDate: showDate,
-            sfSymbolName: .some(sfSymbolName)
+            sfSymbolName: .some(sfSymbolName),
+            reflectionPrimaryText: invalidatesReflection ? .some(nil) : nil,
+            reflectionExpandedText: invalidatesReflection ? .some(nil) : nil,
+            reflectionGeneratedAt: invalidatesReflection ? .some(nil) : nil
         )
         AppHaptics.impact(.light)
         dismiss()

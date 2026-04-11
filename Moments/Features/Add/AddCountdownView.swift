@@ -26,6 +26,7 @@ struct AddCountdownView: View {
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
 
     @State private var title = ""
+    @State private var detailsText = ""
     @State private var targetDate = Calendar.current.startOfDay(
         for: Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
     )
@@ -58,6 +59,14 @@ struct AddCountdownView: View {
                         Label("Title is required", systemImage: "exclamationmark.circle.fill")
                             .foregroundStyle(.red).font(.caption)
                     }
+                }
+                Section {
+                    TextField("Optional", text: $detailsText, axis: .vertical)
+                        .lineLimit(3...6)
+                } header: {
+                    Text("Description")
+                } footer: {
+                    Text("Context for intelligence")
                 }
                 Section("Target Date") {
                     TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
@@ -99,6 +108,7 @@ struct AddCountdownView: View {
 
     private func create() {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedDetails = detailsText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { showTitleError = true; return }
         isCreating = true
         let newID = UUID()
@@ -127,6 +137,7 @@ struct AddCountdownView: View {
             try repository.create(
                 id: newID,
                 title: trimmed,
+                detailsText: trimmedDetails.isEmpty ? nil : trimmedDetails,
                 targetDate: Calendar.current.startOfDay(for: targetDate),
                 backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
                 backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
