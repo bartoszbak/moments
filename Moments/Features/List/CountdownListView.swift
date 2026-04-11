@@ -12,7 +12,7 @@ struct CountdownListView: View {
     @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
     @AppStorage(AppSettingsKeys.hasSeenIntroSheet) private var hasSeenIntroSheet = AppSettingsDefaults.hasSeenIntroSheet
     @State private var showingAddSheet = false
-    @State private var editingCountdown: Countdown?
+    @State private var previewingCountdown: Countdown?
     @State private var showingSettings = false
     @State private var showingIntroSheet = false
     @State private var selectedFilter: CountdownFilter = .all
@@ -96,6 +96,9 @@ struct CountdownListView: View {
                     }
                 }
             }
+            .navigationDestination(item: $previewingCountdown) { countdown in
+                MomentPreviewView(countdownID: countdown.id)
+            }
         }
         .onChange(of: selectedFilter) {
             AppHaptics.impact(.light)
@@ -119,9 +122,6 @@ struct CountdownListView: View {
         }
         .sheet(isPresented: $showingAddSheet) {
             AddCountdownView()
-        }
-        .sheet(item: $editingCountdown) { countdown in
-            EditCountdownView(countdownID: countdown.id)
         }
     }
 
@@ -210,15 +210,18 @@ struct CountdownListView: View {
     }
 
     private var emptyStateButton: some View {
-        Button("Add first event") {
-            presentAddCountdown()
+        Button(action: presentAddCountdown) {
+            Text("Add first event")
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(primaryActionForegroundColor)
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .background(
+                    Capsule()
+                        .fill(primaryActionBackgroundColor)
+                )
         }
-        .id(themeRefreshKey)
-        .controlSize(.large)
-        .frame(maxWidth: .infinity)
-        .tint(primaryActionBackgroundColor)
-        .foregroundStyle(primaryActionForegroundColor)
-        .adaptiveGlassProminentButtonStyle()
+        .buttonStyle(.plain)
         .padding(.horizontal, 24)
         .padding(.top, 12)
         .padding(.bottom, 8)
@@ -299,7 +302,7 @@ struct CountdownListView: View {
 
     private func openCountdown(_ countdown: Countdown) {
         AppHaptics.impact(.soft)
-        editingCountdown = countdown
+        previewingCountdown = countdown
     }
 }
 
@@ -333,29 +336,16 @@ private enum CountdownFilter: String, CaseIterable, Identifiable {
 
 private struct EmptyStateArtworkView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.colorScheme) private var colorScheme
 
     @StateObject private var motionController = EmptyStateMotionController()
 
-    private let containerSize: CGFloat = 96
     private let imageSize: CGFloat = 96
-    private let cornerRadius: CGFloat = 28
 
     var body: some View {
-        ZStack {
-            Color.clear
-                .frame(width: containerSize, height: containerSize)
-                .glassCard(cornerRadius: cornerRadius)
-                .overlay {
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .strokeBorder(.white.opacity(colorScheme == .dark ? 0.12 : 0.32), lineWidth: 1)
-                }
-
-            Image("EmptyState")
-                .resizable()
-                .scaledToFit()
-                .frame(width: imageSize, height: imageSize)
-        }
+        Image("EmptyState")
+            .resizable()
+            .scaledToFit()
+            .frame(width: imageSize, height: imageSize)
         .scaleEffect(isMotionEnabled ? 1.04 : 1)
         .offset(x: translation.width, y: translation.height)
         .rotation3DEffect(

@@ -152,6 +152,7 @@ final class CountdownRepository: NSObject, ObservableObject {
     func create(
         id: UUID = UUID(),
         title: String,
+        detailsText: String? = nil,
         targetDate: Date,
         backgroundImagePath: String? = nil,
         thumbnailImagePath: String? = nil,
@@ -159,7 +160,10 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundColorHex: String? = nil,
         startPercentage: Double = 1.0,
         showDate: Bool = true,
-        sfSymbolName: String? = nil
+        sfSymbolName: String? = nil,
+        reflectionPrimaryText: String? = nil,
+        reflectionExpandedText: String? = nil,
+        reflectionGeneratedAt: Date? = nil
     ) throws {
         let context = backgroundContext
         let colorIndex = backgroundColorIndex
@@ -170,6 +174,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             let entity = CountdownEntity(context: context)
             entity.id = id
             entity.title = title
+            entity.detailsText = detailsText
             entity.targetDate = normalizedDate
             entity.backgroundImagePath = backgroundImagePath
             entity.thumbnailImagePath = thumbnailImagePath
@@ -179,6 +184,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.showDate = showDate
             entity.sfSymbolName = sfSymbolName
             entity.createdDate = createdDate
+            entity.reflectionPrimaryText = reflectionPrimaryText
+            entity.reflectionExpandedText = reflectionExpandedText
+            entity.reflectionGeneratedAt = reflectionGeneratedAt
             try context.save()
         }
 
@@ -187,6 +195,7 @@ final class CountdownRepository: NSObject, ObservableObject {
         let countdown = Countdown(
             id: id,
             title: title,
+            detailsText: detailsText,
             targetDate: normalizedDate,
             backgroundImageURL: backgroundImagePath.map { URL(fileURLWithPath: $0) },
             thumbnailImageURL: thumbnailImagePath.map { URL(fileURLWithPath: $0) },
@@ -196,7 +205,10 @@ final class CountdownRepository: NSObject, ObservableObject {
             startPercentage: startPercentage,
             showDate: showDate,
             sfSymbolName: sfSymbolName,
-            calendarEventIdentifier: nil
+            calendarEventIdentifier: nil,
+            reflectionPrimaryText: reflectionPrimaryText,
+            reflectionExpandedText: reflectionExpandedText,
+            reflectionGeneratedAt: reflectionGeneratedAt
         )
 
         Task { @MainActor in
@@ -211,6 +223,7 @@ final class CountdownRepository: NSObject, ObservableObject {
     func update(
         _ countdown: Countdown,
         title: String? = nil,
+        detailsText: String?? = nil,
         targetDate: Date? = nil,
         backgroundImagePath: String?? = nil,
         thumbnailImagePath: String?? = nil,
@@ -218,7 +231,10 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundColorHex: String?? = nil,
         startPercentage: Double? = nil,
         showDate: Bool? = nil,
-        sfSymbolName: String?? = nil
+        sfSymbolName: String?? = nil,
+        reflectionPrimaryText: String?? = nil,
+        reflectionExpandedText: String?? = nil,
+        reflectionGeneratedAt: Date?? = nil
     ) throws {
         let id = countdown.id
         let context = backgroundContext
@@ -227,6 +243,10 @@ final class CountdownRepository: NSObject, ObservableObject {
         let newImagePath = backgroundImagePath
         let newThumbPath = thumbnailImagePath
         let normalizedDate = targetDate.map(normalizedTargetDate)
+        let newReflectionPrimaryText = reflectionPrimaryText
+        let newReflectionExpandedText = reflectionExpandedText
+        let newReflectionGeneratedAt = reflectionGeneratedAt
+        let newDetailsText = detailsText
         let updatedCreatedDate = normalizedDate == nil ? countdown.createdDate : Date()
         try context.performAndWait {
             let request = CountdownEntity.fetchRequest()
@@ -234,6 +254,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             request.fetchLimit = 1
             guard let entity = try context.fetch(request).first else { return }
             if let title { entity.title = title }
+            if let newDetailsText { entity.detailsText = newDetailsText }
             if let normalizedDate {
                 entity.targetDate = normalizedDate
                 entity.createdDate = updatedCreatedDate
@@ -245,12 +266,19 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let startPercentage { entity.startPercentage = startPercentage }
             if let showDate { entity.showDate = showDate }
             if let sfSymbolName { entity.sfSymbolName = sfSymbolName }
+            if let newReflectionPrimaryText { entity.reflectionPrimaryText = newReflectionPrimaryText }
+            if let newReflectionExpandedText { entity.reflectionExpandedText = newReflectionExpandedText }
+            if let newReflectionGeneratedAt { entity.reflectionGeneratedAt = newReflectionGeneratedAt }
             try context.save()
         }
 
         let updatedCountdown = Countdown(
             id: countdown.id,
             title: title ?? countdown.title,
+            detailsText: resolvedValue(
+                existing: countdown.detailsText,
+                update: detailsText
+            ),
             targetDate: normalizedDate ?? countdown.targetDate,
             backgroundImageURL: resolvedFileURL(
                 existing: countdown.backgroundImageURL,
@@ -272,7 +300,19 @@ final class CountdownRepository: NSObject, ObservableObject {
             startPercentage: startPercentage ?? countdown.startPercentage,
             showDate: showDate ?? countdown.showDate,
             sfSymbolName: sfSymbolName != nil ? sfSymbolName! : countdown.sfSymbolName,
-            calendarEventIdentifier: countdown.calendarEventIdentifier
+            calendarEventIdentifier: countdown.calendarEventIdentifier,
+            reflectionPrimaryText: resolvedValue(
+                existing: countdown.reflectionPrimaryText,
+                update: reflectionPrimaryText
+            ),
+            reflectionExpandedText: resolvedValue(
+                existing: countdown.reflectionExpandedText,
+                update: reflectionExpandedText
+            ),
+            reflectionGeneratedAt: resolvedValue(
+                existing: countdown.reflectionGeneratedAt,
+                update: reflectionGeneratedAt
+            )
         )
 
         if let eventIdentifier = countdown.calendarEventIdentifier {

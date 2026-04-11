@@ -3,6 +3,7 @@ import Foundation
 struct Countdown: Identifiable, Hashable {
     let id: UUID
     var title: String
+    var detailsText: String?
     var targetDate: Date
     var backgroundImageURL: URL?
     var thumbnailImageURL: URL?
@@ -13,6 +14,9 @@ struct Countdown: Identifiable, Hashable {
     var showDate: Bool               // whether to show the target date in the widget
     var sfSymbolName: String?        // optional SF Symbol shown on the widget
     var calendarEventIdentifier: String?
+    var reflectionPrimaryText: String?
+    var reflectionExpandedText: String?
+    var reflectionGeneratedAt: Date?
 
     func timeRemaining(from now: Date) -> TimeInterval {
         let startOfNow = Calendar.current.startOfDay(for: now)

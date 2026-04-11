@@ -4,6 +4,7 @@ import CoreData
 final class CountdownEntity: NSManagedObject {
     @NSManaged var id: UUID?
     @NSManaged var title: String?
+    @NSManaged var detailsText: String?
     @NSManaged var targetDate: Date?
     @NSManaged var backgroundImagePath: String?
     @NSManaged var thumbnailImagePath: String?
@@ -14,6 +15,9 @@ final class CountdownEntity: NSManagedObject {
     @NSManaged var sfSymbolName: String?
     @NSManaged var calendarEventIdentifier: String?
     @NSManaged var createdDate: Date?
+    @NSManaged var reflectionPrimaryText: String?
+    @NSManaged var reflectionExpandedText: String?
+    @NSManaged var reflectionGeneratedAt: Date?
 
     @nonobjc static func fetchRequest() -> NSFetchRequest<CountdownEntity> {
         NSFetchRequest<CountdownEntity>(entityName: "CountdownEntity")
@@ -25,6 +29,7 @@ final class CountdownEntity: NSManagedObject {
         return Countdown(
             id: id,
             title: title,
+            detailsText: detailsText,
             targetDate: normalizedTargetDate,
             backgroundImageURL: backgroundImagePath.map { URL(fileURLWithPath: $0) },
             thumbnailImageURL: thumbnailImagePath.map { URL(fileURLWithPath: $0) },
@@ -34,7 +39,10 @@ final class CountdownEntity: NSManagedObject {
             startPercentage: startPercentage > 0 ? startPercentage : 1.0,
             showDate: showDate,
             sfSymbolName: sfSymbolName,
-            calendarEventIdentifier: calendarEventIdentifier
+            calendarEventIdentifier: calendarEventIdentifier,
+            reflectionPrimaryText: reflectionPrimaryText,
+            reflectionExpandedText: reflectionExpandedText,
+            reflectionGeneratedAt: reflectionGeneratedAt
         )
     }
 }
