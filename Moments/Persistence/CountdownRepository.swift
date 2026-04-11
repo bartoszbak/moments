@@ -159,7 +159,10 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundColorHex: String? = nil,
         startPercentage: Double = 1.0,
         showDate: Bool = true,
-        sfSymbolName: String? = nil
+        sfSymbolName: String? = nil,
+        reflectionPrimaryText: String? = nil,
+        reflectionExpandedText: String? = nil,
+        reflectionGeneratedAt: Date? = nil
     ) throws {
         let context = backgroundContext
         let colorIndex = backgroundColorIndex
@@ -179,6 +182,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.showDate = showDate
             entity.sfSymbolName = sfSymbolName
             entity.createdDate = createdDate
+            entity.reflectionPrimaryText = reflectionPrimaryText
+            entity.reflectionExpandedText = reflectionExpandedText
+            entity.reflectionGeneratedAt = reflectionGeneratedAt
             try context.save()
         }
 
@@ -196,7 +202,10 @@ final class CountdownRepository: NSObject, ObservableObject {
             startPercentage: startPercentage,
             showDate: showDate,
             sfSymbolName: sfSymbolName,
-            calendarEventIdentifier: nil
+            calendarEventIdentifier: nil,
+            reflectionPrimaryText: reflectionPrimaryText,
+            reflectionExpandedText: reflectionExpandedText,
+            reflectionGeneratedAt: reflectionGeneratedAt
         )
 
         Task { @MainActor in
@@ -218,7 +227,10 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundColorHex: String?? = nil,
         startPercentage: Double? = nil,
         showDate: Bool? = nil,
-        sfSymbolName: String?? = nil
+        sfSymbolName: String?? = nil,
+        reflectionPrimaryText: String?? = nil,
+        reflectionExpandedText: String?? = nil,
+        reflectionGeneratedAt: Date?? = nil
     ) throws {
         let id = countdown.id
         let context = backgroundContext
@@ -227,6 +239,9 @@ final class CountdownRepository: NSObject, ObservableObject {
         let newImagePath = backgroundImagePath
         let newThumbPath = thumbnailImagePath
         let normalizedDate = targetDate.map(normalizedTargetDate)
+        let newReflectionPrimaryText = reflectionPrimaryText
+        let newReflectionExpandedText = reflectionExpandedText
+        let newReflectionGeneratedAt = reflectionGeneratedAt
         let updatedCreatedDate = normalizedDate == nil ? countdown.createdDate : Date()
         try context.performAndWait {
             let request = CountdownEntity.fetchRequest()
@@ -245,6 +260,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let startPercentage { entity.startPercentage = startPercentage }
             if let showDate { entity.showDate = showDate }
             if let sfSymbolName { entity.sfSymbolName = sfSymbolName }
+            if let newReflectionPrimaryText { entity.reflectionPrimaryText = newReflectionPrimaryText }
+            if let newReflectionExpandedText { entity.reflectionExpandedText = newReflectionExpandedText }
+            if let newReflectionGeneratedAt { entity.reflectionGeneratedAt = newReflectionGeneratedAt }
             try context.save()
         }
 
@@ -272,7 +290,19 @@ final class CountdownRepository: NSObject, ObservableObject {
             startPercentage: startPercentage ?? countdown.startPercentage,
             showDate: showDate ?? countdown.showDate,
             sfSymbolName: sfSymbolName != nil ? sfSymbolName! : countdown.sfSymbolName,
-            calendarEventIdentifier: countdown.calendarEventIdentifier
+            calendarEventIdentifier: countdown.calendarEventIdentifier,
+            reflectionPrimaryText: resolvedValue(
+                existing: countdown.reflectionPrimaryText,
+                update: reflectionPrimaryText
+            ),
+            reflectionExpandedText: resolvedValue(
+                existing: countdown.reflectionExpandedText,
+                update: reflectionExpandedText
+            ),
+            reflectionGeneratedAt: resolvedValue(
+                existing: countdown.reflectionGeneratedAt,
+                update: reflectionGeneratedAt
+            )
         )
 
         if let eventIdentifier = countdown.calendarEventIdentifier {

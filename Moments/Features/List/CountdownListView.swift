@@ -12,7 +12,7 @@ struct CountdownListView: View {
     @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
     @AppStorage(AppSettingsKeys.hasSeenIntroSheet) private var hasSeenIntroSheet = AppSettingsDefaults.hasSeenIntroSheet
     @State private var showingAddSheet = false
-    @State private var editingCountdown: Countdown?
+    @State private var previewingCountdown: Countdown?
     @State private var showingSettings = false
     @State private var showingIntroSheet = false
     @State private var selectedFilter: CountdownFilter = .all
@@ -97,6 +97,9 @@ struct CountdownListView: View {
                 }
             }
         }
+        .navigationDestination(item: $previewingCountdown) { countdown in
+            MomentPreviewView(countdownID: countdown.id)
+        }
         .onChange(of: selectedFilter) {
             AppHaptics.impact(.light)
         }
@@ -119,9 +122,6 @@ struct CountdownListView: View {
         }
         .sheet(isPresented: $showingAddSheet) {
             AddCountdownView()
-        }
-        .sheet(item: $editingCountdown) { countdown in
-            EditCountdownView(countdownID: countdown.id)
         }
     }
 
@@ -299,8 +299,349 @@ struct CountdownListView: View {
 
     private func openCountdown(_ countdown: Countdown) {
         AppHaptics.impact(.soft)
-        editingCountdown = countdown
+        previewingCountdown = countdown
     }
+}
+
+private struct MomentPreviewView: View {
+    let countdownID: UUID
+
+    @EnvironmentObject private var repository: CountdownRepository
+    @EnvironmentObject private var timerManager: TimerManager
+
+    @State private var showingEditSheet = false
+    @State private var isLoadingReflection = false
+    @State private var isExpanded = false
+    @State private var primaryText: String?
+    @State private var expandedText: String?
+    @State private var errorText: String?
+
+    private var countdown: Countdown? {
+        repository.countdowns.first { $0.id == countdownID }
+    }
+
+    var body: some View {
+        Group {
+            if let countdown {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text(countdown.title)
+                            .font(.system(.title2, design: .rounded, weight: .bold))
+
+                        Text(countdown.targetDate.smartFormatted)
+                            .font(.system(.body, design: .rounded))
+                            .foregroundStyle(.secondary)
+
+                        Text(metricLabel(for: countdown))
+                            .font(.system(.title3, design: .rounded, weight: .semibold))
+                            .contentTransition(.numericText())
+
+                        Button(primaryActionTitle(for: countdown)) {
+                            generateReflection(for: countdown)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(isLoadingReflection)
+
+                        if isLoadingReflection {
+                            ProgressView()
+                        }
+
+                        if let primaryText {
+                            Text(primaryText)
+                                .font(.system(.body, design: .rounded))
+                                .contentTransition(.opacity)
+                        }
+
+                        if let expandedText, isExpanded {
+                            Text(expandedText)
+                                .font(.system(.body, design: .rounded))
+                                .foregroundStyle(.secondary)
+                                .contentTransition(.opacity)
+                        }
+
+                        if expandedText != nil {
+                            Button(isExpanded ? "Hide" : "Expand") {
+                                withAnimation(.snappy) {
+                                    isExpanded.toggle()
+                                }
+                            }
+                            .buttonStyle(.bordered)
+                        }
+
+                        if let errorText {
+                            Text(errorText)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(20)
+                }
+                .navigationTitle("Moment")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Edit") {
+                            showingEditSheet = true
+                        }
+                    }
+                }
+                .sheet(isPresented: $showingEditSheet) {
+                    EditCountdownView(countdownID: countdownID)
+                }
+                .onAppear {
+                    syncSavedReflection(from: countdown)
+                }
+                .onChange(of: repository.countdowns) { _, _ in
+                    guard let countdown else { return }
+                    syncSavedReflection(from: countdown)
+                }
+            } else {
+                ContentUnavailableView("Moment not found", systemImage: "exclamationmark.triangle")
+            }
+        }
+    }
+
+    private func syncSavedReflection(from countdown: Countdown) {
+        primaryText = countdown.reflectionPrimaryText
+        expandedText = countdown.reflectionExpandedText
+    }
+
+    private func metricLabel(for countdown: Countdown) -> String {
+        if countdown.isToday(at: timerManager.currentTime) {
+            return "Today"
+        }
+
+        if countdown.isExpired(at: timerManager.currentTime) {
+            return "\(countdown.daysSince(from: timerManager.currentTime)) days since"
+        }
+
+        return "\(countdown.daysUntil(from: timerManager.currentTime)) days until"
+    }
+
+    private func primaryActionTitle(for countdown: Countdown) -> String {
+        countdown.isExpired(at: timerManager.currentTime) ? "Reflect" : "Prepare"
+    }
+
+    private func generateReflection(for countdown: Countdown) {
+        if primaryText != nil {
+            withAnimation(.snappy) {
+                isExpanded = true
+            }
+            return
+        }
+
+        isLoadingReflection = true
+        errorText = nil
+
+        Task {
+            do {
+                let response = try await ReflectionService.shared.generateReflection(for: countdown, now: timerManager.currentTime)
+                await MainActor.run {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        primaryText = response.primary
+                        expandedText = response.expanded
+                    }
+                    isLoadingReflection = false
+                    isExpanded = false
+                }
+                try? repository.update(
+                    countdown,
+                    reflectionPrimaryText: .some(response.primary),
+                    reflectionExpandedText: .some(response.expanded),
+                    reflectionGeneratedAt: .some(Date())
+                )
+            } catch {
+                await MainActor.run {
+                    isLoadingReflection = false
+                    errorText = "Unable to load right now."
+                }
+            }
+        }
+    }
+}
+
+private final class ReflectionService {
+    static let shared = ReflectionService()
+
+    private init() {}
+
+    func generateReflection(for countdown: Countdown, now: Date) async throws -> ReflectionOutput {
+        guard let apiKey = AppSecrets.openRouterAPIKey, !apiKey.isEmpty else {
+            throw ReflectionError.missingAPIKey
+        }
+
+        let isPast = countdown.isExpired(at: now)
+        let systemPrompt = ReflectionPrompt.systemPrompt(isPast: isPast)
+        let userPrompt = ReflectionPrompt.userPrompt(for: countdown, now: now)
+
+        var request = URLRequest(url: URL(string: "https://openrouter.ai/api/v1/chat/completions")!)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+
+        let payload = OpenRouterRequest(
+            model: AppSecrets.openRouterModel,
+            messages: [
+                .init(role: "system", content: systemPrompt),
+                .init(role: "user", content: userPrompt)
+            ],
+            temperature: 0.7,
+            responseFormat: .init(
+                type: "json_schema",
+                jsonSchema: .init(
+                    name: "moment_reflection",
+                    strict: true,
+                    schema: .init(
+                        type: "object",
+                        properties: [
+                            "primary": .init(type: "string"),
+                            "expanded": .init(type: "string")
+                        ],
+                        required: ["primary", "expanded"],
+                        additionalProperties: false
+                    )
+                )
+            )
+        )
+        request.httpBody = try JSONEncoder().encode(payload)
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let decoded = try JSONDecoder().decode(OpenRouterResponse.self, from: data)
+        guard let content = decoded.choices.first?.message.content.data(using: .utf8) else {
+            throw ReflectionError.emptyResponse
+        }
+
+        return try JSONDecoder().decode(ReflectionOutput.self, from: content)
+    }
+}
+
+private enum ReflectionPrompt {
+    static func systemPrompt(isPast: Bool) -> String {
+        if let bundledPrompt = loadPrompt(named: isPast ? "reflection_past_system_prompt" : "reflection_future_system_prompt") {
+            return bundledPrompt
+        }
+
+        if isPast {
+            return """
+            You create short, timeless reflections for moments that already happened.
+            Return JSON with `primary` and `expanded`.
+            `primary` is 1-3 short sentences, calm and emotionally meaningful.
+            `expanded` is slightly deeper, concise, elegant, and never instructional.
+            Avoid bullet points, listicles, dramatic language, therapy framing, and motivational clichés.
+            """
+        }
+
+        return """
+        You create short, timeless preparation notes for moments that are still ahead.
+        Return JSON with `primary` and `expanded`.
+        `primary` is 1-3 short sentences, calm and emotionally meaningful.
+        `expanded` is slightly deeper, concise, elegant, and never instructional.
+        Avoid bullet points, listicles, dramatic language, therapy framing, and motivational clichés.
+        """
+    }
+
+    private static func loadPrompt(named name: String) -> String? {
+        guard let url = Bundle.main.url(forResource: name, withExtension: "txt") else {
+            return nil
+        }
+
+        return try? String(contentsOf: url).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    static func userPrompt(for countdown: Countdown, now: Date) -> String {
+        """
+        Moment title: \(countdown.title)
+        Moment date: \(countdown.targetDate.smartFormatted)
+        Today: \(now.smartFormatted)
+        Days until: \(countdown.daysUntil(from: now))
+        Days since: \(countdown.daysSince(from: now))
+        """
+    }
+}
+
+private enum AppSecrets {
+    static var openRouterAPIKey: String? {
+        ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"]
+        ?? Bundle.main.object(forInfoDictionaryKey: "OPENROUTER_API_KEY") as? String
+    }
+
+    static var openRouterModel: String {
+        (ProcessInfo.processInfo.environment["OPENROUTER_MODEL"]
+         ?? Bundle.main.object(forInfoDictionaryKey: "OPENROUTER_MODEL") as? String)
+        ?? "openai/gpt-4o-mini"
+    }
+}
+
+private struct ReflectionOutput: Decodable {
+    let primary: String
+    let expanded: String
+}
+
+private enum ReflectionError: Error {
+    case missingAPIKey
+    case emptyResponse
+}
+
+private struct OpenRouterRequest: Encodable {
+    struct Message: Encodable {
+        let role: String
+        let content: String
+    }
+
+    struct ResponseFormat: Encodable {
+        let type: String
+        let jsonSchema: JSONSchemaContainer
+
+        enum CodingKeys: String, CodingKey {
+            case type
+            case jsonSchema = "json_schema"
+        }
+    }
+
+    struct JSONSchemaContainer: Encodable {
+        let name: String
+        let strict: Bool
+        let schema: JSONSchemaObject
+    }
+
+    struct JSONSchemaObject: Encodable {
+        let type: String
+        let properties: [String: JSONSchemaValue]
+        let required: [String]
+        let additionalProperties: Bool
+
+        enum CodingKeys: String, CodingKey {
+            case type, properties, required
+            case additionalProperties = "additionalProperties"
+        }
+    }
+
+    struct JSONSchemaValue: Encodable {
+        let type: String
+    }
+
+    let model: String
+    let messages: [Message]
+    let temperature: Double
+    let responseFormat: ResponseFormat
+
+    enum CodingKeys: String, CodingKey {
+        case model, messages, temperature
+        case responseFormat = "response_format"
+    }
+}
+
+private struct OpenRouterResponse: Decodable {
+    struct Choice: Decodable {
+        struct Message: Decodable {
+            let content: String
+        }
+
+        let message: Message
+    }
+
+    let choices: [Choice]
 }
 
 private enum CountdownFilter: String, CaseIterable, Identifiable {

@@ -1,0 +1,6 @@
+// Duplicate this as Config.xcconfig and include from target build settings.
+OPENROUTER_API_KEY = sk-or-v1-your-key
+OPENROUTER_MODEL = openai/gpt-4o-mini
+
+INFOPLIST_KEY_OPENROUTER_API_KEY = $(OPENROUTER_API_KEY)
+INFOPLIST_KEY_OPENROUTER_MODEL = $(OPENROUTER_MODEL)

@@ -8,6 +8,9 @@
         <attribute name="calendarEventIdentifier" optional="YES" attributeType="String"/>
         <attribute name="createdDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="reflectionExpandedText" optional="YES" attributeType="String"/>
+        <attribute name="reflectionGeneratedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="reflectionPrimaryText" optional="YES" attributeType="String"/>
         <attribute name="thumbnailImagePath" optional="YES" attributeType="String"/>
         <attribute name="targetDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" attributeType="String" defaultValueString=""/>
