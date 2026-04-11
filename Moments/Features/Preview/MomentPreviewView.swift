@@ -13,6 +13,9 @@ struct MomentPreviewView: View {
     @State private var primaryText: String?
     @State private var expandedText: String?
     @State private var errorText: String?
+    @State private var headerHeight: CGFloat = 0
+    @State private var reflectionHeight: CGFloat = 0
+    @State private var expandButtonHeight: CGFloat = 0
 
     private var countdown: Countdown? {
         repository.countdowns.first { $0.id == countdownID }
@@ -24,10 +27,15 @@ struct MomentPreviewView: View {
                 GeometryReader { proxy in
                     ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
-                            if shouldShowReflectionCard {
-                                momentHeader(for: countdown)
+                            Color.clear
+                                .frame(height: headerTopSpacing(in: proxy))
 
+                            momentHeader(for: countdown)
+                                .background(HeightMeasurementView(height: $headerHeight))
+
+                            if shouldShowReflectionCard {
                                 reflectionCard
+                                    .background(HeightMeasurementView(height: $reflectionHeight))
 
                                 if expandedText != nil && !isExpanded {
                                     Button {
@@ -42,18 +50,20 @@ struct MomentPreviewView: View {
                                     }
                                     .frame(maxWidth: .infinity, alignment: .center)
                                     .buttonStyle(.plain)
+                                    .background(HeightMeasurementView(height: $expandButtonHeight))
                                 }
-                            } else {
-                                Spacer(minLength: 0)
-                                momentHeader(for: countdown)
-                                Spacer(minLength: 0)
                             }
+
+                            Spacer(minLength: 0)
                         }
-                        .frame(minHeight: availableContentHeight(in: proxy), alignment: .center)
+                        .frame(minHeight: availableContentHeight(in: proxy), alignment: .top)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
                         .padding(.bottom, showsBottomPrimaryAction ? 28 : 20)
+                        .animation(.smooth(duration: 0.36), value: shouldShowReflectionCard)
+                        .animation(.smooth(duration: 0.36), value: reflectionHeight)
+                        .animation(.smooth(duration: 0.36), value: expandButtonHeight)
                     }
                     .safeAreaInset(edge: .bottom) {
                         if showsBottomPrimaryAction {
@@ -199,7 +209,7 @@ struct MomentPreviewView: View {
             if !reflectionPrimaryDisplayText.isEmpty {
                 WordRevealText(
                     text: reflectionPrimaryDisplayText,
-                    font: primaryText == nil && errorText != nil ? .footnote : .system(size: 20, weight: .regular, design: .serif),
+                    font: primaryText == nil && errorText != nil ? .footnote : .system(.callout, design: .rounded),
                     color: primaryText == nil && errorText != nil ? .secondary : .primary
                 )
             }
@@ -208,7 +218,7 @@ struct MomentPreviewView: View {
                 if isExpanded && !reflectionExpandedDisplayText.isEmpty {
                     WordRevealText(
                         text: reflectionExpandedDisplayText,
-                        font: .system(size: 20, weight: .regular, design: .serif),
+                        font: .system(.callout, design: .rounded),
                         color: .secondary
                     )
                     .transition(.opacity)
@@ -249,6 +259,24 @@ struct MomentPreviewView: View {
     private func availableContentHeight(in proxy: GeometryProxy) -> CGFloat {
         let bottomInset: CGFloat = showsBottomPrimaryAction ? 108 : 0
         return max(proxy.size.height - bottomInset, 0)
+    }
+
+    private func headerTopSpacing(in proxy: GeometryProxy) -> CGFloat {
+        guard headerHeight > 0 else { return 0 }
+
+        let referenceHeight = max(proxy.size.height - 108, 0)
+        let centeredHeaderSpacing = max((referenceHeight - headerHeight) / 2, 0)
+
+        guard shouldShowReflectionCard else {
+            return centeredHeaderSpacing
+        }
+
+        let extraBelowHeader =
+            16 + reflectionHeight +
+            ((expandedText != nil && !isExpanded) ? (16 + expandButtonHeight) : 0)
+        let maxSpacingThatStillFits = max(availableContentHeight(in: proxy) - headerHeight - extraBelowHeader, 0)
+
+        return min(centeredHeaderSpacing, maxSpacingThatStillFits)
     }
 
     private func generateReflection(for countdown: Countdown) {
@@ -315,6 +343,20 @@ private struct ThinkingActionLabel: View {
             Capsule()
                 .fill(backgroundColor)
         )
+    }
+}
+
+private struct HeightMeasurementView: View {
+    @Binding var height: CGFloat
+
+    var body: some View {
+        GeometryReader { proxy in
+            Color.clear
+                .task(id: proxy.size.height) {
+                    guard abs(height - proxy.size.height) > 0.5 else { return }
+                    height = proxy.size.height
+                }
+        }
     }
 }
 

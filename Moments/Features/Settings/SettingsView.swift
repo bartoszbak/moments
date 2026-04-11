@@ -72,8 +72,13 @@ struct SettingsView: View {
                 Section {
                     EmptyView()
                 } footer: {
-                    Text(buildNumberText)
+                    Link(destination: URL(string: "https://x.com/bartbak_")!) {
+                        Text(buildNumberText)
+                            .multilineTextAlignment(.center)
+                    }
                         .font(.footnote.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .buttonStyle(.plain)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
@@ -127,7 +132,7 @@ struct SettingsView: View {
 
     private var buildNumberText: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
-        return "Moments \(version),\nMade by Bart Bak\nin Zh, Switzerland."
+        return "Moments \(version),\nMade by Bart Bak,\nin ZH, Switzerland."
     }
 
     @ViewBuilder
