@@ -101,6 +101,7 @@
 		641EF3FC55AFA909DB257418 /* MomentsWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentsWidgetBundle.swift; sourceTree = "<group>"; };
 		6795018E13A078626EFE240C /* DeveloperMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMenuView.swift; sourceTree = "<group>"; };
 		72D50D912CD761E02900BE22 /* TillApp 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 4.xcdatamodel"; sourceTree = "<group>"; };
+		9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 5.xcdatamodel"; sourceTree = "<group>"; };
 		7BF9FB726E1D289FBBC53F5C /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
 		81644C993BB4FF389537E4C4 /* SharedDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataStore.swift; sourceTree = "<group>"; };
 		914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownAppEntity.swift; sourceTree = "<group>"; };
@@ -733,9 +734,10 @@
 				5D4F941463FA621F50ECB980 /* TillApp 2.xcdatamodel */,
 				1F322964288F951F948ED9E3 /* TillApp 3.xcdatamodel */,
 				72D50D912CD761E02900BE22 /* TillApp 4.xcdatamodel */,
+				9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */,
 				D27D809EF8B82CF274B52103 /* TillApp.xcdatamodel */,
 			);
-			currentVersion = 72D50D912CD761E02900BE22 /* TillApp 4.xcdatamodel */;
+			currentVersion = 9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */;
 			path = Moments.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
