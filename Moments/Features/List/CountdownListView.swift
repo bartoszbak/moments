@@ -1,3 +1,4 @@
+import CoreMotion
 import SwiftUI
 
 struct CountdownListView: View {
@@ -194,10 +195,7 @@ struct CountdownListView: View {
         VStack(spacing: 16) {
             Spacer()
 
-            Image("EmptyState")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 110, height: 110)
+            EmptyStateArtworkView()
 
             Text("No moments to wait for\nor reflect on")
                 .font(.title3.weight(.semibold))
@@ -331,4 +329,123 @@ private enum CountdownFilter: String, CaseIterable, Identifiable {
             backgroundContext: PersistenceController.preview.newBackgroundContext()
         ))
         .environmentObject(TimerManager())
+}
+
+private struct EmptyStateArtworkView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.colorScheme) private var colorScheme
+
+    @StateObject private var motionController = EmptyStateMotionController()
+
+    private let containerSize: CGFloat = 96
+    private let imageSize: CGFloat = 96
+    private let cornerRadius: CGFloat = 28
+
+    var body: some View {
+        ZStack {
+            Color.clear
+                .frame(width: containerSize, height: containerSize)
+                .glassCard(cornerRadius: cornerRadius)
+                .overlay {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .strokeBorder(.white.opacity(colorScheme == .dark ? 0.12 : 0.32), lineWidth: 1)
+                }
+
+            Image("EmptyState")
+                .resizable()
+                .scaledToFit()
+                .frame(width: imageSize, height: imageSize)
+        }
+        .scaleEffect(isMotionEnabled ? 1.04 : 1)
+        .offset(x: translation.width, y: translation.height)
+        .rotation3DEffect(
+            .degrees(Double(-motionController.tilt.height * 7)),
+            axis: (x: 1, y: 0, z: 0),
+            perspective: 0.55
+        )
+        .rotation3DEffect(
+            .degrees(Double(motionController.tilt.width * 7)),
+            axis: (x: 0, y: 1, z: 0),
+            perspective: 0.55
+        )
+        .shadow(
+            color: .black.opacity(isMotionEnabled ? 0.14 : 0.08),
+            radius: 18,
+            x: -translation.width * 0.35,
+            y: 12 - (translation.height * 0.35)
+        )
+        .onAppear {
+            updateMotionState(isEnabled: isMotionEnabled)
+        }
+        .onDisappear {
+            motionController.stop()
+        }
+        .onChange(of: isMotionEnabled) { _, isEnabled in
+            updateMotionState(isEnabled: isEnabled)
+        }
+    }
+
+    private var isMotionEnabled: Bool {
+        !reduceMotion
+    }
+
+    private var translation: CGSize {
+        CGSize(
+            width: motionController.tilt.width * 8,
+            height: motionController.tilt.height * 6
+        )
+    }
+
+    private func updateMotionState(isEnabled: Bool) {
+        if isEnabled {
+            motionController.start()
+        } else {
+            motionController.stop()
+        }
+    }
+}
+
+private final class EmptyStateMotionController: ObservableObject {
+    @Published var tilt: CGSize = .zero
+
+    private let motionManager = CMMotionManager()
+    private let queue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.tillappcounter.Moments.empty-state-motion"
+        queue.qualityOfService = .userInteractive
+        return queue
+    }()
+
+    func start() {
+        guard motionManager.isDeviceMotionAvailable else { return }
+        guard !motionManager.isDeviceMotionActive else { return }
+
+        motionManager.deviceMotionUpdateInterval = 1.0 / 60.0
+        motionManager.startDeviceMotionUpdates(to: queue) { [weak self] motion, _ in
+            guard let self, let motion else { return }
+
+            let roll = Self.clamped(motion.attitude.roll / 0.55)
+            let pitch = Self.clamped(motion.attitude.pitch / 0.7)
+            let targetTilt = CGSize(width: roll, height: -pitch)
+
+            DispatchQueue.main.async {
+                self.tilt = CGSize(
+                    width: (self.tilt.width * 0.84) + (targetTilt.width * 0.16),
+                    height: (self.tilt.height * 0.84) + (targetTilt.height * 0.16)
+                )
+            }
+        }
+    }
+
+    func stop() {
+        motionManager.stopDeviceMotionUpdates()
+
+        withAnimation(.spring(duration: 0.35, bounce: 0.18)) {
+            tilt = .zero
+        }
+    }
+
+    private static func clamped(_ value: Double) -> CGFloat {
+        CGFloat(max(-1, min(1, value)))
+    }
 }
