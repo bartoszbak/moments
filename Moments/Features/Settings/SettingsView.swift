@@ -17,6 +17,19 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
+                    HStack {
+                        Spacer()
+                        Image("Settings")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 88, height: 88)
+                        Spacer()
+                    }
+                    .listRowInsets(EdgeInsets(top: 12, leading: 0, bottom: 12, trailing: 0))
+                    .listRowBackground(Color.clear)
+                }
+
+                Section {
                     Picker("Mode", selection: $appearanceSetting) {
                         Text("System").tag("system")
                         Text("Light").tag("light")
@@ -55,6 +68,13 @@ struct SettingsView: View {
                     NavigationLink("Developer Tools") {
                         DeveloperMenuView()
                     }
+                }
+                Section {
+                    EmptyView()
+                } footer: {
+                    Text(buildNumberText)
+                        .font(.footnote.weight(.medium))
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
             .navigationTitle("Settings")
@@ -103,6 +123,11 @@ struct SettingsView: View {
 
     private var doneButtonColor: Color {
         effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var buildNumberText: String {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+        return "Moments \(version),\nMade by Bart Bak\nin Zh, Switzerland."
     }
 
     @ViewBuilder

@@ -25,6 +25,11 @@ struct IntroSheetView: View {
             description: "Customize colors, add notes, and adjust the app later from Settings whenever you want."
         ),
         .init(
+            icon: "sparkles",
+            title: "Moments Intelligence",
+            description: "Add a little context and get calm, personal reflections that help you prepare or look back with clarity."
+        ),
+        .init(
             icon: "applewatch.watchface",
             title: "Watch complications",
             description: "Keep your next moment visible on Apple Watch so the countdown is always one glance away."
@@ -32,51 +37,47 @@ struct IntroSheetView: View {
     ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("Welcome to Moments")
-                .font(.system(size: 23, weight: .bold, design: .rounded))
-                .foregroundStyle(.primary)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Welcome to Moments")
+                    .font(.system(size: 23, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
 
-            Text("See what's possible")
-                .font(.system(size: 23, weight: .medium, design: .rounded))
-                .foregroundStyle(.secondary)
-                .padding(.top, 2)
-
-            VStack(alignment: .leading, spacing: 26) {
-                ForEach(features) { feature in
-                    introFeatureRow(feature)
-                }
-            }
-            .padding(.top, 38)
-
-            Spacer(minLength: 40)
-
-            VStack(alignment: .leading, spacing: 18) {
-                Text("Your moments stay on your device, and Calendar sync is optional. You can change appearance, haptics, and permissions later in Settings.")
-                    .font(.footnote.weight(.medium))
+                Text("See what's possible")
+                    .font(.system(size: 23, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
-                    .lineSpacing(2)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 2)
 
-                Button(action: onGetStarted) {
-                    Text("Continue")
-                        .font(.headline.weight(.semibold))
-                        .foregroundStyle(primaryButtonLabelColor)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            Capsule()
-                                .fill(interfaceTintColor)
-                        )
+                VStack(alignment: .leading, spacing: 26) {
+                    ForEach(features) { feature in
+                        introFeatureRow(feature)
+                    }
                 }
-                .buttonStyle(.plain)
-                .padding(.top, 2)
+                .padding(.top, 38)
             }
+            .padding(.horizontal, 32)
+            .padding(.top, 42)
+            .padding(.bottom, 120)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
-        .padding(.horizontal, 32)
-        .padding(.top, 42)
-        .padding(.bottom, 20)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .safeAreaInset(edge: .bottom) {
+            Button(action: onGetStarted) {
+                Text("Continue")
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(primaryButtonLabelColor)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(
+                        Capsule()
+                            .fill(interfaceTintColor)
+                    )
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 32)
+            .padding(.top, 12)
+            .padding(.bottom, 12)
+            .background(Color(.systemBackground))
+        }
         .background(Color(.systemBackground))
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
