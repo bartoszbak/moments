@@ -69,7 +69,7 @@ struct AddCountdownView: View {
                     Text("Context for intelligence")
                 }
                 Section("Target Date") {
-                    TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
+                    TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                 }
                 BackgroundPickerSection(
                     selection: $background
@@ -84,7 +84,7 @@ struct AddCountdownView: View {
                     ProgressStartPickerSection(value: $startPercentage)
                 }
             }
-            .tint(interfaceTintColor)
+            .tint(controlTintColor)
             .navigationTitle("Add a Moment")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -101,7 +101,7 @@ struct AddCountdownView: View {
             }
         }
         .sheet(isPresented: $showSymbolPicker) {
-            SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: interfaceTintColor)
+            SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: controlTintColor)
         }
         .preferredColorScheme(preferredColorScheme)
     }
@@ -158,8 +158,8 @@ struct AddCountdownView: View {
         preferredColorScheme ?? colorScheme
     }
 
-    private var interfaceTintColor: Color {
-        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
+    private var controlTintColor: Color {
+        .blue
     }
 
     private var toolbarButtonColor: Color {

@@ -70,25 +70,12 @@ private extension UIFont {
 
 private struct AppThemeRootView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
 
     var body: some View {
         CountdownListView()
-            .tint(interfaceTintColor)
-            .toggleStyle(AppSwitchToggleStyle(tint: interfaceTintColor, colorScheme: effectiveColorScheme))
+            .tint(.blue)
+            .toggleStyle(AppSwitchToggleStyle(tint: .blue, colorScheme: colorScheme))
             .fontDesign(.rounded)
-    }
-
-    private var interfaceTintColor: Color {
-        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
-    }
-
-    private var preferredColorScheme: ColorScheme? {
-        AppTheme.preferredColorScheme(for: appearanceSetting)
-    }
-
-    private var effectiveColorScheme: ColorScheme {
-        preferredColorScheme ?? colorScheme
     }
 }
 

@@ -17,10 +17,10 @@ struct CountdownTileView: View {
         Group {
             if #available(iOS 26, *) {
                 tileContent
-                    .glassEffect(.regular.tint(tileSurfaceColor.opacity(colorScheme == .dark ? 0.64 : 0.82)), in: .rect(cornerRadius: cornerRadius))
+                    .glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
             } else {
                 tileContent
-                    .background(tileSurfaceColor, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
                     .shadow(color: .black.opacity(colorScheme == .dark ? 0.24 : 0.12), radius: 22, x: 0, y: 12)
             }
         }
@@ -71,16 +71,11 @@ struct CountdownTileView: View {
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .aspectRatio(1, contentMode: .fit)
         .padding(18)
-        .background(tileSurfaceColor)
         .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
 
-    private var tileSurfaceColor: Color {
-        colorScheme == .dark ? .black : .white
-    }
-
     private var tileBorderColor: Color {
-        colorScheme == .dark ? .white.opacity(0.10) : .black.opacity(0.14)
+        colorScheme == .dark ? .white.opacity(0.10) : .black.opacity(0.12)
     }
 
     private var primaryTextColor: Color {
@@ -88,7 +83,7 @@ struct CountdownTileView: View {
     }
 
     private var secondaryTextColor: Color {
-        colorScheme == .dark ? .white.opacity(0.50) : .black.opacity(0.38)
+        colorScheme == .dark ? .white.opacity(0.62) : .black.opacity(0.46)
     }
 
     private var metricValueText: String {

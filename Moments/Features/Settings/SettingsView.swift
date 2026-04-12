@@ -41,7 +41,7 @@ struct SettingsView: View {
                         Button("Reset to Default") {
                             interfaceTintHex = AppSettingsDefaults.interfaceTintHex
                         }
-                        .foregroundStyle(interfaceTintColor)
+                        .foregroundStyle(controlTintColor)
                     }
                 } header: {
                     Text("Appearance")
@@ -49,7 +49,7 @@ struct SettingsView: View {
 
                 Section {
                     Toggle("Add moments to Calendar", isOn: $isCalendarIntegrationEnabled)
-                        .tint(interfaceTintColor)
+                        .tint(controlTintColor)
                 } header: {
                     Text("Calendar")
                 } footer: {
@@ -61,7 +61,7 @@ struct SettingsView: View {
 
                 Section {
                     Toggle("Haptic Feedback", isOn: $hapticsEnabled)
-                        .tint(interfaceTintColor)
+                        .tint(controlTintColor)
                 }
 
                 Section("Developer") {
@@ -84,7 +84,7 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-            .tint(interfaceTintColor)
+            .tint(controlTintColor)
             .task {
                 reconcileCalendarAccessState()
             }
@@ -114,8 +114,8 @@ struct SettingsView: View {
         interfaceTintHex != AppSettingsDefaults.interfaceTintHex
     }
 
-    private var interfaceTintColor: Color {
-        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
+    private var controlTintColor: Color {
+        .blue
     }
 
     private var preferredColorScheme: ColorScheme? {
@@ -192,7 +192,7 @@ enum AppSettingsKeys {
 
 enum AppSettingsDefaults {
     static let appearance = "system"
-    static let interfaceTintHex = "#000000"
+    static let interfaceTintHex = "#D3E2FF"
     static let calendarIntegrationEnabled = false
     static let hapticsEnabled = true
     static let hasSeenIntroSheet = false

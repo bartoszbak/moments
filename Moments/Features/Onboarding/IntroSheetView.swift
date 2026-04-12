@@ -27,25 +27,70 @@ struct IntroSheetView: View {
         .init(
             icon: "sparkles",
             title: "Moments Intelligence",
-            description: "Add a little context and get calm, personal reflections that help you prepare or look back with clarity."
-        ),
-        .init(
-            icon: "applewatch.watchface",
-            title: "Watch complications",
-            description: "Keep your next moment visible on Apple Watch so the countdown is always one glance away."
+            description: "Add context and get three calm layers: a surface reframe, a deeper reflection, and gentle guidance."
         )
     ]
 
     var body: some View {
+        Group {
+            if #available(iOS 26, *) {
+                introScrollView
+                    .safeAreaBar(
+                        edge: .bottom,
+                        alignment: .center,
+                        spacing: 0,
+                        content: makeSafeAreaBarContent
+                    )
+            } else {
+                introScrollView
+                    .overlay(alignment: .bottom) {
+                        Button(action: onGetStarted) {
+                            Text("Continue")
+                                .font(.headline.weight(.semibold))
+                                .foregroundStyle(primaryButtonLabelColor)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 56)
+                                .background(
+                                    Capsule()
+                                        .fill(primaryButtonColor)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 24)
+                        .padding(.top, 12)
+                        .padding(.bottom, 12)
+                        .background(Color(.systemBackground))
+                    }
+            }
+        }
+        .background(Color(.systemBackground))
+        .presentationDetents([.large])
+        .presentationDragIndicator(.hidden)
+        .preferredColorScheme(preferredColorScheme)
+    }
+
+    private var introScrollView: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .center, spacing: 0) {
+                HStack {
+                    Spacer()
+                    Image("Settings")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 88, height: 88)
+                    Spacer()
+                }
+                .padding(.bottom, 30)
+
                 Text("Welcome to Moments")
                     .font(.system(size: 23, weight: .bold, design: .rounded))
                     .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
 
                 Text("See what's possible")
                     .font(.system(size: 23, weight: .medium, design: .rounded))
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
                     .padding(.top, 2)
 
                 VStack(alignment: .leading, spacing: 26) {
@@ -54,41 +99,20 @@ struct IntroSheetView: View {
                     }
                 }
                 .padding(.top, 38)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(.horizontal, 32)
             .padding(.top, 42)
-            .padding(.bottom, 120)
-            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .padding(.bottom, 112)
+            .frame(maxWidth: .infinity, alignment: .top)
         }
-        .safeAreaInset(edge: .bottom) {
-            Button(action: onGetStarted) {
-                Text("Continue")
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(primaryButtonLabelColor)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(
-                        Capsule()
-                            .fill(interfaceTintColor)
-                    )
-            }
-            .buttonStyle(.plain)
-            .padding(.horizontal, 32)
-            .padding(.top, 12)
-            .padding(.bottom, 12)
-            .background(Color(.systemBackground))
-        }
-        .background(Color(.systemBackground))
-        .presentationDetents([.large])
-        .presentationDragIndicator(.hidden)
-        .preferredColorScheme(preferredColorScheme)
     }
 
     private func introFeatureRow(_ feature: IntroFeature) -> some View {
         HStack(alignment: .top, spacing: 18) {
             Image(systemName: feature.icon)
                 .font(.system(size: 26, weight: .medium))
-                .foregroundStyle(interfaceTintColor)
+                .foregroundStyle(.secondary)
                 .frame(width: 38, height: 38, alignment: .topLeading)
                 .padding(.top, 1)
 
@@ -105,20 +129,34 @@ struct IntroSheetView: View {
         }
     }
 
+    private func makeSafeAreaBarContent() -> some View {
+        Button(action: onGetStarted) {
+            Text("Continue")
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(primaryButtonLabelColor)
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .background(
+                    Capsule()
+                        .fill(primaryButtonColor)
+                )
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 24)
+        .padding(.top, 12)
+        .padding(.bottom, 12)
+    }
+
     private var preferredColorScheme: ColorScheme? {
         AppTheme.preferredColorScheme(for: appearanceSetting)
     }
 
-    private var effectiveColorScheme: ColorScheme {
-        preferredColorScheme ?? colorScheme
-    }
-
-    private var interfaceTintColor: Color {
-        AppTheme.interfaceTintColor(from: interfaceTintHex, for: effectiveColorScheme)
+    private var primaryButtonColor: Color {
+        AppTheme.baseInterfaceTintColor(from: interfaceTintHex)
     }
 
     private var primaryButtonLabelColor: Color {
-        interfaceTintColor.prefersLightForeground ? .white : .black
+        primaryButtonColor.prefersLightForeground ? .white : .black
     }
 }
 

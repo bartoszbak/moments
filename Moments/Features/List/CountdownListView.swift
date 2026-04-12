@@ -57,8 +57,7 @@ struct CountdownListView: View {
                 }
             }
             .scrollIndicators(.hidden)
-            .background(Color(.systemBackground))
-            .tint(interfaceTintColor)
+            .background(mainBackgroundGradient)
             .navigationTitle(isShowingPrimaryEmptyState ? "" : "Moments")
             .navigationBarTitleDisplayMode(isShowingPrimaryEmptyState ? .inline : .large)
             .toolbar {
@@ -213,12 +212,12 @@ struct CountdownListView: View {
         Button(action: presentAddCountdown) {
             Text("Add first event")
                 .font(.headline.weight(.semibold))
-                .foregroundStyle(primaryActionForegroundColor)
+                .foregroundStyle(emptyStateButtonForegroundColor)
                 .frame(maxWidth: .infinity)
                 .frame(height: 56)
                 .background(
                     Capsule()
-                        .fill(primaryActionBackgroundColor)
+                        .fill(emptyStateButtonBackgroundColor)
                 )
         }
         .buttonStyle(.plain)
@@ -260,7 +259,24 @@ struct CountdownListView: View {
     }
 
     private var interfaceTintColor: Color {
-        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
+        AppTheme.interfaceTintColor(from: interfaceTintHex, for: effectiveColorScheme)
+    }
+
+    private var leadingBackgroundColor: Color {
+        AppTheme.baseInterfaceTintColor(from: interfaceTintHex).opacity(0.33)
+    }
+
+    private var trailingBackgroundColor: Color {
+        effectiveColorScheme == .dark ? .black : .white
+    }
+
+    private var mainBackgroundGradient: some View {
+        LinearGradient(
+            colors: [leadingBackgroundColor, trailingBackgroundColor],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .ignoresSafeArea()
     }
 
     private var preferredColorScheme: ColorScheme? {
@@ -287,12 +303,12 @@ struct CountdownListView: View {
         addButtonBackgroundColor.prefersLightForeground ? .white : .black
     }
 
-    private var primaryActionBackgroundColor: Color {
-        effectiveColorScheme == .dark ? .white : .black
+    private var emptyStateButtonBackgroundColor: Color {
+        AppTheme.baseInterfaceTintColor(from: interfaceTintHex)
     }
 
-    private var primaryActionForegroundColor: Color {
-        effectiveColorScheme == .dark ? .black : .white
+    private var emptyStateButtonForegroundColor: Color {
+        emptyStateButtonBackgroundColor.prefersLightForeground ? .white : .black
     }
 
     private func presentAddCountdown() {

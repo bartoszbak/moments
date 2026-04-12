@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-private let defaultInterfaceTintHex = "#0A84FF"
+private let defaultInterfaceTintHex = "#D3E2FF"
 
 extension Color {
     init?(hex: String) {

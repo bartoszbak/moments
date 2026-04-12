@@ -15,6 +15,9 @@ final class CountdownEntity: NSManagedObject {
     @NSManaged var sfSymbolName: String?
     @NSManaged var calendarEventIdentifier: String?
     @NSManaged var createdDate: Date?
+    @NSManaged var reflectionSurfaceText: String?
+    @NSManaged var reflectionText: String?
+    @NSManaged var reflectionGuidanceText: String?
     @NSManaged var reflectionPrimaryText: String?
     @NSManaged var reflectionExpandedText: String?
     @NSManaged var reflectionGeneratedAt: Date?
@@ -40,6 +43,9 @@ final class CountdownEntity: NSManagedObject {
             showDate: showDate,
             sfSymbolName: sfSymbolName,
             calendarEventIdentifier: calendarEventIdentifier,
+            reflectionSurfaceText: reflectionSurfaceText,
+            reflectionText: reflectionText,
+            reflectionGuidanceText: reflectionGuidanceText,
             reflectionPrimaryText: reflectionPrimaryText,
             reflectionExpandedText: reflectionExpandedText,
             reflectionGeneratedAt: reflectionGeneratedAt

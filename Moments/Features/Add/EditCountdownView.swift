@@ -46,7 +46,7 @@ struct EditCountdownView: View {
                     Text("Context for intelligence")
                 }
                 Section("Target Date") {
-                    TargetDatePickerRow(targetDate: $targetDate, tintColor: interfaceTintColor)
+                    TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                 }
                 BackgroundPickerSection(
                     selection: $background,
@@ -73,9 +73,9 @@ struct EditCountdownView: View {
                     }
                 }
             }
-            .tint(interfaceTintColor)
+            .tint(controlTintColor)
             .sheet(isPresented: $showSymbolPicker) {
-                SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: interfaceTintColor)
+                SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: controlTintColor)
             }
             .alert("Delete this moment?", isPresented: $showDeleteConfirmation) {
                 Button("Delete", role: .destructive, action: delete)
@@ -191,6 +191,9 @@ struct EditCountdownView: View {
             startPercentage: startPercentage,
             showDate: showDate,
             sfSymbolName: .some(sfSymbolName),
+            reflectionSurfaceText: invalidatesReflection ? .some(nil) : nil,
+            reflectionText: invalidatesReflection ? .some(nil) : nil,
+            reflectionGuidanceText: invalidatesReflection ? .some(nil) : nil,
             reflectionPrimaryText: invalidatesReflection ? .some(nil) : nil,
             reflectionExpandedText: invalidatesReflection ? .some(nil) : nil,
             reflectionGeneratedAt: invalidatesReflection ? .some(nil) : nil
@@ -214,8 +217,8 @@ struct EditCountdownView: View {
         preferredColorScheme ?? colorScheme
     }
 
-    private var interfaceTintColor: Color {
-        AppTheme.defaultInterfaceTintColor(for: effectiveColorScheme)
+    private var controlTintColor: Color {
+        .blue
     }
 
     private var toolbarButtonColor: Color {

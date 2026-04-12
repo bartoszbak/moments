@@ -34,10 +34,11 @@ final class ReflectionService {
                     schema: .init(
                         type: "object",
                         properties: [
-                            "primary": .init(type: "string"),
-                            "expanded": .init(type: "string")
+                            "surface": .init(type: "string"),
+                            "reflection": .init(type: "string"),
+                            "guidance": .init(type: "string")
                         ],
-                        required: ["primary", "expanded"],
+                        required: ["surface", "reflection", "guidance"],
                         additionalProperties: false
                     )
                 )
@@ -57,15 +58,25 @@ final class ReflectionService {
 
 private enum ReflectionPrompt {
     static func systemPrompt(isPast: Bool) -> String {
-        if let bundledPrompt = loadPrompt(named: isPast ? "reflection_past_system_prompt" : "reflection_future_system_prompt") {
-            return bundledPrompt
+        let sharedPrompt = loadPrompt(named: "system")
+        let modePrompt = loadPrompt(named: isPast ? "past" : "future")
+
+        switch (sharedPrompt, modePrompt) {
+        case let (.some(shared), .some(mode)):
+            return [shared, mode].joined(separator: "\n\n")
+        case let (.some(shared), nil):
+            return shared
+        case let (nil, .some(mode)):
+            return mode
+        case (nil, nil):
+            break
         }
 
         return """
         You are a reflective assistant inside a minimal iOS app.
         Use the provided title, date, current time, and optional context.
-        Return JSON with `primary` and `expanded`.
-        Keep both fields concise, personal, calm, and specific to the moment.
+        Return JSON with `surface`, `reflection`, and `guidance`.
+        Keep all fields concise, personal, calm, and specific to the moment.
         Avoid generic advice, clichés, and dramatic language.
         """
     }
@@ -118,8 +129,9 @@ private enum AppSecrets {
 }
 
 struct ReflectionOutput: Decodable {
-    let primary: String
-    let expanded: String
+    let surface: String
+    let reflection: String
+    let guidance: String
 }
 
 enum ReflectionError: Error {

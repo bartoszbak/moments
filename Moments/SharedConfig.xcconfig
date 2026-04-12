@@ -2,7 +2,7 @@
 // Local developer secrets can live in Config.xcconfig, which is gitignored.
 #include? "Config.xcconfig"
 
-OPENROUTER_API_KEY =
+OPENROUTER_API_KEY = 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
 OPENROUTER_MODEL = openai/gpt-4o-mini
 
 INFOPLIST_KEY_OPENROUTER_API_KEY = $(OPENROUTER_API_KEY)

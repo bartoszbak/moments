@@ -41,8 +41,9 @@
 		A13786BFC0E5C2118EA783D6 /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */; };
 		AE02A368854B537AD1723011 /* CountdownRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA841B2553A2BA3491EF4E3 /* CountdownRowView.swift */; };
 		AE7DD78D38B008A7FA9DF128 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */; };
-		AF12BC34DE56F78901234567 /* reflection_future_system_prompt.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234565 /* reflection_future_system_prompt.txt */; };
-		AF12BC34DE56F78901234568 /* reflection_past_system_prompt.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234566 /* reflection_past_system_prompt.txt */; };
+		AF12BC34DE56F78901234567 /* system.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234565 /* system.txt */; };
+		AF12BC34DE56F78901234568 /* past.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234566 /* past.txt */; };
+		AF12BC34DE56F78901234569 /* future.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234570 /* future.txt */; };
 		B1C2D3E4F5061728394A5B6C /* ReflectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F30415263748A9B5C6D7 /* ReflectionService.swift */; };
 		C1B4BA8394A75B001EFAE5C8 /* AddCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C70200D860A729B74D9CB5 /* AddCountdownView.swift */; };
 		C7DAAECDC98D8B1685AC8311 /* MomentsWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641EF3FC55AFA909DB257418 /* MomentsWidgetBundle.swift */; };
@@ -102,14 +103,16 @@
 		6795018E13A078626EFE240C /* DeveloperMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMenuView.swift; sourceTree = "<group>"; };
 		72D50D912CD761E02900BE22 /* TillApp 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 4.xcdatamodel"; sourceTree = "<group>"; };
 		9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 5.xcdatamodel"; sourceTree = "<group>"; };
+		A7B8C9D0E1F23456789ABCDE /* TillApp 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 6.xcdatamodel"; sourceTree = "<group>"; };
 		7BF9FB726E1D289FBBC53F5C /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
 		81644C993BB4FF389537E4C4 /* SharedDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataStore.swift; sourceTree = "<group>"; };
 		914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownAppEntity.swift; sourceTree = "<group>"; };
 		A454604EA8126CA30C88E46A /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		A878F14CB50B697ADBFCEDD5 /* CountdownListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownListView.swift; sourceTree = "<group>"; };
 		A8F2FD4B2E62CCE92B56AE89 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		AF12BC34DE56F78901234565 /* reflection_future_system_prompt.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = reflection_future_system_prompt.txt; sourceTree = "<group>"; };
-		AF12BC34DE56F78901234566 /* reflection_past_system_prompt.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = reflection_past_system_prompt.txt; sourceTree = "<group>"; };
+		AF12BC34DE56F78901234565 /* system.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = system.txt; sourceTree = "<group>"; };
+		AF12BC34DE56F78901234566 /* past.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = past.txt; sourceTree = "<group>"; };
+		AF12BC34DE56F78901234570 /* future.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = future.txt; sourceTree = "<group>"; };
 		B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCountdown.swift; sourceTree = "<group>"; };
 		C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewView.swift; sourceTree = "<group>"; };
 		C4BF3C7A6776967BD8E726B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -236,8 +239,9 @@
 		AF12BC34DE56F78901234564 /* Prompts */ = {
 			isa = PBXGroup;
 			children = (
-				AF12BC34DE56F78901234565 /* reflection_future_system_prompt.txt */,
-				AF12BC34DE56F78901234566 /* reflection_past_system_prompt.txt */,
+				AF12BC34DE56F78901234565 /* system.txt */,
+				AF12BC34DE56F78901234566 /* past.txt */,
+				AF12BC34DE56F78901234570 /* future.txt */,
 			);
 			path = Prompts;
 			sourceTree = "<group>";
@@ -417,8 +421,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AE7DD78D38B008A7FA9DF128 /* Assets.xcassets in Resources */,
-				AF12BC34DE56F78901234567 /* reflection_future_system_prompt.txt in Resources */,
-				AF12BC34DE56F78901234568 /* reflection_past_system_prompt.txt in Resources */,
+				AF12BC34DE56F78901234567 /* system.txt in Resources */,
+				AF12BC34DE56F78901234568 /* past.txt in Resources */,
+				AF12BC34DE56F78901234569 /* future.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -735,9 +740,10 @@
 				1F322964288F951F948ED9E3 /* TillApp 3.xcdatamodel */,
 				72D50D912CD761E02900BE22 /* TillApp 4.xcdatamodel */,
 				9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */,
+				A7B8C9D0E1F23456789ABCDE /* TillApp 6.xcdatamodel */,
 				D27D809EF8B82CF274B52103 /* TillApp.xcdatamodel */,
 			);
-			currentVersion = 9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */;
+			currentVersion = A7B8C9D0E1F23456789ABCDE /* TillApp 6.xcdatamodel */;
 			path = Moments.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

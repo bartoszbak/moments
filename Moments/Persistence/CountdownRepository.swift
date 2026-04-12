@@ -161,6 +161,9 @@ final class CountdownRepository: NSObject, ObservableObject {
         startPercentage: Double = 1.0,
         showDate: Bool = true,
         sfSymbolName: String? = nil,
+        reflectionSurfaceText: String? = nil,
+        reflectionText: String? = nil,
+        reflectionGuidanceText: String? = nil,
         reflectionPrimaryText: String? = nil,
         reflectionExpandedText: String? = nil,
         reflectionGeneratedAt: Date? = nil
@@ -184,6 +187,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.showDate = showDate
             entity.sfSymbolName = sfSymbolName
             entity.createdDate = createdDate
+            entity.reflectionSurfaceText = reflectionSurfaceText
+            entity.reflectionText = reflectionText
+            entity.reflectionGuidanceText = reflectionGuidanceText
             entity.reflectionPrimaryText = reflectionPrimaryText
             entity.reflectionExpandedText = reflectionExpandedText
             entity.reflectionGeneratedAt = reflectionGeneratedAt
@@ -206,6 +212,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             showDate: showDate,
             sfSymbolName: sfSymbolName,
             calendarEventIdentifier: nil,
+            reflectionSurfaceText: reflectionSurfaceText,
+            reflectionText: reflectionText,
+            reflectionGuidanceText: reflectionGuidanceText,
             reflectionPrimaryText: reflectionPrimaryText,
             reflectionExpandedText: reflectionExpandedText,
             reflectionGeneratedAt: reflectionGeneratedAt
@@ -232,6 +241,9 @@ final class CountdownRepository: NSObject, ObservableObject {
         startPercentage: Double? = nil,
         showDate: Bool? = nil,
         sfSymbolName: String?? = nil,
+        reflectionSurfaceText: String?? = nil,
+        reflectionText: String?? = nil,
+        reflectionGuidanceText: String?? = nil,
         reflectionPrimaryText: String?? = nil,
         reflectionExpandedText: String?? = nil,
         reflectionGeneratedAt: Date?? = nil
@@ -243,6 +255,9 @@ final class CountdownRepository: NSObject, ObservableObject {
         let newImagePath = backgroundImagePath
         let newThumbPath = thumbnailImagePath
         let normalizedDate = targetDate.map(normalizedTargetDate)
+        let newReflectionSurfaceText = reflectionSurfaceText
+        let newReflectionText = reflectionText
+        let newReflectionGuidanceText = reflectionGuidanceText
         let newReflectionPrimaryText = reflectionPrimaryText
         let newReflectionExpandedText = reflectionExpandedText
         let newReflectionGeneratedAt = reflectionGeneratedAt
@@ -266,6 +281,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let startPercentage { entity.startPercentage = startPercentage }
             if let showDate { entity.showDate = showDate }
             if let sfSymbolName { entity.sfSymbolName = sfSymbolName }
+            if let newReflectionSurfaceText { entity.reflectionSurfaceText = newReflectionSurfaceText }
+            if let newReflectionText { entity.reflectionText = newReflectionText }
+            if let newReflectionGuidanceText { entity.reflectionGuidanceText = newReflectionGuidanceText }
             if let newReflectionPrimaryText { entity.reflectionPrimaryText = newReflectionPrimaryText }
             if let newReflectionExpandedText { entity.reflectionExpandedText = newReflectionExpandedText }
             if let newReflectionGeneratedAt { entity.reflectionGeneratedAt = newReflectionGeneratedAt }
@@ -301,6 +319,18 @@ final class CountdownRepository: NSObject, ObservableObject {
             showDate: showDate ?? countdown.showDate,
             sfSymbolName: sfSymbolName != nil ? sfSymbolName! : countdown.sfSymbolName,
             calendarEventIdentifier: countdown.calendarEventIdentifier,
+            reflectionSurfaceText: resolvedValue(
+                existing: countdown.reflectionSurfaceText,
+                update: reflectionSurfaceText
+            ),
+            reflectionText: resolvedValue(
+                existing: countdown.reflectionText,
+                update: reflectionText
+            ),
+            reflectionGuidanceText: resolvedValue(
+                existing: countdown.reflectionGuidanceText,
+                update: reflectionGuidanceText
+            ),
             reflectionPrimaryText: resolvedValue(
                 existing: countdown.reflectionPrimaryText,
                 update: reflectionPrimaryText

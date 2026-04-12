@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct MomentPreviewView: View {
     let countdownID: UUID
@@ -6,12 +7,15 @@ struct MomentPreviewView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @EnvironmentObject private var timerManager: TimerManager
     @Environment(\.colorScheme) private var colorScheme
+    @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
 
     @State private var showingEditSheet = false
     @State private var isLoadingReflection = false
-    @State private var isExpanded = false
-    @State private var primaryText: String?
-    @State private var expandedText: String?
+    @State private var expansionStage = 0
+    @State private var surfaceText: String?
+    @State private var reflectionText: String?
+    @State private var guidanceText: String?
     @State private var errorText: String?
     @State private var headerHeight: CGFloat = 0
     @State private var reflectionHeight: CGFloat = 0
@@ -24,88 +28,67 @@ struct MomentPreviewView: View {
     var body: some View {
         Group {
             if let countdown {
-                GeometryReader { proxy in
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Color.clear
-                                .frame(height: headerTopSpacing(in: proxy))
-
-                            momentHeader(for: countdown)
-                                .background(HeightMeasurementView(height: $headerHeight))
-
-                            if shouldShowReflectionCard {
-                                reflectionCard
-                                    .background(HeightMeasurementView(height: $reflectionHeight))
-
-                                if expandedText != nil && !isExpanded {
-                                    Button {
-                                        withAnimation(.smooth(duration: 0.32)) {
-                                            isExpanded = true
-                                        }
-                                    } label: {
-                                        Image(systemName: "chevron.compact.down")
-                                            .font(.system(size: 24, weight: .semibold))
-                                            .foregroundStyle(.secondary)
-                                            .frame(width: 44, height: 32)
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .center)
-                                    .buttonStyle(.plain)
-                                    .background(HeightMeasurementView(height: $expandButtonHeight))
-                                }
-                            }
-
-                            Spacer(minLength: 0)
-                        }
-                        .frame(minHeight: availableContentHeight(in: proxy), alignment: .top)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 20)
-                        .padding(.bottom, showsBottomPrimaryAction ? 28 : 20)
-                        .animation(.smooth(duration: 0.36), value: shouldShowReflectionCard)
-                        .animation(.smooth(duration: 0.36), value: reflectionHeight)
-                        .animation(.smooth(duration: 0.36), value: expandButtonHeight)
-                    }
-                    .safeAreaInset(edge: .bottom) {
-                        if showsBottomPrimaryAction {
-                            bottomPrimaryAction(for: countdown)
-                                .padding(.horizontal, 32)
-                                .padding(.top, 12)
-                                .padding(.bottom, 12)
-                                .background(Color(.systemBackground))
-                        }
-                    }
-                }
-                .background(Color(.systemBackground))
-                .navigationTitle("Moment")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Edit") {
-                            showingEditSheet = true
-                        }
-                        .fontWeight(.medium)
-                        .foregroundStyle(editButtonColor)
-                    }
-                }
-                .sheet(isPresented: $showingEditSheet) {
-                    EditCountdownView(countdownID: countdownID)
-                }
-                .onAppear {
-                    syncSavedReflection(from: countdown)
-                }
-                .onChange(of: repository.countdowns) { _, _ in
-                    guard let updatedCountdown = self.countdown else { return }
-                    syncSavedReflection(from: updatedCountdown)
-                }
+                previewScreen(for: countdown)
             } else {
                 ContentUnavailableView("Moment not found", systemImage: "exclamationmark.triangle")
             }
         }
     }
 
+    @ViewBuilder
+    private func previewScreen(for countdown: Countdown) -> some View {
+        let baseScreen = previewBaseContent(for: countdown)
+            .background(Color(.systemBackground))
+            .navigationTitle("Moment")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Edit") {
+                        showingEditSheet = true
+                    }
+                    .fontWeight(.medium)
+                    .foregroundStyle(editButtonColor)
+                }
+            }
+            .sheet(isPresented: $showingEditSheet) {
+                EditCountdownView(countdownID: countdownID)
+            }
+            .onAppear {
+                syncSavedReflection(from: countdown)
+            }
+            .onChange(of: repository.countdowns) { _, _ in
+                guard let updatedCountdown = self.countdown else { return }
+                syncSavedReflection(from: updatedCountdown)
+            }
+
+        Group {
+            if #available(iOS 26, *) {
+                baseScreen
+                    .safeAreaBar(
+                        edge: .bottom,
+                        alignment: .center,
+                        spacing: 0,
+                        content: { makePreviewSafeAreaBarContent(for: countdown) }
+                    )
+            } else {
+                baseScreen
+                    .overlay(alignment: .bottom) {
+                        previewLegacyBottomOverlay(for: countdown)
+                    }
+            }
+        }
+    }
+
+    private func previewBaseContent(for countdown: Countdown) -> some View {
+        GeometryReader { proxy in
+            previewScrollView(proxy: proxy, countdown: countdown)
+        }
+    }
+
     private func syncSavedReflection(from countdown: Countdown) {
-        primaryText = countdown.reflectionPrimaryText
-        expandedText = countdown.reflectionExpandedText
+        surfaceText = countdown.reflectionSurfaceText ?? countdown.reflectionPrimaryText
+        reflectionText = countdown.reflectionText ?? countdown.reflectionExpandedText
+        guidanceText = countdown.reflectionGuidanceText
     }
 
     private func momentHeader(for countdown: Countdown) -> some View {
@@ -116,11 +99,11 @@ struct MomentPreviewView: View {
                     .foregroundStyle(momentColor(for: countdown))
             }
 
-            Text("\(countdown.targetDate.smartFormatted), \(metricLabel(for: countdown))")
-                .font(.system(.subheadline, design: .rounded, weight: .medium))
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .contentTransition(.numericText())
+            AlternatingLetterRevealText(
+                items: [countdown.targetDate.smartFormatted, metricLabel(for: countdown)],
+                font: .system(.subheadline, design: .rounded, weight: .medium),
+                color: .secondary
+            )
 
             Text(countdown.title)
                 .font(.system(size: 34, weight: .bold, design: .rounded))
@@ -147,7 +130,7 @@ struct MomentPreviewView: View {
     }
 
     private func primaryActionTitle(for countdown: Countdown) -> String {
-        countdown.isExpired(at: timerManager.currentTime) ? "Reflect" : "Prepare"
+        countdown.isExpired(at: timerManager.currentTime) ? "Look Back" : "Set intention"
     }
 
     private func momentColor(for countdown: Countdown) -> Color {
@@ -164,11 +147,11 @@ struct MomentPreviewView: View {
     }
 
     private var actionButtonBackgroundColor: Color {
-        colorScheme == .dark ? .white : .black
+        primaryButtonColor
     }
 
     private var actionButtonForegroundColor: Color {
-        colorScheme == .dark ? .black : .white
+        primaryButtonColor.prefersLightForeground ? .white : .black
     }
 
     private var loadingActionButtonBackgroundColor: Color {
@@ -180,44 +163,72 @@ struct MomentPreviewView: View {
     }
 
     private var showsBottomPrimaryAction: Bool {
-        primaryText == nil
+        surfaceText == nil && errorText == nil
     }
 
     private var editButtonColor: Color {
         colorScheme == .dark ? .white : .black
     }
 
-    private var shouldShowReflectionCard: Bool {
-        primaryText != nil || errorText != nil
+    private var preferredColorScheme: ColorScheme? {
+        AppTheme.preferredColorScheme(for: appearanceSetting)
     }
 
-    private var reflectionPrimaryDisplayText: String {
+    private var primaryButtonColor: Color {
+        AppTheme.baseInterfaceTintColor(from: interfaceTintHex)
+    }
+
+    private var shouldShowReflectionCard: Bool {
+        surfaceText != nil || errorText != nil
+    }
+
+    private var surfaceDisplayText: String {
         if let errorText {
             return errorText
         }
 
-        return primaryText ?? ""
+        return surfaceText ?? ""
     }
 
-    private var reflectionExpandedDisplayText: String {
-        guard isExpanded else { return "" }
-        return expandedText ?? ""
+    private var reflectionDisplayText: String {
+        guard expansionStage >= 1 else { return "" }
+        return reflectionText ?? ""
+    }
+
+    private var guidanceDisplayText: String {
+        guard expansionStage >= 2 else { return "" }
+        return guidanceText ?? ""
+    }
+
+    private var maxExpansionStage: Int {
+        let hasReflection = !(reflectionText?.isEmpty ?? true)
+        let hasGuidance = !(guidanceText?.isEmpty ?? true)
+        return (hasReflection ? 1 : 0) + (hasGuidance ? 1 : 0)
     }
 
     private var reflectionCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if !reflectionPrimaryDisplayText.isEmpty {
+            if !surfaceDisplayText.isEmpty {
                 WordRevealText(
-                    text: reflectionPrimaryDisplayText,
-                    font: primaryText == nil && errorText != nil ? .footnote : .system(.callout, design: .rounded),
-                    color: primaryText == nil && errorText != nil ? .secondary : .primary
+                    text: surfaceDisplayText,
+                    font: surfaceText == nil && errorText != nil ? .footnote : .system(.callout, design: .rounded),
+                    color: surfaceText == nil && errorText != nil ? .secondary : .primary
                 )
             }
 
-            if expandedText != nil {
-                if isExpanded && !reflectionExpandedDisplayText.isEmpty {
+            if reflectionText != nil || guidanceText != nil {
+                if !reflectionDisplayText.isEmpty {
                     WordRevealText(
-                        text: reflectionExpandedDisplayText,
+                        text: reflectionDisplayText,
+                        font: .system(.callout, design: .rounded),
+                        color: .primary
+                    )
+                    .transition(.opacity)
+                }
+
+                if !guidanceDisplayText.isEmpty {
+                    WordRevealText(
+                        text: guidanceDisplayText,
                         font: .system(.callout, design: .rounded),
                         color: .secondary
                     )
@@ -227,8 +238,56 @@ struct MomentPreviewView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 24)
-        .animation(.smooth(duration: 0.36), value: reflectionPrimaryDisplayText)
-        .animation(.smooth(duration: 0.32), value: reflectionExpandedDisplayText)
+        .animation(.smooth(duration: 0.36), value: surfaceDisplayText)
+        .animation(.smooth(duration: 0.32), value: reflectionDisplayText)
+        .animation(.smooth(duration: 0.32), value: guidanceDisplayText)
+    }
+
+    private func previewScrollView(proxy: GeometryProxy, countdown: Countdown) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Color.clear
+                    .frame(height: headerTopSpacing(in: proxy))
+
+                momentHeader(for: countdown)
+                    .background(HeightMeasurementView(height: $headerHeight))
+
+                if shouldShowReflectionCard {
+                    reflectionCard
+                        .background(HeightMeasurementView(height: $reflectionHeight))
+
+                    if expansionStage < maxExpansionStage {
+                        Button {
+                            withAnimation(.smooth(duration: 0.32)) {
+                                expansionStage += 1
+                            }
+                        } label: {
+                            Image(systemName: "chevron.compact.down")
+                                .font(.system(size: 24, weight: .semibold))
+                                .foregroundStyle(.secondary)
+                                .frame(width: 44, height: 32)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .buttonStyle(.plain)
+                        .background(HeightMeasurementView(height: $expandButtonHeight))
+                    }
+                }
+
+                Spacer(minLength: 0)
+            }
+            .frame(minHeight: availableContentHeight(in: proxy), alignment: .top)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, showsBottomPrimaryAction ? 28 : 20)
+            .animation(.smooth(duration: 0.36), value: shouldShowReflectionCard)
+            .animation(.smooth(duration: 0.36), value: reflectionHeight)
+            .animation(.smooth(duration: 0.36), value: expandButtonHeight)
+            .background(
+                PreviewBottomEdgeEffectConfigurator(isEnabled: true)
+            )
+        }
+        .scrollIndicators(.hidden)
     }
 
     private func bottomPrimaryAction(for countdown: Countdown) -> some View {
@@ -256,6 +315,41 @@ struct MomentPreviewView: View {
         .disabled(isLoadingReflection)
     }
 
+    @available(iOS 26.0, *)
+    @ViewBuilder
+    private func makePreviewSafeAreaBarContent(for countdown: Countdown) -> some View {
+        if showsBottomPrimaryAction {
+            previewBottomBar(for: countdown)
+                .glassEffect(.regular, in: .rect(cornerRadius: 28))
+        } else {
+            Color.clear
+                .frame(height: 0)
+        }
+    }
+
+    @ViewBuilder
+    private func previewLegacyBottomOverlay(for countdown: Countdown) -> some View {
+        if showsBottomPrimaryAction {
+            VStack(spacing: 0) {
+                Spacer(minLength: 0)
+                previewBottomBar(for: countdown)
+                    .background(
+                        .ultraThinMaterial,
+                        in: RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    )
+                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.24 : 0.12), radius: 18, x: 0, y: 8)
+            }
+            .ignoresSafeArea(edges: .bottom)
+        }
+    }
+
+    private func previewBottomBar(for countdown: Countdown) -> some View {
+        bottomPrimaryAction(for: countdown)
+            .padding(.horizontal, 32)
+            .padding(.top, 12)
+            .padding(.bottom, 12)
+    }
+
     private func availableContentHeight(in proxy: GeometryProxy) -> CGFloat {
         let bottomInset: CGFloat = showsBottomPrimaryAction ? 108 : 0
         return max(proxy.size.height - bottomInset, 0)
@@ -273,16 +367,18 @@ struct MomentPreviewView: View {
 
         let extraBelowHeader =
             16 + reflectionHeight +
-            ((expandedText != nil && !isExpanded) ? (16 + expandButtonHeight) : 0)
+            ((expansionStage < maxExpansionStage) ? (16 + expandButtonHeight) : 0)
         let maxSpacingThatStillFits = max(availableContentHeight(in: proxy) - headerHeight - extraBelowHeader, 0)
 
         return min(centeredHeaderSpacing, maxSpacingThatStillFits)
     }
 
     private func generateReflection(for countdown: Countdown) {
-        if primaryText != nil {
+        if surfaceText != nil {
             withAnimation(.smooth(duration: 0.32)) {
-                isExpanded = true
+                if expansionStage < maxExpansionStage {
+                    expansionStage += 1
+                }
             }
             return
         }
@@ -295,16 +391,20 @@ struct MomentPreviewView: View {
                 let response = try await ReflectionService.shared.generateReflection(for: countdown, now: timerManager.currentTime)
                 await MainActor.run {
                     withAnimation(.smooth(duration: 0.36)) {
-                        primaryText = response.primary
-                        expandedText = response.expanded
+                        surfaceText = response.surface
+                        reflectionText = response.reflection
+                        guidanceText = response.guidance
                         isLoadingReflection = false
-                        isExpanded = false
+                        expansionStage = 0
                     }
                 }
                 try? repository.update(
                     countdown,
-                    reflectionPrimaryText: .some(response.primary),
-                    reflectionExpandedText: .some(response.expanded),
+                    reflectionSurfaceText: .some(response.surface),
+                    reflectionText: .some(response.reflection),
+                    reflectionGuidanceText: .some(response.guidance),
+                    reflectionPrimaryText: .some(nil),
+                    reflectionExpandedText: .some(nil),
                     reflectionGeneratedAt: .some(Date())
                 )
             } catch {
@@ -357,6 +457,47 @@ private struct HeightMeasurementView: View {
                     height = proxy.size.height
                 }
         }
+    }
+}
+
+private struct PreviewBottomEdgeEffectConfigurator: UIViewRepresentable {
+    let isEnabled: Bool
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView(frame: .zero)
+        view.isUserInteractionEnabled = false
+        view.backgroundColor = .clear
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        guard #available(iOS 26.0, *) else { return }
+
+        DispatchQueue.main.async {
+            guard let scrollView = uiView.enclosingScrollView() else { return }
+
+            scrollView.topEdgeEffect.isHidden = true
+            scrollView.leftEdgeEffect.isHidden = true
+            scrollView.rightEdgeEffect.isHidden = true
+            scrollView.bottomEdgeEffect.style = .soft
+            scrollView.bottomEdgeEffect.isHidden = !isEnabled
+        }
+    }
+}
+
+private extension UIView {
+    func enclosingScrollView() -> UIScrollView? {
+        var currentSuperview = superview
+
+        while let view = currentSuperview {
+            if let scrollView = view as? UIScrollView {
+                return scrollView
+            }
+
+            currentSuperview = view.superview
+        }
+
+        return nil
     }
 }
 
@@ -446,6 +587,9 @@ private struct LetterRevealText: View {
         .onAppear {
             restartReveal()
         }
+        .onChange(of: text) { _, _ in
+            restartReveal()
+        }
         .onDisappear {
             revealTask?.cancel()
         }
@@ -460,6 +604,62 @@ private struct LetterRevealText: View {
         revealTask = Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(45))
             revealedCharacterCount = characters.count
+        }
+    }
+}
+
+private struct AlternatingLetterRevealText: View {
+    let items: [String]
+    let font: Font
+    let color: Color
+
+    @State private var currentIndex = 0
+    @State private var cycleTask: Task<Void, Never>?
+
+    private var visibleItems: [String] {
+        let trimmed = items.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        return trimmed.filter { !$0.isEmpty }
+    }
+
+    var body: some View {
+        Group {
+            if let currentText = currentText {
+                LetterRevealText(
+                    text: currentText,
+                    font: font,
+                    color: color
+                )
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: 20, alignment: .center)
+        .task(id: visibleItems) {
+            startCycling()
+        }
+        .onDisappear {
+            cycleTask?.cancel()
+        }
+    }
+
+    private var currentText: String? {
+        guard !visibleItems.isEmpty else { return nil }
+        return visibleItems[currentIndex % visibleItems.count]
+    }
+
+    private func startCycling() {
+        cycleTask?.cancel()
+        currentIndex = 0
+
+        guard visibleItems.count > 1 else { return }
+
+        cycleTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(2.8))
+                guard !Task.isCancelled else { return }
+
+                await MainActor.run {
+                    currentIndex = (currentIndex + 1) % visibleItems.count
+                }
+            }
         }
     }
 }

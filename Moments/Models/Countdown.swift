@@ -14,6 +14,9 @@ struct Countdown: Identifiable, Hashable {
     var showDate: Bool               // whether to show the target date in the widget
     var sfSymbolName: String?        // optional SF Symbol shown on the widget
     var calendarEventIdentifier: String?
+    var reflectionSurfaceText: String?
+    var reflectionText: String?
+    var reflectionGuidanceText: String?
     var reflectionPrimaryText: String?
     var reflectionExpandedText: String?
     var reflectionGeneratedAt: Date?
