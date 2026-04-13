@@ -42,16 +42,7 @@ struct MomentPreviewScrollEdgeView: View {
                 .ignoresSafeArea()
 
             GeometryReader { proxy in
-                ScrollView {
-                    previewSections(for: countdown)
-                        .frame(maxWidth: .infinity, alignment: .top)
-                        .frame(minHeight: proxy.size.height, alignment: .top)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 28)
-                        .padding(.bottom, bottomContentPadding)
-                }
-                .scrollIndicators(.hidden)
-                .modifier(BottomScrollEdgeEffectModifier())
+                previewScrollView(for: countdown, viewportHeight: proxy.size.height)
             }
         }
 
@@ -91,6 +82,26 @@ struct MomentPreviewScrollEdgeView: View {
         .onChange(of: repository.countdowns) { _, _ in
             guard let updatedCountdown = self.countdown else { return }
             viewModel.syncSavedReflection(from: updatedCountdown)
+        }
+    }
+
+    @ViewBuilder
+    private func previewScrollView(for countdown: Countdown, viewportHeight: CGFloat) -> some View {
+        let scrollView = ScrollView {
+            previewSections(for: countdown)
+                .frame(maxWidth: .infinity, alignment: .top)
+                .frame(minHeight: viewportHeight, alignment: .top)
+                .padding(.horizontal, 20)
+                .padding(.top, 28)
+                .padding(.bottom, bottomContentPadding)
+        }
+        .scrollIndicators(.hidden)
+
+        if #available(iOS 26, *) {
+            scrollView
+                .scrollEdgeEffectStyle(.soft, for: .bottom)
+        } else {
+            scrollView
         }
     }
 
@@ -410,16 +421,10 @@ struct MomentPreviewScrollEdgeView: View {
     }
 
     private var bottomContentPadding: CGFloat {
-        28
-    }
-}
-
-private struct BottomScrollEdgeEffectModifier: ViewModifier {
-    func body(content: Content) -> some View {
         if #available(iOS 26, *) {
-            content.scrollEdgeEffectStyle(.soft, for: .bottom)
+            return 0
         } else {
-            content
+            return 28
         }
     }
 }
