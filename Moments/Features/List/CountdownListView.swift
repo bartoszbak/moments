@@ -67,7 +67,7 @@ struct CountdownListView: View {
                     Button {
                         showingSettings = true
                     } label: {
-                        Image(systemName: "plus.minus.capsule")
+                        Image(systemName: "ellipsis")
                             .fontWeight(.semibold)
                             .foregroundStyle(settingsButtonColor)
                     }

@@ -1,2 +1,5 @@
 Moments/Config.xcconfig
 .env.openrouter
+.DS_Store
+xcuserdata/
+*.xcuserstate
