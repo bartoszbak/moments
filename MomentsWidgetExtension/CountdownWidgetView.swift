@@ -33,12 +33,12 @@ struct CountdownWidgetView: View {
                 if let countdown = entry.countdown {
                     if let symbol = countdown.sfSymbolName {
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                            Text(metricValue(for: countdown))
                                 .font(.system(size: 24, weight: .bold, design: .rounded))
                                 .foregroundStyle(fgPrimary)
                                 .minimumScaleFactor(0.4)
                                 .lineLimit(1)
-                            Text(countdown.isExpired && !countdown.isToday ? "Days since" : "Days until")
+                            Text(metricTitle(for: countdown))
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundStyle(fgSecondary)
                         }
@@ -50,7 +50,7 @@ struct CountdownWidgetView: View {
                             .foregroundStyle(fgSecondary)
                             .padding(.top, 4)
                     } else {
-                        Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                        Text(metricValue(for: countdown))
                             .font(.system(size: 32, weight: .bold, design: .rounded))
                             .foregroundStyle(fgPrimary)
                             .minimumScaleFactor(0.4)
@@ -99,8 +99,8 @@ struct CountdownWidgetView: View {
                     progressBar(progress: countdown.barProgress)
                 }
 
-                if countdown.showDate {
-                    Text(countdown.targetDate.smartFormatted)
+                if countdown.showDate || countdown.isFutureManifestation {
+                    Text(countdown.isFutureManifestation ? "Manifest" : countdown.targetDate.smartFormatted)
                         .font(.system(.caption, design: .rounded))
                         .foregroundStyle(fgSecondary)
                         .padding(.top, countdown.isExpired ? 0 : 6)
@@ -120,12 +120,12 @@ struct CountdownWidgetView: View {
                 if let countdown = entry.countdown {
                     if let symbol = countdown.sfSymbolName {
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                            Text(metricValue(for: countdown))
                                 .font(.system(size: 24, weight: .bold, design: .rounded))
                                 .foregroundStyle(fgPrimary)
                                 .minimumScaleFactor(0.4)
                                 .lineLimit(1)
-                            Text(countdown.isExpired && !countdown.isToday ? "Days since" : "Days until")
+                            Text(metricTitle(for: countdown))
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundStyle(fgSecondary)
                         }
@@ -137,7 +137,7 @@ struct CountdownWidgetView: View {
                             .foregroundStyle(fgSecondary)
                             .padding(.top, 4)
                     } else {
-                        Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                        Text(metricValue(for: countdown))
                             .font(.system(size: 32, weight: .bold, design: .rounded))
                             .foregroundStyle(fgPrimary)
                             .minimumScaleFactor(0.4)
@@ -186,8 +186,8 @@ struct CountdownWidgetView: View {
                     progressBar(progress: countdown.barProgress)
                 }
 
-                if countdown.showDate {
-                    Text(countdown.targetDate.smartFormatted)
+                if countdown.showDate || countdown.isFutureManifestation {
+                    Text(countdown.isFutureManifestation ? "Manifest" : countdown.targetDate.smartFormatted)
                         .font(.system(.caption, design: .rounded))
                         .foregroundStyle(fgSecondary)
                         .padding(.top, countdown.isExpired ? 0 : 6)
@@ -325,13 +325,25 @@ struct CountdownWidgetView: View {
     }
 
     private func daysLabel(for countdown: WidgetCountdown) -> String {
+        if countdown.isFutureManifestation { return "Manifest" }
         if countdown.isToday { return "Today" }
         if countdown.isExpired { return "\(countdown.daysSince) days since" }
         return "\(countdown.daysUntil) days until"
     }
 
     private func relationLabel(for countdown: WidgetCountdown) -> String {
+        if countdown.isFutureManifestation { return "manifest" }
         countdown.isExpired && !countdown.isToday ? "since" : "until"
+    }
+
+    private func metricValue(for countdown: WidgetCountdown) -> String {
+        if countdown.isFutureManifestation { return "∞" }
+        return countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)"
+    }
+
+    private func metricTitle(for countdown: WidgetCountdown) -> String {
+        if countdown.isFutureManifestation { return "Manifest" }
+        return countdown.isExpired && !countdown.isToday ? "Days since" : "Days until"
     }
 
 }

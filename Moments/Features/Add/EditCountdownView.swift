@@ -15,6 +15,7 @@ struct EditCountdownView: View {
     @State private var startPercentage: Double = 1.0
     @State private var showDate: Bool = true
     @State private var showSymbol: Bool = false
+    @State private var isFutureManifestation = false
     @State private var sfSymbolName: String? = nil
     @State private var showSymbolPicker = false
     @State private var hasLoaded = false
@@ -28,6 +29,7 @@ struct EditCountdownView: View {
     }
 
     private var showsProgressIndicatorSection: Bool {
+        if isFutureManifestation { return false }
         Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
     }
 
@@ -46,7 +48,10 @@ struct EditCountdownView: View {
                     Text("Context for intelligence")
                 }
                 Section("Target Date") {
+                    Toggle("Future manifestation", isOn: $isFutureManifestation)
                     TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
+                        .opacity(isFutureManifestation ? 0.45 : 1)
+                        .disabled(isFutureManifestation)
                 }
                 BackgroundPickerSection(
                     selection: $background,
@@ -113,6 +118,7 @@ struct EditCountdownView: View {
                 }
                 startPercentage = countdown.startPercentage
                 showDate = countdown.showDate
+                isFutureManifestation = countdown.isFutureManifestation
                 sfSymbolName = countdown.sfSymbolName
                 showSymbol = countdown.sfSymbolName != nil
                 hasLoaded = true
@@ -131,6 +137,7 @@ struct EditCountdownView: View {
         let invalidatesReflection =
             trimmed != countdown.title ||
             normalizedTargetDate != Calendar.current.startOfDay(for: countdown.targetDate) ||
+            isFutureManifestation != countdown.isFutureManifestation ||
             normalizedDetails != countdown.detailsText
 
         var imagePath: String?? = nil
@@ -191,6 +198,7 @@ struct EditCountdownView: View {
             startPercentage: startPercentage,
             showDate: showDate,
             sfSymbolName: .some(sfSymbolName),
+            isFutureManifestation: isFutureManifestation,
             reflectionSurfaceText: invalidatesReflection ? .some(nil) : nil,
             reflectionText: invalidatesReflection ? .some(nil) : nil,
             reflectionGuidanceText: invalidatesReflection ? .some(nil) : nil,

@@ -87,6 +87,9 @@ struct CountdownTileView: View {
     }
 
     private var metricValueText: String {
+        if countdown.isFutureManifestation {
+            return "∞"
+        }
         if isToday {
             return "0"
         }
@@ -95,10 +98,16 @@ struct CountdownTileView: View {
     }
 
     private var metricCaptionText: String {
+        if countdown.isFutureManifestation {
+            return "Manifest"
+        }
         isExpired ? "Days since" : "Days until"
     }
 
     private var spokenMetricText: String {
+        if countdown.isFutureManifestation {
+            return "future manifestation"
+        }
         if isToday {
             return "0 days until"
         }
@@ -111,6 +120,9 @@ struct CountdownTileView: View {
     }
 
     private var accessibilityLabel: String {
-        "\(countdown.title), \(spokenMetricText), \(countdown.targetDate.smartFormatted)"
+        if countdown.isFutureManifestation {
+            return "\(countdown.title), \(spokenMetricText)"
+        }
+        return "\(countdown.title), \(spokenMetricText), \(countdown.targetDate.smartFormatted)"
     }
 }

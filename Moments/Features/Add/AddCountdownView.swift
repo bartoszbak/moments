@@ -36,6 +36,7 @@ struct AddCountdownView: View {
     @State private var showSymbol: Bool = false
     @State private var sfSymbolName: String? = nil
     @State private var showSymbolPicker = false
+    @State private var isFutureManifestation = false
     @State private var isCreating = false
     @State private var showTitleError = false
 
@@ -44,6 +45,7 @@ struct AddCountdownView: View {
     }
 
     private var showsProgressIndicatorSection: Bool {
+        if isFutureManifestation { return false }
         Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
     }
 
@@ -69,7 +71,10 @@ struct AddCountdownView: View {
                     Text("Context for intelligence")
                 }
                 Section("Target Date") {
+                    Toggle("Future manifestation", isOn: $isFutureManifestation)
                     TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
+                        .opacity(isFutureManifestation ? 0.45 : 1)
+                        .disabled(isFutureManifestation)
                 }
                 BackgroundPickerSection(
                     selection: $background
@@ -143,7 +148,8 @@ struct AddCountdownView: View {
                 backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
                 startPercentage: startPercentage,
                 showDate: showDate,
-                sfSymbolName: sfSymbolName
+                sfSymbolName: sfSymbolName,
+                isFutureManifestation: isFutureManifestation
             )
             AppHaptics.impact(.medium)
             dismiss()

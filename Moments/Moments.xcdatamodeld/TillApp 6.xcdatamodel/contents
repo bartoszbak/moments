@@ -9,6 +9,7 @@
         <attribute name="createdDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="detailsText" optional="YES" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isFutureManifestation" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="reflectionExpandedText" optional="YES" attributeType="String"/>
         <attribute name="reflectionGeneratedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="reflectionGuidanceText" optional="YES" attributeType="String"/>

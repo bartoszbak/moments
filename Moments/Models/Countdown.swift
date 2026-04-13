@@ -20,24 +20,29 @@ struct Countdown: Identifiable, Hashable {
     var reflectionPrimaryText: String?
     var reflectionExpandedText: String?
     var reflectionGeneratedAt: Date?
+    var isFutureManifestation: Bool
 
     func timeRemaining(from now: Date) -> TimeInterval {
+        if isFutureManifestation { return .infinity }
         let startOfNow = Calendar.current.startOfDay(for: now)
         let startOfTarget = Calendar.current.startOfDay(for: targetDate)
         return max(0, startOfTarget.timeIntervalSince(startOfNow))
     }
 
     func isToday(at now: Date, calendar: Calendar = .current) -> Bool {
+        if isFutureManifestation { return false }
         calendar.isDate(targetDate, inSameDayAs: now)
     }
 
     func isExpired(at now: Date, calendar: Calendar = .current) -> Bool {
+        if isFutureManifestation { return false }
         let startOfNow = calendar.startOfDay(for: now)
         let startOfTarget = calendar.startOfDay(for: targetDate)
         return startOfTarget < startOfNow
     }
 
     func daysUntil(from now: Date, calendar: Calendar = .current) -> Int {
+        if isFutureManifestation { return 0 }
         guard !isToday(at: now, calendar: calendar) else { return 0 }
         let startOfNow = calendar.startOfDay(for: now)
         let startOfTarget = calendar.startOfDay(for: targetDate)
@@ -45,6 +50,7 @@ struct Countdown: Identifiable, Hashable {
     }
 
     func daysSince(from now: Date, calendar: Calendar = .current) -> Int {
+        if isFutureManifestation { return 0 }
         guard !isToday(at: now, calendar: calendar) else { return 0 }
         let startOfNow = calendar.startOfDay(for: now)
         let startOfTarget = calendar.startOfDay(for: targetDate)
