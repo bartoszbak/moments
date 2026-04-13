@@ -1,0 +1,4 @@
+// Local developer overrides. This file is gitignored.
+// Paste your real OpenRouter key after the equals sign.
+OPENROUTER_API_KEY = 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
+OPENROUTER_MODEL = openai/gpt-4o-mini

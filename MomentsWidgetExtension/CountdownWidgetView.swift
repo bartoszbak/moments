@@ -7,18 +7,21 @@ struct CountdownWidgetView: View {
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
-        switch family {
-        case .accessoryCircular:
-            accessoryCircularView
-        case .accessoryRectangular:
-            accessoryRectangularView
-        case .accessoryInline:
-            accessoryInlineView
-        case .systemMedium:
-            mediumView
-        default:
-            smallView
+        Group {
+            switch family {
+            case .accessoryCircular:
+                accessoryCircularView
+            case .accessoryRectangular:
+                accessoryRectangularView
+            case .accessoryInline:
+                accessoryInlineView
+            case .systemMedium:
+                mediumView
+            default:
+                smallView
+            }
         }
+        .widgetURL(widgetDestinationURL)
     }
 
     // MARK: - Small
@@ -256,6 +259,11 @@ struct CountdownWidgetView: View {
     private var resolvedBackgroundColor: Color? {
         guard let hex = entry.countdown?.backgroundColorHex else { return nil }
         return Color(hex: hex)
+    }
+
+    private var widgetDestinationURL: URL? {
+        guard let countdown = entry.countdown else { return nil }
+        return MomentDeepLink.previewURL(for: countdown.id)
     }
 
     /// True when background is dark → use white text; false → use dark text.

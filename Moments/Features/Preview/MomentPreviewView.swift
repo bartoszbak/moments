@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct MomentPreviewView: View {
     let countdownID: UUID
@@ -49,6 +48,16 @@ struct MomentPreviewView: View {
                     .fontWeight(.medium)
                     .foregroundStyle(editButtonColor)
                 }
+
+                if #available(iOS 26, *) {
+                    if showsBottomPrimaryAction {
+                        ToolbarItemGroup(placement: .bottomBar) {
+                            Spacer()
+                            toolbarPrimaryAction(for: countdown)
+                            Spacer()
+                        }
+                    }
+                }
             }
             .sheet(isPresented: $showingEditSheet) {
                 EditCountdownView(countdownID: countdownID)
@@ -64,12 +73,6 @@ struct MomentPreviewView: View {
         Group {
             if #available(iOS 26, *) {
                 baseScreen
-                    .safeAreaBar(
-                        edge: .bottom,
-                        alignment: .center,
-                        spacing: 0,
-                        content: { makePreviewSafeAreaBarContent(for: countdown) }
-                    )
             } else {
                 baseScreen
                     .overlay(alignment: .bottom) {
@@ -164,6 +167,26 @@ struct MomentPreviewView: View {
 
     private var showsBottomPrimaryAction: Bool {
         surfaceText == nil && errorText == nil
+    }
+
+    private var bottomActionReservedHeight: CGFloat {
+        guard showsBottomPrimaryAction else { return 0 }
+
+        if #available(iOS 26, *) {
+            return 72
+        }
+
+        return 108
+    }
+
+    private var previewContentBottomPadding: CGFloat {
+        guard showsBottomPrimaryAction else { return 20 }
+
+        if #available(iOS 26, *) {
+            return 16
+        }
+
+        return 28
     }
 
     private var editButtonColor: Color {
@@ -279,13 +302,10 @@ struct MomentPreviewView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 20)
             .padding(.top, 20)
-            .padding(.bottom, showsBottomPrimaryAction ? 28 : 20)
+            .padding(.bottom, previewContentBottomPadding)
             .animation(.smooth(duration: 0.36), value: shouldShowReflectionCard)
             .animation(.smooth(duration: 0.36), value: reflectionHeight)
             .animation(.smooth(duration: 0.36), value: expandButtonHeight)
-            .background(
-                PreviewBottomEdgeEffectConfigurator(isEnabled: true)
-            )
         }
         .scrollIndicators(.hidden)
     }
@@ -316,15 +336,22 @@ struct MomentPreviewView: View {
     }
 
     @available(iOS 26.0, *)
-    @ViewBuilder
-    private func makePreviewSafeAreaBarContent(for countdown: Countdown) -> some View {
-        if showsBottomPrimaryAction {
-            previewBottomBar(for: countdown)
-                .glassEffect(.regular, in: .rect(cornerRadius: 28))
-        } else {
-            Color.clear
-                .frame(height: 0)
+    private func toolbarPrimaryAction(for countdown: Countdown) -> some View {
+        Button(action: { generateReflection(for: countdown) }) {
+            Group {
+                if isLoadingReflection {
+                    ProgressView()
+                        .controlSize(.regular)
+                        .frame(minWidth: 28)
+                } else {
+                    Text(primaryActionButtonTitle(for: countdown))
+                        .font(.headline.weight(.semibold))
+                }
+            }
         }
+        .tint(primaryButtonColor)
+        .buttonStyle(.glassProminent)
+        .disabled(isLoadingReflection)
     }
 
     @ViewBuilder
@@ -351,14 +378,13 @@ struct MomentPreviewView: View {
     }
 
     private func availableContentHeight(in proxy: GeometryProxy) -> CGFloat {
-        let bottomInset: CGFloat = showsBottomPrimaryAction ? 108 : 0
-        return max(proxy.size.height - bottomInset, 0)
+        max(proxy.size.height - bottomActionReservedHeight, 0)
     }
 
     private func headerTopSpacing(in proxy: GeometryProxy) -> CGFloat {
         guard headerHeight > 0 else { return 0 }
 
-        let referenceHeight = max(proxy.size.height - 108, 0)
+        let referenceHeight = max(proxy.size.height - bottomActionReservedHeight, 0)
         let centeredHeaderSpacing = max((referenceHeight - headerHeight) / 2, 0)
 
         guard shouldShowReflectionCard else {
@@ -457,47 +483,6 @@ private struct HeightMeasurementView: View {
                     height = proxy.size.height
                 }
         }
-    }
-}
-
-private struct PreviewBottomEdgeEffectConfigurator: UIViewRepresentable {
-    let isEnabled: Bool
-
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView(frame: .zero)
-        view.isUserInteractionEnabled = false
-        view.backgroundColor = .clear
-        return view
-    }
-
-    func updateUIView(_ uiView: UIView, context: Context) {
-        guard #available(iOS 26.0, *) else { return }
-
-        DispatchQueue.main.async {
-            guard let scrollView = uiView.enclosingScrollView() else { return }
-
-            scrollView.topEdgeEffect.isHidden = true
-            scrollView.leftEdgeEffect.isHidden = true
-            scrollView.rightEdgeEffect.isHidden = true
-            scrollView.bottomEdgeEffect.style = .soft
-            scrollView.bottomEdgeEffect.isHidden = !isEnabled
-        }
-    }
-}
-
-private extension UIView {
-    func enclosingScrollView() -> UIScrollView? {
-        var currentSuperview = superview
-
-        while let view = currentSuperview {
-            if let scrollView = view as? UIScrollView {
-                return scrollView
-            }
-
-            currentSuperview = view.superview
-        }
-
-        return nil
     }
 }
 

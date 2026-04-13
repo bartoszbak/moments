@@ -16,6 +16,7 @@ struct CountdownListView: View {
     @State private var showingSettings = false
     @State private var showingIntroSheet = false
     @State private var selectedFilter: CountdownFilter = .all
+    @Binding var deepLinkedCountdownID: UUID?
     private let gridColumns = [
         GridItem(.flexible(), spacing: 16),
         GridItem(.flexible(), spacing: 16)
@@ -96,7 +97,7 @@ struct CountdownListView: View {
                 }
             }
             .navigationDestination(item: $previewingCountdown) { countdown in
-                MomentPreviewView(countdownID: countdown.id)
+                MomentPreviewScrollEdgeView(countdownID: countdown.id)
             }
         }
         .onChange(of: selectedFilter) {
@@ -107,8 +108,15 @@ struct CountdownListView: View {
                 showingIntroSheet = true
             }
         }
+        .onChange(of: deepLinkedCountdownID) { _, _ in
+            openDeepLinkedCountdownIfNeeded()
+        }
+        .onChange(of: repository.countdowns) { _, _ in
+            openDeepLinkedCountdownIfNeeded()
+        }
         .task {
             showingIntroSheet = !hasSeenIntroSheet || forceIntroSheetOnLaunch
+            openDeepLinkedCountdownIfNeeded()
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
@@ -127,6 +135,17 @@ struct CountdownListView: View {
     private func delete(_ countdown: Countdown) {
         try? repository.delete(countdown)
         AppHaptics.impact(.medium)
+    }
+
+    private func openDeepLinkedCountdownIfNeeded() {
+        guard let id = deepLinkedCountdownID,
+              let countdown = repository.countdowns.first(where: { $0.id == id })
+        else {
+            return
+        }
+
+        previewingCountdown = countdown
+        deepLinkedCountdownID = nil
     }
 
     @ViewBuilder
@@ -342,7 +361,7 @@ private enum CountdownFilter: String, CaseIterable, Identifiable {
 }
 
 #Preview {
-    CountdownListView()
+    CountdownListView(deepLinkedCountdownID: .constant(nil))
         .environmentObject(CountdownRepository(
             viewContext: PersistenceController.preview.container.viewContext,
             backgroundContext: PersistenceController.preview.newBackgroundContext()

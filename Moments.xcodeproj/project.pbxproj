@@ -23,10 +23,11 @@
 		551B5A74EC8931D0244BDCFA /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295B4F955515A909874DCDF6 /* CalendarService.swift */; };
 		5CFD43AC5166E06B4C4B87CB /* CountdownListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A878F14CB50B697ADBFCEDD5 /* CountdownListView.swift */; };
 		5E406BAB2EE7A0FA7BC88CA2 /* ProgressStartPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FD789458F240ED033C1398 /* ProgressStartPickerSection.swift */; };
+		61A2B3C4D5E6F708192A3B4C /* MomentDeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A2B3C4D5E6F708192A3B4B /* MomentDeepLink.swift */; };
+		61A2B3C4D5E6F708192A3B4D /* MomentDeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A2B3C4D5E6F708192A3B4B /* MomentDeepLink.swift */; };
 		666B2CDFDDECBB03B29C1C9C /* MomentsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3143AF35092DD5FA8CA97B19 /* MomentsApp.swift */; };
 		6768E6FC173F385292FDC5EB /* Moments.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9540726F389C28BEEAAF2446 /* Moments.xcdatamodeld */; };
 		68FD4858BC20A66321F6D2AA /* WidgetCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */; };
-		A1B2C3D4E5F60718293A4B5C /* MomentPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */; };
 		6A462D0AC9B180F1316ABDA9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27945F4762D1F80FF5B93926 /* SwiftUI.framework */; };
 		72915A86997186404BD35329 /* Countdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565D10A492681A7C42E01C6 /* Countdown.swift */; };
 		747E493CAC4F6A0F3BD39B3C /* BackgroundPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFE51D898B86FE8EEE527CA /* BackgroundPickerSection.swift */; };
@@ -35,10 +36,13 @@
 		7D133EA404D55FF5AE5B0C24 /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355DA3487DC073A60B6857A7 /* ColorPalette.swift */; };
 		7DE45262ECCA220057ED3193 /* SFSymbolPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55909B66699820B699EED0F6 /* SFSymbolPickerView.swift */; };
 		7DE5E2E5F4C592064ABEFE89 /* CountdownEntity+Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B8E850029658CE606FCFD8 /* CountdownEntity+Mapping.swift */; };
+		8B11C0A1D2E3F40516273849 /* MomentPreviewScrollEdgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C22D1B2E3F4051627384950 /* MomentPreviewScrollEdgeView.swift */; };
+		8B11C0A1D2E3F40516273850 /* MomentPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C22D1B2E3F4051627384951 /* MomentPreviewViewModel.swift */; };
 		8FD3EE9907EE0F6EA1A98943 /* ImageStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1FE3C03AE21E0C2F0563E3 /* ImageStorageService.swift */; };
 		9CEA28060EB697D45D69F140 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDD7F362590382735CAFACE /* WidgetKit.framework */; };
 		A113A8D7FC7216CF0149F607 /* CountdownWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D212718BD9096D60168E8BC /* CountdownWidgetView.swift */; };
 		A13786BFC0E5C2118EA783D6 /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */; };
+		A1B2C3D4E5F60718293A4B5C /* MomentPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */; };
 		AE02A368854B537AD1723011 /* CountdownRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA841B2553A2BA3491EF4E3 /* CountdownRowView.swift */; };
 		AE7DD78D38B008A7FA9DF128 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */; };
 		AF12BC34DE56F78901234567 /* system.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234565 /* system.txt */; };
@@ -83,7 +87,7 @@
 		1661F8FD807EB75471F4EC72 /* Moments.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Moments.entitlements; sourceTree = "<group>"; };
 		16B8E850029658CE606FCFD8 /* CountdownEntity+Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CountdownEntity+Mapping.swift"; sourceTree = "<group>"; };
 		16DD7DFA0319BC50C9174291 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		1810B5E3A4474B24B7421C61 /* SharedConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SharedConfig.xcconfig; sourceTree = "<group>"; };
+		1810B5E3A4474B24B7421C61 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		1C9F44D2A4B64729B8C2D3E4 /* IntroSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroSheetView.swift; sourceTree = "<group>"; };
 		1F1FE3C03AE21E0C2F0563E3 /* ImageStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorageService.swift; sourceTree = "<group>"; };
 		1F322964288F951F948ED9E3 /* TillApp 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 3.xcdatamodel"; sourceTree = "<group>"; };
@@ -98,16 +102,19 @@
 		4D212718BD9096D60168E8BC /* CountdownWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownWidgetView.swift; sourceTree = "<group>"; };
 		503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+SmartFormat.swift"; sourceTree = "<group>"; };
 		55909B66699820B699EED0F6 /* SFSymbolPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbolPickerView.swift; sourceTree = "<group>"; };
+		61A2B3C4D5E6F708192A3B4B /* MomentDeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentDeepLink.swift; sourceTree = "<group>"; };
 		5D4F941463FA621F50ECB980 /* TillApp 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 2.xcdatamodel"; sourceTree = "<group>"; };
 		641EF3FC55AFA909DB257418 /* MomentsWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentsWidgetBundle.swift; sourceTree = "<group>"; };
 		6795018E13A078626EFE240C /* DeveloperMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMenuView.swift; sourceTree = "<group>"; };
 		72D50D912CD761E02900BE22 /* TillApp 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 4.xcdatamodel"; sourceTree = "<group>"; };
-		9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 5.xcdatamodel"; sourceTree = "<group>"; };
-		A7B8C9D0E1F23456789ABCDE /* TillApp 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 6.xcdatamodel"; sourceTree = "<group>"; };
 		7BF9FB726E1D289FBBC53F5C /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
 		81644C993BB4FF389537E4C4 /* SharedDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataStore.swift; sourceTree = "<group>"; };
 		914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownAppEntity.swift; sourceTree = "<group>"; };
+		9C22D1B2E3F4051627384950 /* MomentPreviewScrollEdgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewScrollEdgeView.swift; sourceTree = "<group>"; };
+		9C22D1B2E3F4051627384951 /* MomentPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewViewModel.swift; sourceTree = "<group>"; };
+		9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 5.xcdatamodel"; sourceTree = "<group>"; };
 		A454604EA8126CA30C88E46A /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
+		A7B8C9D0E1F23456789ABCDE /* TillApp 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 6.xcdatamodel"; sourceTree = "<group>"; };
 		A878F14CB50B697ADBFCEDD5 /* CountdownListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownListView.swift; sourceTree = "<group>"; };
 		A8F2FD4B2E62CCE92B56AE89 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AF12BC34DE56F78901234565 /* system.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = system.txt; sourceTree = "<group>"; };
@@ -119,8 +126,8 @@
 		C565D10A492681A7C42E01C6 /* Countdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Countdown.swift; sourceTree = "<group>"; };
 		C893FD9BAC0B25110AE1FA17 /* EditCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCountdownView.swift; sourceTree = "<group>"; };
 		D032B9A9BACA5B224295B2E4 /* Moments.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Moments.entitlements; sourceTree = "<group>"; };
-		D27D809EF8B82CF274B52103 /* TillApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TillApp.xcdatamodel; sourceTree = "<group>"; };
 		D1E2F30415263748A9B5C6D7 /* ReflectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectionService.swift; sourceTree = "<group>"; };
+		D27D809EF8B82CF274B52103 /* TillApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TillApp.xcdatamodel; sourceTree = "<group>"; };
 		D6C70200D860A729B74D9CB5 /* AddCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCountdownView.swift; sourceTree = "<group>"; };
 		DBFA2E1C9FADC24754179453 /* Moments.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moments.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2FD789458F240ED033C1398 /* ProgressStartPickerSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStartPickerSection.swift; sourceTree = "<group>"; };
@@ -228,6 +235,15 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		A11498920150032D8C7C6C4D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				27945F4762D1F80FF5B93926 /* SwiftUI.framework */,
+				EBDD7F362590382735CAFACE /* WidgetKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		AF12BC34DE56F78901234563 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -246,28 +262,11 @@
 			path = Prompts;
 			sourceTree = "<group>";
 		};
-		E1F2031425364758697A8B9C /* Preview */ = {
-			isa = PBXGroup;
-			children = (
-				C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */,
-			);
-			path = Preview;
-			sourceTree = "<group>";
-		};
-		A11498920150032D8C7C6C4D /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				27945F4762D1F80FF5B93926 /* SwiftUI.framework */,
-				EBDD7F362590382735CAFACE /* WidgetKit.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		BFDE012D4F382C26E35B93CA /* Moments */ = {
 			isa = PBXGroup;
 			children = (
 				F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */,
-				1810B5E3A4474B24B7421C61 /* SharedConfig.xcconfig */,
+				1810B5E3A4474B24B7421C61 /* Config.xcconfig */,
 				16DD7DFA0319BC50C9174291 /* Info.plist */,
 				D032B9A9BACA5B224295B2E4 /* Moments.entitlements */,
 				3143AF35092DD5FA8CA97B19 /* MomentsApp.swift */,
@@ -298,6 +297,16 @@
 				C565D10A492681A7C42E01C6 /* Countdown.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		E1F2031425364758697A8B9C /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				9C22D1B2E3F4051627384950 /* MomentPreviewScrollEdgeView.swift */,
+				C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */,
+				9C22D1B2E3F4051627384951 /* MomentPreviewViewModel.swift */,
+			);
+			path = Preview;
 			sourceTree = "<group>";
 		};
 		E5F9BF08D7D46E37915E0E0C /* Extensions */ = {
@@ -331,6 +340,7 @@
 			children = (
 				A454604EA8126CA30C88E46A /* Color+Hex.swift */,
 				503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */,
+				61A2B3C4D5E6F708192A3B4B /* MomentDeepLink.swift */,
 				81644C993BB4FF389537E4C4 /* SharedDataStore.swift */,
 				B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */,
 			);
@@ -437,6 +447,7 @@
 				0B8A6D770A4E8F0AB235FE7A /* Color+Hex.swift in Sources */,
 				275C10D882BC0DC41D5027FC /* CountdownAppEntity.swift in Sources */,
 				47FA59083373337CB08AC3BD /* CountdownProvider.swift in Sources */,
+				61A2B3C4D5E6F708192A3B4D /* MomentDeepLink.swift in Sources */,
 				A113A8D7FC7216CF0149F607 /* CountdownWidgetView.swift in Sources */,
 				E012AD4BC4192EA5F83B9E8D /* Date+SmartFormat.swift in Sources */,
 				C7DAAECDC98D8B1685AC8311 /* MomentsWidgetBundle.swift in Sources */,
@@ -465,8 +476,11 @@
 				101945C06C7DAD4A4D717B31 /* EditCountdownView.swift in Sources */,
 				8FD3EE9907EE0F6EA1A98943 /* ImageStorageService.swift in Sources */,
 				0C6A38A3F3A94AB4B5A5A5A5 /* IntroSheetView.swift in Sources */,
+				61A2B3C4D5E6F708192A3B4C /* MomentDeepLink.swift in Sources */,
 				6768E6FC173F385292FDC5EB /* Moments.xcdatamodeld in Sources */,
+				8B11C0A1D2E3F40516273849 /* MomentPreviewScrollEdgeView.swift in Sources */,
 				A1B2C3D4E5F60718293A4B5C /* MomentPreviewView.swift in Sources */,
+				8B11C0A1D2E3F40516273850 /* MomentPreviewViewModel.swift in Sources */,
 				666B2CDFDDECBB03B29C1C9C /* MomentsApp.swift in Sources */,
 				4C2BA38CE636B3E4A6F5A197 /* PersistenceController.swift in Sources */,
 				5E406BAB2EE7A0FA7BC88CA2 /* ProgressStartPickerSection.swift in Sources */,
@@ -640,7 +654,7 @@
 		};
 		82A763699C4D80B1A7125403 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1810B5E3A4474B24B7421C61 /* SharedConfig.xcconfig */;
+			baseConfigurationReference = 1810B5E3A4474B24B7421C61 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
@@ -681,7 +695,7 @@
 		};
 		FBA3D172D26C40F1402D20DD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1810B5E3A4474B24B7421C61 /* SharedConfig.xcconfig */;
+			baseConfigurationReference = 1810B5E3A4474B24B7421C61 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;

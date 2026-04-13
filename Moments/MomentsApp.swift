@@ -70,12 +70,16 @@ private extension UIFont {
 
 private struct AppThemeRootView: View {
     @Environment(\.colorScheme) private var colorScheme
+    @State private var deepLinkedCountdownID: UUID?
 
     var body: some View {
-        CountdownListView()
+        CountdownListView(deepLinkedCountdownID: $deepLinkedCountdownID)
             .tint(.blue)
             .toggleStyle(AppSwitchToggleStyle(tint: .blue, colorScheme: colorScheme))
             .fontDesign(.rounded)
+            .onOpenURL { url in
+                deepLinkedCountdownID = MomentDeepLink.countdownID(from: url)
+            }
     }
 }
 

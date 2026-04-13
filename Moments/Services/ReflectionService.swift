@@ -16,6 +16,7 @@ final class ReflectionService {
 
         var request = URLRequest(url: URL(string: "https://openrouter.ai/api/v1/chat/completions")!)
         request.httpMethod = "POST"
+        request.timeoutInterval = 30
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
 
@@ -46,7 +47,26 @@ final class ReflectionService {
         )
         request.httpBody = try JSONEncoder().encode(payload)
 
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, response): (Data, URLResponse)
+
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch {
+            throw ReflectionError.transport(error)
+        }
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw ReflectionError.invalidResponse
+        }
+
+        guard 200 ..< 300 ~= httpResponse.statusCode else {
+            let serviceMessage = try? JSONDecoder().decode(OpenRouterErrorResponse.self, from: data)
+            throw ReflectionError.requestFailed(
+                statusCode: httpResponse.statusCode,
+                message: serviceMessage?.error.message
+            )
+        }
+
         let decoded = try JSONDecoder().decode(OpenRouterResponse.self, from: data)
         guard let content = decoded.choices.first?.message.content.data(using: .utf8) else {
             throw ReflectionError.emptyResponse
@@ -117,15 +137,43 @@ private enum ReflectionPrompt {
 
 private enum AppSecrets {
     static var openRouterAPIKey: String? {
-        ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"]
-            ?? Bundle.main.object(forInfoDictionaryKey: "OPENROUTER_API_KEY") as? String
+        normalizedSecret(
+            ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"]
+                ?? Bundle.main.object(forInfoDictionaryKey: "OPENROUTER_API_KEY") as? String
+        )
     }
 
     static var openRouterModel: String {
-        (ProcessInfo.processInfo.environment["OPENROUTER_MODEL"]
-         ?? Bundle.main.object(forInfoDictionaryKey: "OPENROUTER_MODEL") as? String)
-            ?? "openai/gpt-4o-mini"
+        let resolvedModel =
+            ProcessInfo.processInfo.environment["OPENROUTER_MODEL"]
+            ?? Bundle.main.object(forInfoDictionaryKey: "OPENROUTER_MODEL") as? String
+
+        let trimmed = resolvedModel?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if let trimmed,
+           !trimmed.isEmpty,
+           !trimmed.contains("$(") {
+            return trimmed
+        }
+
+        return "openai/gpt-4o-mini"
     }
+
+    private static func normalizedSecret(_ value: String?) -> String? {
+        guard let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !trimmed.isEmpty,
+              !trimmed.contains("$("),
+              !placeholderSecrets.contains(trimmed) else {
+            return nil
+        }
+
+        return trimmed
+    }
+
+    private static let placeholderSecrets: Set<String> = [
+        "sk-or-v1-your-key",
+        "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"
+    ]
 }
 
 struct ReflectionOutput: Decodable {
@@ -137,6 +185,34 @@ struct ReflectionOutput: Decodable {
 enum ReflectionError: Error {
     case missingAPIKey
     case emptyResponse
+    case invalidResponse
+    case requestFailed(statusCode: Int, message: String?)
+    case transport(Error)
+}
+
+extension ReflectionError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .missingAPIKey:
+            return "AI generation is not configured. Add a real OPENROUTER_API_KEY in Moments/Config.xcconfig."
+        case .emptyResponse:
+            return "The AI service returned an empty response."
+        case .invalidResponse:
+            return "The AI service returned an invalid response."
+        case let .requestFailed(statusCode, message):
+            if statusCode == 401 || statusCode == 403 {
+                return "The OpenRouter key was rejected. Check OPENROUTER_API_KEY."
+            }
+
+            if let message, !message.isEmpty {
+                return "AI request failed: \(message)"
+            }
+
+            return "AI request failed with status \(statusCode)."
+        case .transport:
+            return "Could not reach the AI service."
+        }
+    }
 }
 
 private struct OpenRouterRequest: Encodable {
@@ -198,4 +274,12 @@ private struct OpenRouterResponse: Decodable {
     }
 
     let choices: [Choice]
+}
+
+private struct OpenRouterErrorResponse: Decodable {
+    struct ErrorBody: Decodable {
+        let message: String
+    }
+
+    let error: ErrorBody
 }
