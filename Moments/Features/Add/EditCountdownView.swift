@@ -15,6 +15,7 @@ struct EditCountdownView: View {
     @State private var startPercentage: Double = 1.0
     @State private var showDate: Bool = true
     @State private var showSymbol: Bool = false
+    @State private var isFutureManifestation = false
     @State private var sfSymbolName: String? = nil
     @State private var showSymbolPicker = false
     @State private var hasLoaded = false
@@ -28,7 +29,8 @@ struct EditCountdownView: View {
     }
 
     private var showsProgressIndicatorSection: Bool {
-        Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
+        if isFutureManifestation { return false }
+        return Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
     }
 
     var body: some View {
@@ -36,17 +38,21 @@ struct EditCountdownView: View {
             Form {
                 Section("Title") {
                     TextField("Countdown name", text: $title)
-                }
-                Section {
-                    TextField("Optional", text: $detailsText, axis: .vertical)
-                        .lineLimit(3...6)
-                } header: {
-                    Text("Description")
-                } footer: {
-                    Text("Context for intelligence")
+                    NavigationLink {
+                        MomentDescriptionEditorView(text: $detailsText)
+                    } label: {
+                        LabeledContent("Description") {
+                            Text(detailsActionTitle)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.tint)
+                        }
+                    }
                 }
                 Section("Target Date") {
-                    TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
+                    Toggle("Future manifestation", isOn: $isFutureManifestation)
+                    if !isFutureManifestation {
+                        TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
+                    }
                 }
                 BackgroundPickerSection(
                     selection: $background,
@@ -85,11 +91,19 @@ struct EditCountdownView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                        .foregroundStyle(toolbarButtonColor)
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .accessibilityLabel("Cancel")
+                    .foregroundStyle(toolbarButtonColor)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save", action: save)
+                    Button(action: save) {
+                        Image(systemName: "checkmark")
+                    }
+                        .accessibilityLabel("Save")
                         .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         .fontWeight(.semibold)
                         .foregroundStyle(toolbarButtonColor)
@@ -113,6 +127,7 @@ struct EditCountdownView: View {
                 }
                 startPercentage = countdown.startPercentage
                 showDate = countdown.showDate
+                isFutureManifestation = countdown.isFutureManifestation
                 sfSymbolName = countdown.sfSymbolName
                 showSymbol = countdown.sfSymbolName != nil
                 hasLoaded = true
@@ -131,6 +146,7 @@ struct EditCountdownView: View {
         let invalidatesReflection =
             trimmed != countdown.title ||
             normalizedTargetDate != Calendar.current.startOfDay(for: countdown.targetDate) ||
+            isFutureManifestation != countdown.isFutureManifestation ||
             normalizedDetails != countdown.detailsText
 
         var imagePath: String?? = nil
@@ -196,7 +212,8 @@ struct EditCountdownView: View {
             reflectionGuidanceText: invalidatesReflection ? .some(nil) : nil,
             reflectionPrimaryText: invalidatesReflection ? .some(nil) : nil,
             reflectionExpandedText: invalidatesReflection ? .some(nil) : nil,
-            reflectionGeneratedAt: invalidatesReflection ? .some(nil) : nil
+            reflectionGeneratedAt: invalidatesReflection ? .some(nil) : nil,
+            isFutureManifestation: isFutureManifestation
         )
         AppHaptics.impact(.light)
         dismiss()
@@ -223,5 +240,9 @@ struct EditCountdownView: View {
 
     private var toolbarButtonColor: Color {
         effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var detailsActionTitle: String {
+        detailsText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Add" : "Edit"
     }
 }

@@ -64,7 +64,8 @@ final class CountdownRepository: NSObject, ObservableObject {
                 backgroundImagePath: sharedImagePath,
                 startPercentage: countdown.startPercentage,
                 showDate: countdown.showDate,
-                sfSymbolName: countdown.sfSymbolName
+                sfSymbolName: countdown.sfSymbolName,
+                isFutureManifestation: countdown.isFutureManifestation
             )
         }
 
@@ -166,7 +167,8 @@ final class CountdownRepository: NSObject, ObservableObject {
         reflectionGuidanceText: String? = nil,
         reflectionPrimaryText: String? = nil,
         reflectionExpandedText: String? = nil,
-        reflectionGeneratedAt: Date? = nil
+        reflectionGeneratedAt: Date? = nil,
+        isFutureManifestation: Bool = false
     ) throws {
         let context = backgroundContext
         let colorIndex = backgroundColorIndex
@@ -193,10 +195,11 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.reflectionPrimaryText = reflectionPrimaryText
             entity.reflectionExpandedText = reflectionExpandedText
             entity.reflectionGeneratedAt = reflectionGeneratedAt
+            entity.isFutureManifestation = isFutureManifestation
             try context.save()
         }
 
-        guard isCalendarIntegrationEnabled else { return }
+        guard isCalendarIntegrationEnabled, !isFutureManifestation else { return }
 
         let countdown = Countdown(
             id: id,
@@ -217,7 +220,8 @@ final class CountdownRepository: NSObject, ObservableObject {
             reflectionGuidanceText: reflectionGuidanceText,
             reflectionPrimaryText: reflectionPrimaryText,
             reflectionExpandedText: reflectionExpandedText,
-            reflectionGeneratedAt: reflectionGeneratedAt
+            reflectionGeneratedAt: reflectionGeneratedAt,
+            isFutureManifestation: isFutureManifestation
         )
 
         Task { @MainActor in
@@ -246,7 +250,8 @@ final class CountdownRepository: NSObject, ObservableObject {
         reflectionGuidanceText: String?? = nil,
         reflectionPrimaryText: String?? = nil,
         reflectionExpandedText: String?? = nil,
-        reflectionGeneratedAt: Date?? = nil
+        reflectionGeneratedAt: Date?? = nil,
+        isFutureManifestation: Bool? = nil
     ) throws {
         let id = countdown.id
         let context = backgroundContext
@@ -287,6 +292,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let newReflectionPrimaryText { entity.reflectionPrimaryText = newReflectionPrimaryText }
             if let newReflectionExpandedText { entity.reflectionExpandedText = newReflectionExpandedText }
             if let newReflectionGeneratedAt { entity.reflectionGeneratedAt = newReflectionGeneratedAt }
+            if let isFutureManifestation { entity.isFutureManifestation = isFutureManifestation }
             try context.save()
         }
 
@@ -342,10 +348,18 @@ final class CountdownRepository: NSObject, ObservableObject {
             reflectionGeneratedAt: resolvedValue(
                 existing: countdown.reflectionGeneratedAt,
                 update: reflectionGeneratedAt
-            )
+            ),
+            isFutureManifestation: isFutureManifestation ?? countdown.isFutureManifestation
         )
 
-        if let eventIdentifier = countdown.calendarEventIdentifier {
+        if updatedCountdown.isFutureManifestation {
+            if let eventIdentifier = countdown.calendarEventIdentifier {
+                Task { @MainActor in
+                    await calendarService.deleteEvent(identifier: eventIdentifier)
+                    try? self.updateCalendarIdentifier(id: countdown.id, eventIdentifier: nil)
+                }
+            }
+        } else if let eventIdentifier = countdown.calendarEventIdentifier {
             Task { @MainActor in
                 await calendarService.updateEvent(identifier: eventIdentifier, for: updatedCountdown)
             }

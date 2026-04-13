@@ -27,18 +27,23 @@ struct CountdownWidgetView: View {
     // MARK: - Small
 
     private var smallView: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        if let countdown = entry.countdown, countdown.isFutureManifestation {
+            return AnyView(manifestationWidgetView(countdown: countdown, titleBottomPadding: 4))
+        }
+
+        return AnyView(
+            VStack(alignment: .leading, spacing: 0) {
             // Top row: big number (+ subtitle when symbol shown) + label or symbol
             HStack(alignment: .top, spacing: 4) {
                 if let countdown = entry.countdown {
                     if let symbol = countdown.sfSymbolName {
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                            Text(metricValue(for: countdown))
                                 .font(.system(size: 24, weight: .bold, design: .rounded))
                                 .foregroundStyle(fgPrimary)
                                 .minimumScaleFactor(0.4)
                                 .lineLimit(1)
-                            Text(countdown.isExpired && !countdown.isToday ? "Days since" : "Days until")
+                            Text(metricTitle(for: countdown))
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundStyle(fgSecondary)
                         }
@@ -50,7 +55,7 @@ struct CountdownWidgetView: View {
                             .foregroundStyle(fgSecondary)
                             .padding(.top, 4)
                     } else {
-                        Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                        Text(metricValue(for: countdown))
                             .font(.system(size: 32, weight: .bold, design: .rounded))
                             .foregroundStyle(fgPrimary)
                             .minimumScaleFactor(0.4)
@@ -60,12 +65,14 @@ struct CountdownWidgetView: View {
 
                         Spacer()
 
-                        VStack(alignment: .trailing, spacing: 0) {
-                            Text("Days")
-                            Text(relationLabel(for: countdown))
+                        if !countdown.isFutureManifestation {
+                            VStack(alignment: .trailing, spacing: 0) {
+                                Text("Days")
+                                Text(relationLabel(for: countdown))
+                            }
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(fgSecondary)
                         }
-                        .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(fgSecondary)
                     }
                 } else {
                     Text("—")
@@ -95,11 +102,11 @@ struct CountdownWidgetView: View {
                     .truncationMode(.tail)
                     .padding(.bottom, 6)
 
-                if !countdown.isExpired {
+                if !countdown.isExpired && !countdown.isFutureManifestation {
                     progressBar(progress: countdown.barProgress)
                 }
 
-                if countdown.showDate {
+                if countdown.showDate && !countdown.isFutureManifestation {
                     Text(countdown.targetDate.smartFormatted)
                         .font(.system(.caption, design: .rounded))
                         .foregroundStyle(fgSecondary)
@@ -109,23 +116,29 @@ struct CountdownWidgetView: View {
         }
         .padding(1)
         .containerBackground(for: .widget) { containerBackground }
+        )
     }
 
     // MARK: - Medium
 
     private var mediumView: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        if let countdown = entry.countdown, countdown.isFutureManifestation {
+            return AnyView(manifestationWidgetView(countdown: countdown, titleBottomPadding: 6))
+        }
+
+        return AnyView(
+            VStack(alignment: .leading, spacing: 0) {
             // Top row: big number + label or symbol
             HStack(alignment: .top, spacing: 4) {
                 if let countdown = entry.countdown {
                     if let symbol = countdown.sfSymbolName {
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                            Text(metricValue(for: countdown))
                                 .font(.system(size: 24, weight: .bold, design: .rounded))
                                 .foregroundStyle(fgPrimary)
                                 .minimumScaleFactor(0.4)
                                 .lineLimit(1)
-                            Text(countdown.isExpired && !countdown.isToday ? "Days since" : "Days until")
+                            Text(metricTitle(for: countdown))
                                 .font(.system(.caption, design: .rounded))
                                 .foregroundStyle(fgSecondary)
                         }
@@ -137,7 +150,7 @@ struct CountdownWidgetView: View {
                             .foregroundStyle(fgSecondary)
                             .padding(.top, 4)
                     } else {
-                        Text(countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)")
+                        Text(metricValue(for: countdown))
                             .font(.system(size: 32, weight: .bold, design: .rounded))
                             .foregroundStyle(fgPrimary)
                             .minimumScaleFactor(0.4)
@@ -147,12 +160,14 @@ struct CountdownWidgetView: View {
 
                         Spacer()
 
-                        VStack(alignment: .trailing, spacing: 0) {
-                            Text("Days")
-                            Text(relationLabel(for: countdown))
+                        if !countdown.isFutureManifestation {
+                            VStack(alignment: .trailing, spacing: 0) {
+                                Text("Days")
+                                Text(relationLabel(for: countdown))
+                            }
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(fgSecondary)
                         }
-                        .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(fgSecondary)
                     }
                 } else {
                     Text("—")
@@ -182,17 +197,51 @@ struct CountdownWidgetView: View {
                     .truncationMode(.tail)
                     .padding(.bottom, 8)
 
-                if !countdown.isExpired {
+                if !countdown.isExpired && !countdown.isFutureManifestation {
                     progressBar(progress: countdown.barProgress)
                 }
 
-                if countdown.showDate {
+                if countdown.showDate && !countdown.isFutureManifestation {
                     Text(countdown.targetDate.smartFormatted)
                         .font(.system(.caption, design: .rounded))
                         .foregroundStyle(fgSecondary)
                         .padding(.top, countdown.isExpired ? 0 : 6)
                 }
             }
+        }
+        .padding(1)
+        .containerBackground(for: .widget) { containerBackground }
+        )
+    }
+
+    private func manifestationWidgetView(
+        countdown: WidgetCountdown,
+        titleBottomPadding: CGFloat
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .top, spacing: 4) {
+                Spacer()
+
+                if let symbol = countdown.sfSymbolName {
+                    Image(systemName: symbol)
+                        .font(.system(.title3, weight: .semibold))
+                        .foregroundStyle(fgSecondary)
+                        .padding(.top, 4)
+                }
+            }
+
+            Spacer()
+
+            Text(countdown.title)
+                .font(.system(.headline, design: .rounded, weight: .semibold))
+                .foregroundStyle(fgPrimary)
+                .lineLimit(2)
+                .truncationMode(.tail)
+                .padding(.bottom, titleBottomPadding)
+
+            Text("Manifest")
+                .font(.system(.caption, design: .rounded))
+                .foregroundStyle(fgSecondary)
         }
         .padding(1)
         .containerBackground(for: .widget) { containerBackground }
@@ -269,11 +318,11 @@ struct CountdownWidgetView: View {
     /// True when background is dark → use white text; false → use dark text.
     private var usesLightText: Bool {
         guard let hex = entry.countdown?.backgroundColorHex else {
-            return true // gradient background → white text
+            return false // default white background → dark text
         }
         let cleaned = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         guard cleaned.count == 6, let value = UInt64(cleaned, radix: 16) else {
-            return true
+            return false
         }
         let r = Double((value >> 16) & 0xFF) / 255
         let g = Double((value >> 8) & 0xFF) / 255
@@ -296,15 +345,11 @@ struct CountdownWidgetView: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-                Color.black.opacity(0.3)
+                Color.black.opacity(0.1)
             } else if let color = resolvedBackgroundColor {
                 color
             } else {
-                LinearGradient(
-                    colors: [Color.accentColor.opacity(0.8), Color.accentColor.opacity(0.4)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                Color.white
             }
         }
     }
@@ -325,13 +370,25 @@ struct CountdownWidgetView: View {
     }
 
     private func daysLabel(for countdown: WidgetCountdown) -> String {
+        if countdown.isFutureManifestation { return "Manifest" }
         if countdown.isToday { return "Today" }
         if countdown.isExpired { return "\(countdown.daysSince) days since" }
         return "\(countdown.daysUntil) days until"
     }
 
     private func relationLabel(for countdown: WidgetCountdown) -> String {
-        countdown.isExpired && !countdown.isToday ? "since" : "until"
+        if countdown.isFutureManifestation { return "manifest" }
+        return countdown.isExpired && !countdown.isToday ? "since" : "until"
+    }
+
+    private func metricValue(for countdown: WidgetCountdown) -> String {
+        if countdown.isFutureManifestation { return "∞" }
+        return countdown.isToday ? "0" : "\(countdown.isExpired ? countdown.daysSince : countdown.daysUntil)"
+    }
+
+    private func metricTitle(for countdown: WidgetCountdown) -> String {
+        if countdown.isFutureManifestation { return "Manifest" }
+        return countdown.isExpired && !countdown.isToday ? "Days since" : "Days until"
     }
 
 }

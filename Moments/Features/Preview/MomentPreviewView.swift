@@ -103,7 +103,7 @@ struct MomentPreviewView: View {
             }
 
             AlternatingLetterRevealText(
-                items: [countdown.targetDate.smartFormatted, metricLabel(for: countdown)],
+                items: [dateOrManifestLabel(for: countdown), metricLabel(for: countdown)],
                 font: .system(.subheadline, design: .rounded, weight: .medium),
                 color: .secondary
             )
@@ -121,6 +121,9 @@ struct MomentPreviewView: View {
     }
 
     private func metricLabel(for countdown: Countdown) -> String {
+        if countdown.isFutureManifestation {
+            return "Always upcoming"
+        }
         if countdown.isToday(at: timerManager.currentTime) {
             return "Today"
         }
@@ -134,6 +137,10 @@ struct MomentPreviewView: View {
 
     private func primaryActionTitle(for countdown: Countdown) -> String {
         countdown.isExpired(at: timerManager.currentTime) ? "Look Back" : "Set intention"
+    }
+
+    private func dateOrManifestLabel(for countdown: Countdown) -> String {
+        countdown.isFutureManifestation ? "Manifest" : countdown.targetDate.smartFormatted
     }
 
     private func momentColor(for countdown: Countdown) -> Color {

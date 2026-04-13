@@ -181,6 +181,7 @@ struct BackgroundPickerSection: View {
 }
 
 struct WidgetOptionsSection: View {
+    var allowsDateOption: Bool = true
     @Binding var showDate: Bool
     @Binding var showSymbol: Bool
     @Binding var sfSymbolName: String?
@@ -189,7 +190,9 @@ struct WidgetOptionsSection: View {
 
     var body: some View {
         Section {
-            Toggle("Show Date on Widget", isOn: $showDate)
+            if allowsDateOption {
+                Toggle("Show Date on Widget", isOn: $showDate)
+            }
             Toggle("Add a Symbol", isOn: $showSymbol.animation())
                 .onChange(of: showSymbol) { _, enabled in
                     if !enabled { sfSymbolName = nil }

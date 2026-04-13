@@ -21,6 +21,7 @@ final class CountdownEntity: NSManagedObject {
     @NSManaged var reflectionPrimaryText: String?
     @NSManaged var reflectionExpandedText: String?
     @NSManaged var reflectionGeneratedAt: Date?
+    @NSManaged var isFutureManifestation: Bool
 
     @nonobjc static func fetchRequest() -> NSFetchRequest<CountdownEntity> {
         NSFetchRequest<CountdownEntity>(entityName: "CountdownEntity")
@@ -48,7 +49,8 @@ final class CountdownEntity: NSManagedObject {
             reflectionGuidanceText: reflectionGuidanceText,
             reflectionPrimaryText: reflectionPrimaryText,
             reflectionExpandedText: reflectionExpandedText,
-            reflectionGeneratedAt: reflectionGeneratedAt
+            reflectionGeneratedAt: reflectionGeneratedAt,
+            isFutureManifestation: isFutureManifestation
         )
     }
 }

@@ -13,8 +13,6 @@ struct MomentPreviewScrollEdgeView: View {
 
     @StateObject private var viewModel: MomentPreviewViewModel
     @State private var showingEditSheet = false
-    @State private var isContinueButtonVisible = true
-    @State private var isAdvancingReflectionStage = false
     @State private var completedRevealStages: Set<Int> = []
 
     init(countdownID: UUID) {
@@ -38,16 +36,12 @@ struct MomentPreviewScrollEdgeView: View {
         .onDisappear {
             viewModel.cancelReflection()
         }
-        .onAppear {
-            syncContinueButtonVisibility()
-        }
         .onChange(of: viewModel.surfaceDisplayText) { _, newValue in
             if newValue.isEmpty {
                 completedRevealStages.remove(0)
             } else {
                 completedRevealStages.removeAll()
             }
-            syncContinueButtonVisibility()
         }
     }
 
@@ -98,15 +92,10 @@ struct MomentPreviewScrollEdgeView: View {
         }
         .onAppear {
             viewModel.syncSavedReflection(from: countdown)
-            syncContinueButtonVisibility()
         }
         .onChange(of: repository.countdowns) { _, _ in
             guard let updatedCountdown = self.countdown else { return }
             viewModel.syncSavedReflection(from: updatedCountdown)
-            syncContinueButtonVisibility()
-        }
-        .onChange(of: viewModel.expansionStage) { _, _ in
-            syncContinueButtonVisibility()
         }
     }
 
@@ -116,7 +105,7 @@ struct MomentPreviewScrollEdgeView: View {
             previewSections(for: countdown)
                 .frame(maxWidth: .infinity, alignment: .top)
                 .frame(minHeight: viewportHeight, alignment: .top)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, 32)
                 .padding(.top, 28)
                 .padding(.bottom, bottomContentPadding)
         }
@@ -144,11 +133,19 @@ struct MomentPreviewScrollEdgeView: View {
     @ViewBuilder
     private func previewReflectionSection(for countdown: Countdown) -> some View {
         if viewModel.shouldShowReflectionCard {
-            reflectionCard
+            reflectionCard(for: countdown)
         }
     }
 
     private func heroCard(for countdown: Countdown) -> some View {
+        if countdown.isFutureManifestation {
+            return AnyView(manifestationHeroCard(for: countdown))
+        }
+
+        return AnyView(standardHeroCard(for: countdown))
+    }
+
+    private func standardHeroCard(for countdown: Countdown) -> some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .top, spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
@@ -186,13 +183,32 @@ struct MomentPreviewScrollEdgeView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.bottom, 28)
-        .overlay(alignment: .bottom) {
-            Divider()
-                .overlay(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
-        }
     }
 
-    private var reflectionCard: some View {
+    private func manifestationHeroCard(for countdown: Countdown) -> some View {
+        VStack(alignment: .center, spacing: 18) {
+            if let symbolName = countdown.sfSymbolName {
+                Image(systemName: symbolName)
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(momentAccentColor(for: countdown))
+                    .frame(width: 54, height: 54)
+                    .background(
+                        momentAccentColor(for: countdown).opacity(colorScheme == .dark ? 0.24 : 0.12),
+                        in: Circle()
+                    )
+            }
+
+            Text(countdown.title)
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.bottom, 28)
+    }
+
+    private func reflectionCard(for countdown: Countdown) -> some View {
         VStack(alignment: .leading, spacing: 18) {
             if viewModel.errorText != nil {
                 Label(reflectionCardTitle, systemImage: reflectionCardIcon)
@@ -200,7 +216,7 @@ struct MomentPreviewScrollEdgeView: View {
                     .foregroundStyle(.primary)
             }
 
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: reflectionContentSpacing(for: countdown)) {
                 if !viewModel.surfaceDisplayText.isEmpty {
                     WordRevealText(
                         text: viewModel.surfaceDisplayText,
@@ -211,9 +227,6 @@ struct MomentPreviewScrollEdgeView: View {
                 }
 
                 if !viewModel.reflectionDisplayText.isEmpty {
-                    Divider()
-                        .overlay(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
-
                     WordRevealText(
                         text: viewModel.reflectionDisplayText,
                         font: .system(.body, design: .rounded),
@@ -224,32 +237,23 @@ struct MomentPreviewScrollEdgeView: View {
                 }
 
                 if !viewModel.guidanceDisplayText.isEmpty {
-                    Divider()
-                        .overlay(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
-
                     WordRevealText(
                         text: viewModel.guidanceDisplayText,
                         font: .system(.body, design: .rounded),
                         color: .secondary,
-                        onRevealCompleted: { handleRevealCompleted(for: 2) }
+                        alignment: countdown.isFutureManifestation ? .center : .leading,
+                        onRevealCompleted: { handleRevealCompleted(for: viewModel.guidanceStage) }
                     )
                     .transition(.opacity)
                 }
             }
 
-            if viewModel.expansionStage < viewModel.maxExpansionStage, isContinueButtonVisible {
-                Button {
-                    advanceReflectionStage()
-                } label: {
-                    Text("Continue")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .interactiveGlassCard(cornerRadius: 999)
-                }
-                .buttonStyle(.plain)
-                .frame(maxWidth: .infinity, alignment: .center)
+            if shouldShowReflectionCompletionIcon {
+                Image(systemName: "sparkle")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .transition(.opacity.combined(with: .scale(scale: 0.92)))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -362,7 +366,15 @@ struct MomentPreviewScrollEdgeView: View {
             return "Try Again"
         }
 
+        if countdown.isFutureManifestation {
+            return "Get Manifestation"
+        }
+
         return countdown.isExpired(at: timerManager.currentTime) ? "Look Back" : "Set Intention"
+    }
+
+    private func reflectionContentSpacing(for countdown: Countdown) -> CGFloat {
+        countdown.isFutureManifestation ? 32 : 14
     }
 
     private func momentAccentColor(for countdown: Countdown) -> Color {
@@ -394,10 +406,15 @@ struct MomentPreviewScrollEdgeView: View {
         AppTheme.preferredColorScheme(for: appearanceSetting)
     }
 
-    private func syncContinueButtonVisibility() {
-        isContinueButtonVisible = completedRevealStages.contains(viewModel.expansionStage)
-            && viewModel.expansionStage < viewModel.maxExpansionStage
-        isAdvancingReflectionStage = false
+    private var shouldShowReflectionCompletionIcon: Bool {
+        guard viewModel.errorText == nil else { return false }
+        guard !viewModel.surfaceDisplayText.isEmpty else { return false }
+
+        if viewModel.maxExpansionStage == 0 {
+            return completedRevealStages.contains(0)
+        }
+
+        return completedRevealStages.contains(viewModel.maxExpansionStage)
     }
 
     private func handleSurfaceRevealCompleted() {
@@ -409,28 +426,15 @@ struct MomentPreviewScrollEdgeView: View {
         guard stage == viewModel.expansionStage else { return }
         completedRevealStages.insert(stage)
 
-        withAnimation(.easeOut(duration: 0.16)) {
-            isContinueButtonVisible = viewModel.expansionStage < viewModel.maxExpansionStage
-        }
-    }
-
-    private func advanceReflectionStage() {
-        guard !isAdvancingReflectionStage else { return }
-        guard viewModel.expansionStage < viewModel.maxExpansionStage else { return }
-
-        isAdvancingReflectionStage = true
+        guard stage < viewModel.maxExpansionStage else { return }
 
         Task { @MainActor in
-            withAnimation(.easeOut(duration: 0.16)) {
-                isContinueButtonVisible = false
-            }
-
-            try? await Task.sleep(for: .milliseconds(170))
+            try? await Task.sleep(for: .milliseconds(220))
+            guard viewModel.expansionStage == stage else { return }
 
             withAnimation(.smooth(duration: 0.28)) {
                 viewModel.expansionStage += 1
             }
-            isAdvancingReflectionStage = false
         }
     }
 
@@ -452,6 +456,7 @@ private struct WordRevealText: View {
     let text: String
     let font: Font
     let color: Color
+    var alignment: HorizontalAlignment = .leading
     var verticalSpacing: CGFloat = 4
     var onRevealCompleted: (() -> Void)? = nil
 
@@ -476,10 +481,10 @@ private struct WordRevealText: View {
                     .animation(
                         .easeOut(duration: 0.42).delay(Double(index) * 0.045),
                         value: revealedWordCount
-                    )
+                )
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
         .onAppear {
             restartReveal()
         }

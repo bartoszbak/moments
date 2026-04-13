@@ -10,8 +10,7 @@ final class ReflectionService {
             throw ReflectionError.missingAPIKey
         }
 
-        let isPast = countdown.isExpired(at: now)
-        let systemPrompt = ReflectionPrompt.systemPrompt(isPast: isPast)
+        let systemPrompt = ReflectionPrompt.systemPrompt(for: countdown, now: now)
         let userPrompt = ReflectionPrompt.userPrompt(for: countdown, now: now)
 
         var request = URLRequest(url: URL(string: "https://openrouter.ai/api/v1/chat/completions")!)
@@ -27,23 +26,7 @@ final class ReflectionService {
                 .init(role: "user", content: userPrompt)
             ],
             temperature: 0.7,
-            responseFormat: .init(
-                type: "json_schema",
-                jsonSchema: .init(
-                    name: "moment_reflection",
-                    strict: true,
-                    schema: .init(
-                        type: "object",
-                        properties: [
-                            "surface": .init(type: "string"),
-                            "reflection": .init(type: "string"),
-                            "guidance": .init(type: "string")
-                        ],
-                        required: ["surface", "reflection", "guidance"],
-                        additionalProperties: false
-                    )
-                )
-            )
+            responseFormat: ReflectionResponseSchema.responseFormat(for: countdown)
         )
         request.httpBody = try JSONEncoder().encode(payload)
 
@@ -70,6 +53,60 @@ final class ReflectionService {
         let decoded = try JSONDecoder().decode(OpenRouterResponse.self, from: data)
         guard let content = decoded.choices.first?.message.content.data(using: .utf8) else {
             throw ReflectionError.emptyResponse
+        }
+
+        return try ReflectionResponseSchema.decodeOutput(from: content, for: countdown)
+    }
+}
+
+private enum ReflectionResponseSchema {
+    static func responseFormat(for countdown: Countdown) -> OpenRouterRequest.ResponseFormat {
+        if countdown.isFutureManifestation {
+            return .init(
+                type: "json_schema",
+                jsonSchema: .init(
+                    name: "moment_manifestation",
+                    strict: true,
+                    schema: .init(
+                        type: "object",
+                        properties: [
+                            "instruction": .init(type: "string"),
+                            "anchor": .init(type: "string")
+                        ],
+                        required: ["instruction", "anchor"],
+                        additionalProperties: false
+                    )
+                )
+            )
+        }
+
+        return .init(
+            type: "json_schema",
+            jsonSchema: .init(
+                name: "moment_reflection",
+                strict: true,
+                schema: .init(
+                    type: "object",
+                    properties: [
+                        "surface": .init(type: "string"),
+                        "reflection": .init(type: "string"),
+                        "guidance": .init(type: "string")
+                    ],
+                    required: ["surface", "reflection", "guidance"],
+                    additionalProperties: false
+                )
+            )
+        )
+    }
+
+    static func decodeOutput(from content: Data, for countdown: Countdown) throws -> ReflectionOutput {
+        if countdown.isFutureManifestation {
+            let manifestation = try JSONDecoder().decode(ManifestationOutput.self, from: content)
+            return ReflectionOutput(
+                surface: manifestation.instruction,
+                reflection: "",
+                guidance: manifestation.anchor
+            )
         }
 
         return try JSONDecoder().decode(ReflectionOutput.self, from: content)
@@ -118,13 +155,17 @@ private enum ReflectionPrompt {
     }
 
     static func userPrompt(for countdown: Countdown, now: Date) -> String {
-        var lines = [
-            "Moment title: \(countdown.title)",
-            "Moment date: \(countdown.targetDate.smartFormatted)",
-            "Today: \(now.smartFormatted)",
-            "Days until: \(countdown.daysUntil(from: now))",
-            "Days since: \(countdown.daysSince(from: now))"
-        ]
+        var lines = ["Moment title: \(countdown.title)"]
+
+        if countdown.isFutureManifestation {
+            lines.append("Mode: Future manifestation (no fixed date)")
+            lines.append("Today: \(now.smartFormatted)")
+        } else {
+            lines.append("Moment date: \(countdown.targetDate.smartFormatted)")
+            lines.append("Today: \(now.smartFormatted)")
+            lines.append("Days until: \(countdown.daysUntil(from: now))")
+            lines.append("Days since: \(countdown.daysSince(from: now))")
+        }
 
         if let detailsText = countdown.detailsText?.trimmingCharacters(in: .whitespacesAndNewlines),
            !detailsText.isEmpty {
@@ -132,6 +173,26 @@ private enum ReflectionPrompt {
         }
 
         return lines.joined(separator: "\n")
+    }
+
+    static func systemPrompt(for countdown: Countdown, now: Date) -> String {
+        if countdown.isFutureManifestation {
+            let sharedPrompt = loadPrompt(named: "system")
+            let manifestPrompt = loadPrompt(named: "manifest")
+
+            switch (sharedPrompt, manifestPrompt) {
+            case let (.some(shared), .some(mode)):
+                return [shared, mode].joined(separator: "\n\n")
+            case let (.some(shared), nil):
+                return shared
+            case let (nil, .some(mode)):
+                return mode
+            case (nil, nil):
+                return systemPrompt(isPast: countdown.isExpired(at: now))
+            }
+        }
+
+        return systemPrompt(isPast: countdown.isExpired(at: now))
     }
 }
 
@@ -180,6 +241,11 @@ struct ReflectionOutput: Decodable {
     let surface: String
     let reflection: String
     let guidance: String
+}
+
+private struct ManifestationOutput: Decodable {
+    let instruction: String
+    let anchor: String
 }
 
 enum ReflectionError: Error {

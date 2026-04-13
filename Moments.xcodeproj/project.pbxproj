@@ -49,6 +49,7 @@
 		AF12BC34DE56F78901234567 /* system.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234565 /* system.txt */; };
 		AF12BC34DE56F78901234568 /* past.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234566 /* past.txt */; };
 		AF12BC34DE56F78901234569 /* future.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234570 /* future.txt */; };
+		AF12BC34DE56F78901234571 /* manifest.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234572 /* manifest.txt */; };
 		B1C2D3E4F5061728394A5B6C /* ReflectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F30415263748A9B5C6D7 /* ReflectionService.swift */; };
 		C1B4BA8394A75B001EFAE5C8 /* AddCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C70200D860A729B74D9CB5 /* AddCountdownView.swift */; };
 		C7DAAECDC98D8B1685AC8311 /* MomentsWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641EF3FC55AFA909DB257418 /* MomentsWidgetBundle.swift */; };
@@ -122,6 +123,7 @@
 		AF12BC34DE56F78901234565 /* system.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = system.txt; sourceTree = "<group>"; };
 		AF12BC34DE56F78901234566 /* past.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = past.txt; sourceTree = "<group>"; };
 		AF12BC34DE56F78901234570 /* future.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = future.txt; sourceTree = "<group>"; };
+		AF12BC34DE56F78901234572 /* manifest.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = manifest.txt; sourceTree = "<group>"; };
 		B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCountdown.swift; sourceTree = "<group>"; };
 		C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewView.swift; sourceTree = "<group>"; };
 		C4BF3C7A6776967BD8E726B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -268,6 +270,7 @@
 				AF12BC34DE56F78901234565 /* system.txt */,
 				AF12BC34DE56F78901234566 /* past.txt */,
 				AF12BC34DE56F78901234570 /* future.txt */,
+				AF12BC34DE56F78901234572 /* manifest.txt */,
 			);
 			path = Prompts;
 			sourceTree = "<group>";
@@ -450,6 +453,7 @@
 				AF12BC34DE56F78901234567 /* system.txt in Resources */,
 				AF12BC34DE56F78901234568 /* past.txt in Resources */,
 				AF12BC34DE56F78901234569 /* future.txt in Resources */,
+				AF12BC34DE56F78901234571 /* manifest.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
