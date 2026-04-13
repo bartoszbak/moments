@@ -26,23 +26,7 @@ final class ReflectionService {
                 .init(role: "user", content: userPrompt)
             ],
             temperature: 0.7,
-            responseFormat: .init(
-                type: "json_schema",
-                jsonSchema: .init(
-                    name: "moment_reflection",
-                    strict: true,
-                    schema: .init(
-                        type: "object",
-                        properties: [
-                            "surface": .init(type: "string"),
-                            "reflection": .init(type: "string"),
-                            "guidance": .init(type: "string")
-                        ],
-                        required: ["surface", "reflection", "guidance"],
-                        additionalProperties: false
-                    )
-                )
-            )
+            responseFormat: ReflectionResponseSchema.responseFormat(for: countdown)
         )
         request.httpBody = try JSONEncoder().encode(payload)
 
@@ -69,6 +53,60 @@ final class ReflectionService {
         let decoded = try JSONDecoder().decode(OpenRouterResponse.self, from: data)
         guard let content = decoded.choices.first?.message.content.data(using: .utf8) else {
             throw ReflectionError.emptyResponse
+        }
+
+        return try ReflectionResponseSchema.decodeOutput(from: content, for: countdown)
+    }
+}
+
+private enum ReflectionResponseSchema {
+    static func responseFormat(for countdown: Countdown) -> OpenRouterRequest.ResponseFormat {
+        if countdown.isFutureManifestation {
+            return .init(
+                type: "json_schema",
+                jsonSchema: .init(
+                    name: "moment_manifestation",
+                    strict: true,
+                    schema: .init(
+                        type: "object",
+                        properties: [
+                            "instruction": .init(type: "string"),
+                            "anchor": .init(type: "string")
+                        ],
+                        required: ["instruction", "anchor"],
+                        additionalProperties: false
+                    )
+                )
+            )
+        }
+
+        return .init(
+            type: "json_schema",
+            jsonSchema: .init(
+                name: "moment_reflection",
+                strict: true,
+                schema: .init(
+                    type: "object",
+                    properties: [
+                        "surface": .init(type: "string"),
+                        "reflection": .init(type: "string"),
+                        "guidance": .init(type: "string")
+                    ],
+                    required: ["surface", "reflection", "guidance"],
+                    additionalProperties: false
+                )
+            )
+        )
+    }
+
+    static func decodeOutput(from content: Data, for countdown: Countdown) throws -> ReflectionOutput {
+        if countdown.isFutureManifestation {
+            let manifestation = try JSONDecoder().decode(ManifestationOutput.self, from: content)
+            return ReflectionOutput(
+                surface: manifestation.instruction,
+                reflection: "",
+                guidance: manifestation.anchor
+            )
         }
 
         return try JSONDecoder().decode(ReflectionOutput.self, from: content)
@@ -203,6 +241,11 @@ struct ReflectionOutput: Decodable {
     let surface: String
     let reflection: String
     let guidance: String
+}
+
+private struct ManifestationOutput: Decodable {
+    let instruction: String
+    let anchor: String
 }
 
 enum ReflectionError: Error {

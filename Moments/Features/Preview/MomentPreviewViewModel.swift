@@ -37,7 +37,7 @@ final class MomentPreviewViewModel: ObservableObject {
     }
 
     var guidanceDisplayText: String {
-        guard expansionStage >= 2 else { return "" }
+        guard expansionStage >= guidanceStage else { return "" }
         return guidanceText ?? ""
     }
 
@@ -45,6 +45,11 @@ final class MomentPreviewViewModel: ObservableObject {
         let hasReflection = !(reflectionText?.isEmpty ?? true)
         let hasGuidance = !(guidanceText?.isEmpty ?? true)
         return (hasReflection ? 1 : 0) + (hasGuidance ? 1 : 0)
+    }
+
+    var guidanceStage: Int {
+        let hasReflection = !(reflectionText?.isEmpty ?? true)
+        return hasReflection ? 2 : 1
     }
 
     // MARK: - Actions

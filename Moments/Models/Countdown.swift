@@ -31,7 +31,7 @@ struct Countdown: Identifiable, Hashable {
 
     func isToday(at now: Date, calendar: Calendar = .current) -> Bool {
         if isFutureManifestation { return false }
-        calendar.isDate(targetDate, inSameDayAs: now)
+        return calendar.isDate(targetDate, inSameDayAs: now)
     }
 
     func isExpired(at now: Date, calendar: Calendar = .current) -> Bool {

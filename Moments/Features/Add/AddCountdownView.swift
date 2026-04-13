@@ -1,4 +1,43 @@
 import SwiftUI
+
+struct MomentDescriptionEditorView: View {
+    @Binding var text: String
+
+    var body: some View {
+        Form {
+            Section {
+                ZStack(alignment: .topLeading) {
+                    if text.isEmpty {
+                        Text("Optional")
+                            .foregroundStyle(.tertiary)
+                            .padding(.top, 8)
+                            .padding(.leading, 5)
+                    }
+
+                    TextEditor(text: $text)
+                        .frame(minHeight: 220)
+                }
+            } footer: {
+                Text("Example: \"I'm going for the meetup to hang out and chill.\"")
+            }
+        }
+        .navigationTitle("Description")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "minus")
+                }
+                .accessibilityLabel("Clear description")
+                .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .foregroundStyle(.red)
+            }
+        }
+    }
+}
+
 struct TargetDatePickerRow: View {
     @Binding var targetDate: Date
     let tintColor: Color
@@ -41,12 +80,12 @@ struct AddCountdownView: View {
     @State private var showTitleError = false
 
     private var isValid: Bool {
-        !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        return !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private var showsProgressIndicatorSection: Bool {
         if isFutureManifestation { return false }
-        Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
+        return Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
     }
 
     var body: some View {
@@ -57,29 +96,31 @@ struct AddCountdownView: View {
                         .onChange(of: title) { _, _ in
                             if showTitleError, !title.isEmpty { showTitleError = false }
                         }
+                    NavigationLink {
+                        MomentDescriptionEditorView(text: $detailsText)
+                    } label: {
+                        LabeledContent("Description") {
+                            Text(detailsActionTitle)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.tint)
+                        }
+                    }
                     if showTitleError {
                         Label("Title is required", systemImage: "exclamationmark.circle.fill")
                             .foregroundStyle(.red).font(.caption)
                     }
                 }
-                Section {
-                    TextField("Optional", text: $detailsText, axis: .vertical)
-                        .lineLimit(3...6)
-                } header: {
-                    Text("Description")
-                } footer: {
-                    Text("Context for intelligence")
-                }
                 Section("Target Date") {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
-                    TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
-                        .opacity(isFutureManifestation ? 0.45 : 1)
-                        .disabled(isFutureManifestation)
+                    if !isFutureManifestation {
+                        TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
+                    }
                 }
                 BackgroundPickerSection(
                     selection: $background
                 )
                 WidgetOptionsSection(
+                    allowsDateOption: !isFutureManifestation,
                     showDate: $showDate,
                     showSymbol: $showSymbol,
                     sfSymbolName: $sfSymbolName,
@@ -94,11 +135,19 @@ struct AddCountdownView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                        .foregroundStyle(toolbarButtonColor)
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .accessibilityLabel("Cancel")
+                    .foregroundStyle(toolbarButtonColor)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Create", action: create)
+                    Button(action: create) {
+                        Image(systemName: "checkmark")
+                    }
+                        .accessibilityLabel("Create")
                         .disabled(!isValid || isCreating)
                         .fontWeight(.semibold)
                         .foregroundStyle(toolbarButtonColor)
@@ -107,6 +156,11 @@ struct AddCountdownView: View {
         }
         .sheet(isPresented: $showSymbolPicker) {
             SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: controlTintColor)
+        }
+        .onChange(of: isFutureManifestation) { _, enabled in
+            if enabled {
+                showDate = false
+            }
         }
         .preferredColorScheme(preferredColorScheme)
     }
@@ -170,5 +224,9 @@ struct AddCountdownView: View {
 
     private var toolbarButtonColor: Color {
         effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var detailsActionTitle: String {
+        detailsText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Add" : "Edit"
     }
 }

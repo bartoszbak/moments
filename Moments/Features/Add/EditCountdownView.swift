@@ -30,7 +30,7 @@ struct EditCountdownView: View {
 
     private var showsProgressIndicatorSection: Bool {
         if isFutureManifestation { return false }
-        Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
+        return Calendar.current.startOfDay(for: targetDate) >= Calendar.current.startOfDay(for: Date())
     }
 
     var body: some View {
@@ -38,20 +38,21 @@ struct EditCountdownView: View {
             Form {
                 Section("Title") {
                     TextField("Countdown name", text: $title)
-                }
-                Section {
-                    TextField("Optional", text: $detailsText, axis: .vertical)
-                        .lineLimit(3...6)
-                } header: {
-                    Text("Description")
-                } footer: {
-                    Text("Context for intelligence")
+                    NavigationLink {
+                        MomentDescriptionEditorView(text: $detailsText)
+                    } label: {
+                        LabeledContent("Description") {
+                            Text(detailsActionTitle)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.tint)
+                        }
+                    }
                 }
                 Section("Target Date") {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
-                    TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
-                        .opacity(isFutureManifestation ? 0.45 : 1)
-                        .disabled(isFutureManifestation)
+                    if !isFutureManifestation {
+                        TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
+                    }
                 }
                 BackgroundPickerSection(
                     selection: $background,
@@ -90,11 +91,19 @@ struct EditCountdownView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                        .foregroundStyle(toolbarButtonColor)
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .accessibilityLabel("Cancel")
+                    .foregroundStyle(toolbarButtonColor)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save", action: save)
+                    Button(action: save) {
+                        Image(systemName: "checkmark")
+                    }
+                        .accessibilityLabel("Save")
                         .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         .fontWeight(.semibold)
                         .foregroundStyle(toolbarButtonColor)
@@ -198,13 +207,13 @@ struct EditCountdownView: View {
             startPercentage: startPercentage,
             showDate: showDate,
             sfSymbolName: .some(sfSymbolName),
-            isFutureManifestation: isFutureManifestation,
             reflectionSurfaceText: invalidatesReflection ? .some(nil) : nil,
             reflectionText: invalidatesReflection ? .some(nil) : nil,
             reflectionGuidanceText: invalidatesReflection ? .some(nil) : nil,
             reflectionPrimaryText: invalidatesReflection ? .some(nil) : nil,
             reflectionExpandedText: invalidatesReflection ? .some(nil) : nil,
-            reflectionGeneratedAt: invalidatesReflection ? .some(nil) : nil
+            reflectionGeneratedAt: invalidatesReflection ? .some(nil) : nil,
+            isFutureManifestation: isFutureManifestation
         )
         AppHaptics.impact(.light)
         dismiss()
@@ -231,5 +240,9 @@ struct EditCountdownView: View {
 
     private var toolbarButtonColor: Color {
         effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var detailsActionTitle: String {
+        detailsText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Add" : "Edit"
     }
 }

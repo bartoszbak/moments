@@ -35,28 +35,41 @@ struct CountdownTileView: View {
 
     private var tileContent: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .top, spacing: 8) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(metricValueText)
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundStyle(primaryTextColor)
-                        .contentTransition(.numericText(countsDown: !isExpired))
-                        .animation(.snappy, value: metricValueText)
+            if countdown.isFutureManifestation {
+                HStack(alignment: .top, spacing: 8) {
+                    Spacer(minLength: 0)
 
-                    Text(metricCaptionText)
-                        .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(secondaryTextColor)
-                        .lineLimit(1)
+                    if let symbolName = countdown.sfSymbolName {
+                        Image(systemName: symbolName)
+                            .font(.system(.title3, weight: .semibold))
+                            .foregroundStyle(secondaryTextColor)
+                            .padding(.top, 4)
+                    }
                 }
+            } else {
+                HStack(alignment: .top, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(metricValueText)
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+                            .foregroundStyle(primaryTextColor)
+                            .contentTransition(.numericText(countsDown: !isExpired))
+                            .animation(.snappy, value: metricValueText)
 
-                Spacer(minLength: 0)
+                        Text(metricCaptionText)
+                            .font(.system(.caption, design: .rounded))
+                            .foregroundStyle(secondaryTextColor)
+                            .lineLimit(1)
+                    }
 
-                if let symbolName = countdown.sfSymbolName {
-                    Image(systemName: symbolName)
-                        .font(.system(.title3, weight: .semibold))
-                        .foregroundStyle(secondaryTextColor)
-                        .padding(.top, 4)
+                    Spacer(minLength: 0)
+
+                    if let symbolName = countdown.sfSymbolName {
+                        Image(systemName: symbolName)
+                            .font(.system(.title3, weight: .semibold))
+                            .foregroundStyle(secondaryTextColor)
+                            .padding(.top, 4)
+                    }
                 }
             }
 
@@ -101,7 +114,7 @@ struct CountdownTileView: View {
         if countdown.isFutureManifestation {
             return "Manifest"
         }
-        isExpired ? "Days since" : "Days until"
+        return isExpired ? "Days since" : "Days until"
     }
 
     private var spokenMetricText: String {

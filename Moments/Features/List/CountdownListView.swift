@@ -17,10 +17,11 @@ struct CountdownListView: View {
     @State private var showingIntroSheet = false
     @State private var selectedFilter: CountdownFilter = .all
     @Binding var deepLinkedCountdownID: UUID?
-    private let gridColumns = [
-        GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16)
-    ]
+
+    private var gridColumns: [GridItem] {
+        let columnCount = UIDevice.current.userInterfaceIdiom == .pad ? 4 : 2
+        return Array(repeating: GridItem(.flexible(), spacing: 16), count: columnCount)
+    }
 
     private var isShowingPrimaryEmptyState: Bool {
         repository.countdowns.isEmpty || isShowingEmptyStatePreview
