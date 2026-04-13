@@ -40,6 +40,7 @@
 		8B11C0A1D2E3F40516273850 /* MomentPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C22D1B2E3F4051627384951 /* MomentPreviewViewModel.swift */; };
 		8FD3EE9907EE0F6EA1A98943 /* ImageStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1FE3C03AE21E0C2F0563E3 /* ImageStorageService.swift */; };
 		9CEA28060EB697D45D69F140 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDD7F362590382735CAFACE /* WidgetKit.framework */; };
+		B0A1C2D3E4F5678901234569 /* BlurSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C2D3E4F5678901234568 /* BlurSwiftUI */; };
 		A113A8D7FC7216CF0149F607 /* CountdownWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D212718BD9096D60168E8BC /* CountdownWidgetView.swift */; };
 		A13786BFC0E5C2118EA783D6 /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */; };
 		A1B2C3D4E5F60718293A4B5C /* MomentPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */; };
@@ -144,6 +145,14 @@
 			files = (
 				9CEA28060EB697D45D69F140 /* WidgetKit.framework in Frameworks */,
 				6A462D0AC9B180F1316ABDA9 /* SwiftUI.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B0A1C2D3E4F567890123456A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B0A1C2D3E4F5678901234569 /* BlurSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,6 +365,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4A2A6B6E85FCE9E6DE682E2D /* Build configuration list for PBXNativeTarget "Moments" */;
 			buildPhases = (
+				B0A1C2D3E4F567890123456A /* Frameworks */,
 				B7AABD747DB74C0B3F03CBEE /* Sources */,
 				76C804615BBB58FD8BBE3A10 /* Resources */,
 				96174BC7E5110500E331EF59 /* Embed Foundation Extensions */,
@@ -367,6 +377,7 @@
 			);
 			name = Moments;
 			packageProductDependencies = (
+				B0A1C2D3E4F5678901234568 /* BlurSwiftUI */,
 			);
 			productName = Moments;
 			productReference = DBFA2E1C9FADC24754179453 /* Moments.app */;
@@ -416,6 +427,9 @@
 			);
 			mainGroup = 44C09C9B7CDA9E8C293B09D6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B0A1C2D3E4F5678901234567 /* XCRemoteSwiftPackageReference "BlurUIKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 15B33884CBCC3BED21E5F72F /* Products */;
 			projectDirPath = "";
@@ -747,6 +761,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B0A1C2D3E4F5678901234567 /* XCRemoteSwiftPackageReference "BlurUIKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TimOliver/BlurUIKit.git";
+			requirement = {
+				kind = branch;
+				branch = main;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B0A1C2D3E4F5678901234568 /* BlurSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B0A1C2D3E4F5678901234567 /* XCRemoteSwiftPackageReference "BlurUIKit" */;
+			productName = BlurSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		9540726F389C28BEEAAF2446 /* Moments.xcdatamodeld */ = {

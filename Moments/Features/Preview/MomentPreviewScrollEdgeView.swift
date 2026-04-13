@@ -1,3 +1,4 @@
+import BlurSwiftUI
 import SwiftUI
 
 struct MomentPreviewScrollEdgeView: View {
@@ -12,6 +13,9 @@ struct MomentPreviewScrollEdgeView: View {
 
     @StateObject private var viewModel: MomentPreviewViewModel
     @State private var showingEditSheet = false
+    @State private var isContinueButtonVisible = true
+    @State private var isAdvancingReflectionStage = false
+    @State private var completedRevealStages: Set<Int> = []
 
     init(countdownID: UUID) {
         self.countdownID = countdownID
@@ -34,32 +38,48 @@ struct MomentPreviewScrollEdgeView: View {
         .onDisappear {
             viewModel.cancelReflection()
         }
+        .onAppear {
+            syncContinueButtonVisibility()
+        }
+        .onChange(of: viewModel.surfaceDisplayText) { _, newValue in
+            if newValue.isEmpty {
+                completedRevealStages.remove(0)
+            } else {
+                completedRevealStages.removeAll()
+            }
+            syncContinueButtonVisibility()
+        }
     }
 
     private func previewScreen(for countdown: Countdown) -> some View {
-        let baseScreen = ZStack {
-            previewBackground(for: countdown)
-                .ignoresSafeArea()
+        GeometryReader { proxy in
+            let baseScreen = ZStack {
+                previewBackground(for: countdown)
+                    .ignoresSafeArea()
 
-            GeometryReader { proxy in
                 previewScrollView(for: countdown, viewportHeight: proxy.size.height)
             }
-        }
 
-        return Group {
-            if #available(iOS 26, *) {
-                baseScreen.safeAreaBar(
-                    edge: .bottom,
-                    alignment: .center,
-                    spacing: 0,
-                    content: { bottomSafeAreaBarContent(for: countdown) }
-                )
-            } else {
-                baseScreen.safeAreaInset(
-                    edge: .bottom,
-                    spacing: 0,
-                    content: { legacyBottomInsetContent(for: countdown) }
-                )
+            Group {
+                if #available(iOS 26, *) {
+                    baseScreen.safeAreaBar(
+                        edge: .bottom,
+                        alignment: .center,
+                        spacing: 0,
+                        content: {
+                            bottomSafeAreaBarContent(
+                                for: countdown,
+                                bottomSafeAreaInset: proxy.safeAreaInsets.bottom
+                            )
+                        }
+                    )
+                } else {
+                    baseScreen.safeAreaInset(
+                        edge: .bottom,
+                        spacing: 0,
+                        content: { legacyBottomInsetContent(for: countdown) }
+                    )
+                }
             }
         }
         .navigationTitle("Moment")
@@ -78,16 +98,21 @@ struct MomentPreviewScrollEdgeView: View {
         }
         .onAppear {
             viewModel.syncSavedReflection(from: countdown)
+            syncContinueButtonVisibility()
         }
         .onChange(of: repository.countdowns) { _, _ in
             guard let updatedCountdown = self.countdown else { return }
             viewModel.syncSavedReflection(from: updatedCountdown)
+            syncContinueButtonVisibility()
+        }
+        .onChange(of: viewModel.expansionStage) { _, _ in
+            syncContinueButtonVisibility()
         }
     }
 
     @ViewBuilder
     private func previewScrollView(for countdown: Countdown, viewportHeight: CGFloat) -> some View {
-        let scrollView = ScrollView {
+        ScrollView {
             previewSections(for: countdown)
                 .frame(maxWidth: .infinity, alignment: .top)
                 .frame(minHeight: viewportHeight, alignment: .top)
@@ -96,40 +121,30 @@ struct MomentPreviewScrollEdgeView: View {
                 .padding(.bottom, bottomContentPadding)
         }
         .scrollIndicators(.hidden)
-
-        if #available(iOS 26, *) {
-            scrollView
-                .scrollEdgeEffectStyle(.soft, for: .bottom)
-        } else {
-            scrollView
-        }
     }
 
     @ViewBuilder
     private func previewSections(for countdown: Countdown) -> some View {
-        if #available(iOS 26, *) {
-            GlassEffectContainer(spacing: 20) {
-                previewSectionStack(for: countdown)
-            }
-        } else {
-            previewSectionStack(for: countdown)
-        }
+        previewSectionStack(for: countdown)
     }
 
     private func previewSectionStack(for countdown: Countdown) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 28) {
+            previewPrimarySectionStack(for: countdown)
+            previewReflectionSection(for: countdown)
+        }
+    }
+
+    private func previewPrimarySectionStack(for countdown: Countdown) -> some View {
+        VStack(alignment: .leading, spacing: 28) {
             heroCard(for: countdown)
+        }
+    }
 
-            if let details = countdown.detailsText?.trimmingCharacters(in: .whitespacesAndNewlines),
-               !details.isEmpty {
-                detailCard(text: details)
-            }
-
-            if viewModel.shouldShowReflectionCard {
-                reflectionCard
-            } else {
-                reflectionPromptCard(for: countdown)
-            }
+    @ViewBuilder
+    private func previewReflectionSection(for countdown: Countdown) -> some View {
+        if viewModel.shouldShowReflectionCard {
+            reflectionCard
         }
     }
 
@@ -169,93 +184,78 @@ struct MomentPreviewScrollEdgeView: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .padding(26)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(cornerRadius: 32)
-    }
-
-    private func detailCard(text: String) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("Context", systemImage: "note.text")
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(.primary)
-
-            Text(text)
-                .font(.system(.body, design: .rounded))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+        .padding(.bottom, 28)
+        .overlay(alignment: .bottom) {
+            Divider()
+                .overlay(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
         }
-        .padding(22)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(cornerRadius: 28)
     }
 
     private var reflectionCard: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Label(reflectionCardTitle, systemImage: reflectionCardIcon)
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(.primary)
+            if viewModel.errorText != nil {
+                Label(reflectionCardTitle, systemImage: reflectionCardIcon)
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.primary)
+            }
 
             VStack(alignment: .leading, spacing: 14) {
-                Text(viewModel.surfaceDisplayText)
-                    .font(.system(.body, design: .rounded))
-                    .foregroundStyle(viewModel.errorText == nil ? .primary : .secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                if !viewModel.surfaceDisplayText.isEmpty {
+                    WordRevealText(
+                        text: viewModel.surfaceDisplayText,
+                        font: .system(.body, design: .rounded),
+                        color: viewModel.errorText == nil ? .primary : .secondary,
+                        onRevealCompleted: handleSurfaceRevealCompleted
+                    )
+                }
 
                 if !viewModel.reflectionDisplayText.isEmpty {
                     Divider()
                         .overlay(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
 
-                    Text(viewModel.reflectionDisplayText)
-                        .font(.system(.body, design: .rounded))
-                        .foregroundStyle(.primary)
-                        .fixedSize(horizontal: false, vertical: true)
+                    WordRevealText(
+                        text: viewModel.reflectionDisplayText,
+                        font: .system(.body, design: .rounded),
+                        color: .primary,
+                        onRevealCompleted: { handleRevealCompleted(for: 1) }
+                    )
+                    .transition(.opacity)
                 }
 
                 if !viewModel.guidanceDisplayText.isEmpty {
                     Divider()
                         .overlay(Color.primary.opacity(colorScheme == .dark ? 0.12 : 0.08))
 
-                    Text(viewModel.guidanceDisplayText)
-                        .font(.system(.body, design: .rounded))
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
+                    WordRevealText(
+                        text: viewModel.guidanceDisplayText,
+                        font: .system(.body, design: .rounded),
+                        color: .secondary,
+                        onRevealCompleted: { handleRevealCompleted(for: 2) }
+                    )
+                    .transition(.opacity)
                 }
             }
 
-            if viewModel.expansionStage < viewModel.maxExpansionStage {
+            if viewModel.expansionStage < viewModel.maxExpansionStage, isContinueButtonVisible {
                 Button {
-                    viewModel.expandNextStage()
+                    advanceReflectionStage()
                 } label: {
-                    Label("Continue", systemImage: "chevron.down")
+                    Text("Continue")
                         .font(.subheadline.weight(.semibold))
-                        .frame(maxWidth: .infinity)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .interactiveGlassCard(cornerRadius: 999)
                 }
-                .adaptiveGlassButtonStyle()
+                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .center)
             }
         }
-        .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(cornerRadius: 28)
         .animation(.smooth(duration: 0.28), value: viewModel.surfaceDisplayText)
         .animation(.smooth(duration: 0.28), value: viewModel.reflectionDisplayText)
         .animation(.smooth(duration: 0.28), value: viewModel.guidanceDisplayText)
-    }
-
-    private func reflectionPromptCard(for countdown: Countdown) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label(promptTitle(for: countdown), systemImage: "sparkles")
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(.primary)
-
-            Text(promptBody(for: countdown))
-                .font(.system(.body, design: .rounded))
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(22)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .glassCard(cornerRadius: 28)
     }
 
     private func primaryActionButton(for countdown: Countdown) -> some View {
@@ -264,17 +264,9 @@ struct MomentPreviewScrollEdgeView: View {
         } label: {
             Group {
                 if viewModel.isLoadingReflection {
-                    HStack(spacing: 10) {
-                        ProgressView()
-                        Text("Thinking")
-                            .font(.headline.weight(.semibold))
-                    }
-                    .foregroundStyle(primaryButtonForegroundColor)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(
-                        Capsule()
-                            .fill(primaryButtonColor)
+                    ThinkingActionLabel(
+                        foregroundColor: primaryButtonForegroundColor,
+                        backgroundColor: primaryButtonColor
                     )
                 } else {
                     Text(primaryActionTitle(for: countdown))
@@ -294,14 +286,28 @@ struct MomentPreviewScrollEdgeView: View {
     }
 
     @available(iOS 26.0, *)
-    @ViewBuilder
-    private func bottomSafeAreaBarContent(for countdown: Countdown) -> some View {
-        if viewModel.showsBottomPrimaryAction {
-            primaryActionButton(for: countdown)
-                .padding(.horizontal, 24)
-                .padding(.top, 12)
-                .padding(.bottom, 12)
+    private func bottomSafeAreaBarContent(for countdown: Countdown, bottomSafeAreaInset: CGFloat) -> some View {
+        ZStack(alignment: .bottom) {
+            VariableBlur(direction: .up)
+                .maximumBlurRadius(2)
+                .blurStartingInset(nil)
+                .dimmingTintColor(.red)
+                .dimmingAlpha(nil)
+                .passesTouchesThrough(true)
+                .frame(maxWidth: .infinity)
+                .frame(height: bottomBlurBarHeight + (bottomSafeAreaInset * 2))
+                .offset(y: bottomSafeAreaInset)
+
+            if viewModel.showsBottomPrimaryAction {
+                primaryActionButton(for: countdown)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 12)
+                    .padding(.bottom, 12)
+                    .frame(maxWidth: .infinity)
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .bottom)
+        .ignoresSafeArea(edges: .bottom)
     }
 
     @ViewBuilder
@@ -316,27 +322,7 @@ struct MomentPreviewScrollEdgeView: View {
     }
 
     private func previewBackground(for countdown: Countdown) -> some View {
-        ZStack {
-            LinearGradient(
-                colors: [
-                    Color(.systemBackground),
-                    momentAccentColor(for: countdown).opacity(colorScheme == .dark ? 0.20 : 0.12),
-                    Color(.systemBackground)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-
-            RadialGradient(
-                colors: [
-                    momentAccentColor(for: countdown).opacity(colorScheme == .dark ? 0.18 : 0.10),
-                    .clear
-                ],
-                center: .topTrailing,
-                startRadius: 10,
-                endRadius: 320
-            )
-        }
+        Color(.systemBackground)
     }
 
     private func metricValue(for countdown: Countdown) -> String {
@@ -361,18 +347,6 @@ struct MomentPreviewScrollEdgeView: View {
         }
 
         return "Days until this moment"
-    }
-
-    private func promptTitle(for countdown: Countdown) -> String {
-        countdown.isExpired(at: timerManager.currentTime) ? "Reflect on what happened" : "Generate an AI reflection"
-    }
-
-    private func promptBody(for countdown: Countdown) -> String {
-        if countdown.isExpired(at: timerManager.currentTime) {
-            return "Create a short reflection about what this moment meant, what changed after it, and what is still worth carrying forward."
-        }
-
-        return "Generate a calm reflection for this moment with a surface thought, a deeper connection, and a gentle next step."
     }
 
     private var reflectionCardTitle: String {
@@ -420,11 +394,255 @@ struct MomentPreviewScrollEdgeView: View {
         AppTheme.preferredColorScheme(for: appearanceSetting)
     }
 
+    private func syncContinueButtonVisibility() {
+        isContinueButtonVisible = completedRevealStages.contains(viewModel.expansionStage)
+            && viewModel.expansionStage < viewModel.maxExpansionStage
+        isAdvancingReflectionStage = false
+    }
+
+    private func handleSurfaceRevealCompleted() {
+        handleRevealCompleted(for: 0)
+    }
+
+    private func handleRevealCompleted(for stage: Int) {
+        guard !completedRevealStages.contains(stage) else { return }
+        guard stage == viewModel.expansionStage else { return }
+        completedRevealStages.insert(stage)
+
+        withAnimation(.easeOut(duration: 0.16)) {
+            isContinueButtonVisible = viewModel.expansionStage < viewModel.maxExpansionStage
+        }
+    }
+
+    private func advanceReflectionStage() {
+        guard !isAdvancingReflectionStage else { return }
+        guard viewModel.expansionStage < viewModel.maxExpansionStage else { return }
+
+        isAdvancingReflectionStage = true
+
+        Task { @MainActor in
+            withAnimation(.easeOut(duration: 0.16)) {
+                isContinueButtonVisible = false
+            }
+
+            try? await Task.sleep(for: .milliseconds(170))
+
+            withAnimation(.smooth(duration: 0.28)) {
+                viewModel.expansionStage += 1
+            }
+            isAdvancingReflectionStage = false
+        }
+    }
+
     private var bottomContentPadding: CGFloat {
         if #available(iOS 26, *) {
-            return 0
+            return viewModel.showsBottomPrimaryAction ? 112 : 76
         } else {
             return 28
+        }
+    }
+
+    @available(iOS 26.0, *)
+    private var bottomBlurBarHeight: CGFloat {
+        viewModel.showsBottomPrimaryAction ? 28 : 19
+    }
+}
+
+private struct WordRevealText: View {
+    let text: String
+    let font: Font
+    let color: Color
+    var verticalSpacing: CGFloat = 4
+    var onRevealCompleted: (() -> Void)? = nil
+
+    @State private var revealedWordCount = 0
+    @State private var revealTask: Task<Void, Never>?
+
+    private var tokens: [String] {
+        text
+            .components(separatedBy: .whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+    }
+
+    var body: some View {
+        FlowTextLayout(horizontalSpacing: 5, verticalSpacing: verticalSpacing) {
+            ForEach(Array(tokens.enumerated()), id: \.offset) { index, token in
+                Text(token)
+                    .font(font)
+                    .foregroundStyle(color)
+                    .opacity(index < revealedWordCount ? 1 : 0)
+                    .blur(radius: index < revealedWordCount ? 0 : 14)
+                    .offset(y: index < revealedWordCount ? 0 : 8)
+                    .animation(
+                        .easeOut(duration: 0.42).delay(Double(index) * 0.045),
+                        value: revealedWordCount
+                    )
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .onAppear {
+            restartReveal()
+        }
+        .onChange(of: text) { _, _ in
+            restartReveal()
+        }
+        .onDisappear {
+            revealTask?.cancel()
+        }
+    }
+
+    private func restartReveal() {
+        revealTask?.cancel()
+        revealedWordCount = 0
+
+        guard !tokens.isEmpty else { return }
+
+        revealTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(35))
+            guard !Task.isCancelled else { return }
+            revealedWordCount = tokens.count
+
+            let trailingDelay = Double(max(tokens.count - 1, 0)) * 0.045
+            let completionDelay = trailingDelay + 0.42
+            try? await Task.sleep(for: .seconds(completionDelay))
+            guard !Task.isCancelled else { return }
+            onRevealCompleted?()
+        }
+    }
+}
+
+private struct ThinkingActionLabel: View {
+    let foregroundColor: Color
+    let backgroundColor: Color
+
+    var body: some View {
+        LoopingLetterRevealText(
+            text: "Thinking",
+            font: .headline.weight(.semibold),
+            color: foregroundColor
+        )
+        .frame(maxWidth: .infinity)
+        .frame(height: 56)
+        .background(
+            Capsule()
+                .fill(backgroundColor)
+        )
+    }
+}
+
+private struct LoopingLetterRevealText: View {
+    let text: String
+    let font: Font
+    let color: Color
+
+    @State private var revealedCharacterCount = 0
+    @State private var revealTask: Task<Void, Never>?
+
+    private var characters: [String] {
+        text.map(String.init)
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(Array(characters.enumerated()), id: \.offset) { index, character in
+                Text(character)
+                    .font(font)
+                    .foregroundStyle(color)
+                    .opacity(index < revealedCharacterCount ? 1 : 0)
+                    .blur(radius: index < revealedCharacterCount ? 0 : 12)
+                    .offset(y: index < revealedCharacterCount ? 0 : 4)
+                    .animation(
+                        .easeOut(duration: 0.28).delay(Double(index) * 0.028),
+                        value: revealedCharacterCount
+                    )
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .onAppear {
+            startLoop()
+        }
+        .onChange(of: text) { _, _ in
+            startLoop()
+        }
+        .onDisappear {
+            revealTask?.cancel()
+        }
+    }
+
+    private func startLoop() {
+        revealTask?.cancel()
+        revealedCharacterCount = 0
+
+        guard !characters.isEmpty else { return }
+
+        revealTask = Task { @MainActor in
+            while !Task.isCancelled {
+                revealedCharacterCount = 0
+                try? await Task.sleep(for: .milliseconds(45))
+                guard !Task.isCancelled else { return }
+
+                revealedCharacterCount = characters.count
+                try? await Task.sleep(for: .seconds(1.4))
+                guard !Task.isCancelled else { return }
+            }
+        }
+    }
+}
+
+private struct FlowTextLayout: Layout {
+    let horizontalSpacing: CGFloat
+    let verticalSpacing: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let maxWidth = proposal.width ?? .infinity
+        var currentX: CGFloat = 0
+        var currentY: CGFloat = 0
+        var lineHeight: CGFloat = 0
+        var maxLineWidth: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+
+            if currentX > 0, currentX + size.width > maxWidth {
+                maxLineWidth = max(maxLineWidth, currentX - horizontalSpacing)
+                currentX = 0
+                currentY += lineHeight + verticalSpacing
+                lineHeight = 0
+            }
+
+            currentX += size.width + horizontalSpacing
+            lineHeight = max(lineHeight, size.height)
+        }
+
+        if !subviews.isEmpty {
+            maxLineWidth = max(maxLineWidth, currentX - horizontalSpacing)
+            currentY += lineHeight
+        }
+
+        return CGSize(width: maxLineWidth, height: currentY)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var currentX = bounds.minX
+        var currentY = bounds.minY
+        var lineHeight: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+
+            if currentX > bounds.minX, currentX + size.width > bounds.maxX {
+                currentX = bounds.minX
+                currentY += lineHeight + verticalSpacing
+                lineHeight = 0
+            }
+
+            subview.place(
+                at: CGPoint(x: currentX, y: currentY),
+                proposal: ProposedViewSize(size)
+            )
+
+            currentX += size.width + horizontalSpacing
+            lineHeight = max(lineHeight, size.height)
         }
     }
 }
