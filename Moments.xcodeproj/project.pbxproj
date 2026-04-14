@@ -11,24 +11,33 @@
 		079F0B8954153ED7FFA38977 /* View+Glass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC72310E38EBEF64CC174FF /* View+Glass.swift */; };
 		0B8A6D770A4E8F0AB235FE7A /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A454604EA8126CA30C88E46A /* Color+Hex.swift */; };
 		0BECF6ADAB031B9AE4330C96 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F2FD4B2E62CCE92B56AE89 /* SettingsView.swift */; };
-		0C6A38A3F3A94AB4B5A5A5A5 /* IntroSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9F44D2A4B64729B8C2D3E4 /* IntroSheetView.swift */; };
 		0F4DD98EDE53A53DF745848E /* CountdownRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F1DB9AD5C5C99F9CD502E6 /* CountdownRepository.swift */; };
 		101945C06C7DAD4A4D717B31 /* EditCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C893FD9BAC0B25110AE1FA17 /* EditCountdownView.swift */; };
+		1505ADC2159BA9AE60DCF97A /* manifest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 01A179BD161DD902F6E4F906 /* manifest.txt */; };
 		1715BBD8EA7CA50A9BF9E0A8 /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81644C993BB4FF389537E4C4 /* SharedDataStore.swift */; };
+		2370BD3E84893A4D96D07D59 /* BradfordLL-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */; };
 		275C10D882BC0DC41D5027FC /* CountdownAppEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */; };
 		29AC6602E2B1E80B4811F659 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A454604EA8126CA30C88E46A /* Color+Hex.swift */; };
+		313CB18BEF32C29F6F1006B4 /* system.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3577909D5081385951BC6140 /* system.txt */; };
 		3D1243FD6B03D09E0BDA62C7 /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81644C993BB4FF389537E4C4 /* SharedDataStore.swift */; };
+		3EDCD316B1019D39B2F75ADC /* BradfordLL-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = BB20FB59689E15C57BD62E58 /* BradfordLL-Book.otf */; };
+		4004756376065617A6CF47C9 /* MomentDeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83732CCE2F337909DE208A8F /* MomentDeepLink.swift */; };
+		45E8A79DC8E4CA1F991D9E69 /* ManifestNotificationCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF9B75756531C7F1777198C /* ManifestNotificationCardModel.swift */; };
 		47FA59083373337CB08AC3BD /* CountdownProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0044636E666A16BCDED1CCED /* CountdownProvider.swift */; };
+		4BA80C091AF0231BEEE61F2C /* MomentPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F12CEF1897B09F366E6E6283 /* MomentPreviewViewModel.swift */; };
 		4C2BA38CE636B3E4A6F5A197 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F0161881DF6012EE26C4F0 /* PersistenceController.swift */; };
 		551B5A74EC8931D0244BDCFA /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295B4F955515A909874DCDF6 /* CalendarService.swift */; };
+		5B764D5CC06F34F2F6115802 /* BradfordLL-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = A764D051685A514CA9E98235 /* BradfordLL-Medium.otf */; };
 		5CFD43AC5166E06B4C4B87CB /* CountdownListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A878F14CB50B697ADBFCEDD5 /* CountdownListView.swift */; };
 		5E406BAB2EE7A0FA7BC88CA2 /* ProgressStartPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FD789458F240ED033C1398 /* ProgressStartPickerSection.swift */; };
-		61A2B3C4D5E6F708192A3B4C /* MomentDeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A2B3C4D5E6F708192A3B4B /* MomentDeepLink.swift */; };
-		61A2B3C4D5E6F708192A3B4D /* MomentDeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A2B3C4D5E6F708192A3B4B /* MomentDeepLink.swift */; };
+		6322696B456EF6D6B18CB43D /* BlurSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 09C74FF0F9520A5B30889534 /* BlurSwiftUI */; };
+		64C8DFD9822CB3E910C8F9A1 /* ManifestNotificationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568741B006D7CFBC97B42BF4 /* ManifestNotificationCard.swift */; };
 		666B2CDFDDECBB03B29C1C9C /* MomentsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3143AF35092DD5FA8CA97B19 /* MomentsApp.swift */; };
 		6768E6FC173F385292FDC5EB /* Moments.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9540726F389C28BEEAAF2446 /* Moments.xcdatamodeld */; };
 		68FD4858BC20A66321F6D2AA /* WidgetCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */; };
 		6A462D0AC9B180F1316ABDA9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27945F4762D1F80FF5B93926 /* SwiftUI.framework */; };
+		6A5D3DF9DAC961BE29DD0EA6 /* ReflectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4618C898BC88C486853851 /* ReflectionService.swift */; };
+		70F7247B3F81F3A184CE20EC /* BradfordLL-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4278A770D60414C1A7FE93DE /* BradfordLL-Regular.otf */; };
 		72915A86997186404BD35329 /* Countdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565D10A492681A7C42E01C6 /* Countdown.swift */; };
 		747E493CAC4F6A0F3BD39B3C /* BackgroundPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFE51D898B86FE8EEE527CA /* BackgroundPickerSection.swift */; };
 		75BCBA4F15CCDA388777BC3A /* DeveloperMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6795018E13A078626EFE240C /* DeveloperMenuView.swift */; };
@@ -36,29 +45,22 @@
 		7D133EA404D55FF5AE5B0C24 /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 355DA3487DC073A60B6857A7 /* ColorPalette.swift */; };
 		7DE45262ECCA220057ED3193 /* SFSymbolPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55909B66699820B699EED0F6 /* SFSymbolPickerView.swift */; };
 		7DE5E2E5F4C592064ABEFE89 /* CountdownEntity+Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16B8E850029658CE606FCFD8 /* CountdownEntity+Mapping.swift */; };
-		8B11C0A1D2E3F40516273849 /* MomentPreviewScrollEdgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C22D1B2E3F4051627384950 /* MomentPreviewScrollEdgeView.swift */; };
-		8B11C0A1D2E3F40516273850 /* MomentPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C22D1B2E3F4051627384951 /* MomentPreviewViewModel.swift */; };
 		8FD3EE9907EE0F6EA1A98943 /* ImageStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1FE3C03AE21E0C2F0563E3 /* ImageStorageService.swift */; };
+		9C30BA76600FB185FBC9E392 /* future.txt in Resources */ = {isa = PBXBuildFile; fileRef = 24E7F07CB2EBC623A6A53564 /* future.txt */; };
+		9CBC4B47A452C6C302B4132E /* IntroSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652C12E5F5D18E4C5BA08E0D /* IntroSheetView.swift */; };
 		9CEA28060EB697D45D69F140 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDD7F362590382735CAFACE /* WidgetKit.framework */; };
-		A901F0011111111111111111 /* BradfordLL-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = A901F0111111111111111111 /* BradfordLL-Book.otf */; };
-		A901F0022222222222222222 /* BradfordLL-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = A901F0222222222222222222 /* BradfordLL-Medium.otf */; };
-		A901F0033333333333333333 /* BradfordLL-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = A901F0333333333333333333 /* BradfordLL-Regular.otf */; };
-		A901F0044444444444444445 /* BradfordLL-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = A901F0555555555555555555 /* BradfordLL-Bold.otf */; };
-		B0A1C2D3E4F5678901234569 /* BlurSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C2D3E4F5678901234568 /* BlurSwiftUI */; };
 		A113A8D7FC7216CF0149F607 /* CountdownWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D212718BD9096D60168E8BC /* CountdownWidgetView.swift */; };
 		A13786BFC0E5C2118EA783D6 /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */; };
-		A1B2C3D4E5F60718293A4B5C /* MomentPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */; };
+		A3A27A0524CBAE39F298770A /* ManifestNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D589F23AC90A98A86AB675DC /* ManifestNotificationService.swift */; };
 		AE02A368854B537AD1723011 /* CountdownRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA841B2553A2BA3491EF4E3 /* CountdownRowView.swift */; };
 		AE7DD78D38B008A7FA9DF128 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */; };
-		AF12BC34DE56F78901234567 /* system.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234565 /* system.txt */; };
-		AF12BC34DE56F78901234568 /* past.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234566 /* past.txt */; };
-		AF12BC34DE56F78901234569 /* future.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234570 /* future.txt */; };
-		AF12BC34DE56F78901234571 /* manifest.txt in Resources */ = {isa = PBXBuildFile; fileRef = AF12BC34DE56F78901234572 /* manifest.txt */; };
-		B1C2D3E4F5061728394A5B6C /* ReflectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E2F30415263748A9B5C6D7 /* ReflectionService.swift */; };
+		B19B8BF1181B67AA9BBFB006 /* past.txt in Resources */ = {isa = PBXBuildFile; fileRef = D34E6C127CF17D82614620DB /* past.txt */; };
 		C1B4BA8394A75B001EFAE5C8 /* AddCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C70200D860A729B74D9CB5 /* AddCountdownView.swift */; };
+		C75E3E7D178119242DBA2F21 /* MomentPreviewScrollEdgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF8F75878D9196552AF66BB /* MomentPreviewScrollEdgeView.swift */; };
 		C7DAAECDC98D8B1685AC8311 /* MomentsWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641EF3FC55AFA909DB257418 /* MomentsWidgetBundle.swift */; };
 		C7FB49BA86E4F761B36C1DAE /* SelectCountdownIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000D4BFC4FACD369DD03E87D /* SelectCountdownIntent.swift */; };
 		E012AD4BC4192EA5F83B9E8D /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */; };
+		E935628191F64BA8705ED9F1 /* MomentDeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83732CCE2F337909DE208A8F /* MomentDeepLink.swift */; };
 		F7E34519A1805AF5A7141E52 /* WidgetCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */; };
 /* End PBXBuildFile section */
 
@@ -89,63 +91,67 @@
 /* Begin PBXFileReference section */
 		000D4BFC4FACD369DD03E87D /* SelectCountdownIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectCountdownIntent.swift; sourceTree = "<group>"; };
 		0044636E666A16BCDED1CCED /* CountdownProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownProvider.swift; sourceTree = "<group>"; };
+		01A179BD161DD902F6E4F906 /* manifest.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = manifest.txt; sourceTree = "<group>"; };
 		0AC72310E38EBEF64CC174FF /* View+Glass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Glass.swift"; sourceTree = "<group>"; };
 		1661F8FD807EB75471F4EC72 /* Moments.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Moments.entitlements; sourceTree = "<group>"; };
 		16B8E850029658CE606FCFD8 /* CountdownEntity+Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CountdownEntity+Mapping.swift"; sourceTree = "<group>"; };
 		16DD7DFA0319BC50C9174291 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		1810B5E3A4474B24B7421C61 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
-		1810B5E3A4474B24B7421C62 /* SharedConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SharedConfig.xcconfig; sourceTree = "<group>"; };
-		1C9F44D2A4B64729B8C2D3E4 /* IntroSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroSheetView.swift; sourceTree = "<group>"; };
 		1F1FE3C03AE21E0C2F0563E3 /* ImageStorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorageService.swift; sourceTree = "<group>"; };
 		1F322964288F951F948ED9E3 /* TillApp 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 3.xcdatamodel"; sourceTree = "<group>"; };
 		22F1DB9AD5C5C99F9CD502E6 /* CountdownRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownRepository.swift; sourceTree = "<group>"; };
+		24E7F07CB2EBC623A6A53564 /* future.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = future.txt; sourceTree = "<group>"; };
 		27945F4762D1F80FF5B93926 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		295B4F955515A909874DCDF6 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
 		2AA841B2553A2BA3491EF4E3 /* CountdownRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownRowView.swift; sourceTree = "<group>"; };
+		2AF8F75878D9196552AF66BB /* MomentPreviewScrollEdgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewScrollEdgeView.swift; sourceTree = "<group>"; };
+		2B9ADEC80CA776271B65EACC /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		2CFE51D898B86FE8EEE527CA /* BackgroundPickerSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPickerSection.swift; sourceTree = "<group>"; };
 		3143AF35092DD5FA8CA97B19 /* MomentsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentsApp.swift; sourceTree = "<group>"; };
+		3404F1AFA42993EF795C65BC /* Config.xcconfig.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = Config.xcconfig.example; sourceTree = "<group>"; };
 		355DA3487DC073A60B6857A7 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
+		3577909D5081385951BC6140 /* system.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = system.txt; sourceTree = "<group>"; };
+		4278A770D60414C1A7FE93DE /* BradfordLL-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Regular.otf"; sourceTree = "<group>"; };
 		45F0161881DF6012EE26C4F0 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		4682F02D937FCAC10D633671 /* TillApp 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 6.xcdatamodel"; sourceTree = "<group>"; };
+		46C295C3CAEC2A8A3E2E3BF0 /* TillApp 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 7.xcdatamodel"; sourceTree = "<group>"; };
 		4D212718BD9096D60168E8BC /* CountdownWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownWidgetView.swift; sourceTree = "<group>"; };
 		503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+SmartFormat.swift"; sourceTree = "<group>"; };
 		55909B66699820B699EED0F6 /* SFSymbolPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbolPickerView.swift; sourceTree = "<group>"; };
-		61A2B3C4D5E6F708192A3B4B /* MomentDeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentDeepLink.swift; sourceTree = "<group>"; };
+		568741B006D7CFBC97B42BF4 /* ManifestNotificationCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestNotificationCard.swift; sourceTree = "<group>"; };
 		5D4F941463FA621F50ECB980 /* TillApp 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 2.xcdatamodel"; sourceTree = "<group>"; };
 		641EF3FC55AFA909DB257418 /* MomentsWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentsWidgetBundle.swift; sourceTree = "<group>"; };
+		652C12E5F5D18E4C5BA08E0D /* IntroSheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroSheetView.swift; sourceTree = "<group>"; };
 		6795018E13A078626EFE240C /* DeveloperMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMenuView.swift; sourceTree = "<group>"; };
 		72D50D912CD761E02900BE22 /* TillApp 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 4.xcdatamodel"; sourceTree = "<group>"; };
 		7BF9FB726E1D289FBBC53F5C /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
+		7C4618C898BC88C486853851 /* ReflectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectionService.swift; sourceTree = "<group>"; };
 		81644C993BB4FF389537E4C4 /* SharedDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDataStore.swift; sourceTree = "<group>"; };
+		83732CCE2F337909DE208A8F /* MomentDeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentDeepLink.swift; sourceTree = "<group>"; };
+		8EF9B75756531C7F1777198C /* ManifestNotificationCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestNotificationCardModel.swift; sourceTree = "<group>"; };
+		90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Bold.otf"; sourceTree = "<group>"; };
 		914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownAppEntity.swift; sourceTree = "<group>"; };
-		9C22D1B2E3F4051627384950 /* MomentPreviewScrollEdgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewScrollEdgeView.swift; sourceTree = "<group>"; };
-		9C22D1B2E3F4051627384951 /* MomentPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewViewModel.swift; sourceTree = "<group>"; };
-		9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 5.xcdatamodel"; sourceTree = "<group>"; };
-		A901F0111111111111111111 /* BradfordLL-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Book.otf"; sourceTree = "<group>"; };
-		A901F0222222222222222222 /* BradfordLL-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Medium.otf"; sourceTree = "<group>"; };
-		A901F0333333333333333333 /* BradfordLL-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Regular.otf"; sourceTree = "<group>"; };
-		A901F0555555555555555555 /* BradfordLL-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Bold.otf"; sourceTree = "<group>"; };
 		A454604EA8126CA30C88E46A /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
-		A7B8C9D0E1F23456789ABCDE /* TillApp 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 6.xcdatamodel"; sourceTree = "<group>"; };
+		A764D051685A514CA9E98235 /* BradfordLL-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Medium.otf"; sourceTree = "<group>"; };
 		A878F14CB50B697ADBFCEDD5 /* CountdownListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownListView.swift; sourceTree = "<group>"; };
 		A8F2FD4B2E62CCE92B56AE89 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		AF12BC34DE56F78901234565 /* system.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = system.txt; sourceTree = "<group>"; };
-		AF12BC34DE56F78901234566 /* past.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = past.txt; sourceTree = "<group>"; };
-		AF12BC34DE56F78901234570 /* future.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = future.txt; sourceTree = "<group>"; };
-		AF12BC34DE56F78901234572 /* manifest.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = manifest.txt; sourceTree = "<group>"; };
+		AAF1CE8F6043ED9BAB4F355B /* SharedConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SharedConfig.xcconfig; sourceTree = "<group>"; };
 		B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCountdown.swift; sourceTree = "<group>"; };
-		C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewView.swift; sourceTree = "<group>"; };
+		BB20FB59689E15C57BD62E58 /* BradfordLL-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Book.otf"; sourceTree = "<group>"; };
 		C4BF3C7A6776967BD8E726B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C565D10A492681A7C42E01C6 /* Countdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Countdown.swift; sourceTree = "<group>"; };
 		C893FD9BAC0B25110AE1FA17 /* EditCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCountdownView.swift; sourceTree = "<group>"; };
 		D032B9A9BACA5B224295B2E4 /* Moments.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Moments.entitlements; sourceTree = "<group>"; };
-		D1E2F30415263748A9B5C6D7 /* ReflectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReflectionService.swift; sourceTree = "<group>"; };
 		D27D809EF8B82CF274B52103 /* TillApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TillApp.xcdatamodel; sourceTree = "<group>"; };
+		D34E6C127CF17D82614620DB /* past.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = past.txt; sourceTree = "<group>"; };
+		D589F23AC90A98A86AB675DC /* ManifestNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestNotificationService.swift; sourceTree = "<group>"; };
 		D6C70200D860A729B74D9CB5 /* AddCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCountdownView.swift; sourceTree = "<group>"; };
 		DBFA2E1C9FADC24754179453 /* Moments.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Moments.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2FD789458F240ED033C1398 /* ProgressStartPickerSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStartPickerSection.swift; sourceTree = "<group>"; };
 		EBDD7F362590382735CAFACE /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		EC6495D3A08C241F976E4B59 /* TillApp 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 5.xcdatamodel"; sourceTree = "<group>"; };
+		F12CEF1897B09F366E6E6283 /* MomentPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewViewModel.swift; sourceTree = "<group>"; };
 		F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		FF69A41376D167C2EE412AA6 /* MomentsWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MomentsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF69A41376D167C2EE412AA6 /* MomentsWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = MomentsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,11 +164,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B0A1C2D3E4F567890123456A /* Frameworks */ = {
+		D5845F8745B0D7F2837FC1EF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B0A1C2D3E4F5678901234569 /* BlurSwiftUI in Frameworks */,
+				6322696B456EF6D6B18CB43D /* BlurSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,23 +229,43 @@
 			path = Developer;
 			sourceTree = "<group>";
 		};
+		5B2DE9579DA20C5BF0BDA066 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				872F43BF6D76DC7348FC348D /* Fonts */,
+				F1DA050FEE1F12B4C943D4E0 /* Prompts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		6F21C72B82D0379D827E3CD8 /* Features */ = {
 			isa = PBXGroup;
 			children = (
 				4E24DB1387747FC2016E010B /* Add */,
 				5697348DA675B5EE968A647B /* Developer */,
 				CBFEAF0587D95E8D1AE836B7 /* List */,
-				8A5B2F27DA584E6DA8A7F3D9 /* Onboarding */,
-				E1F2031425364758697A8B9C /* Preview */,
+				8A2B58915E77E510DB1A70DA /* Onboarding */,
+				A40C0CFC42E7D99CD45C41F1 /* Preview */,
 				EC06996EA6ADC5587688DF18 /* Settings */,
 			);
 			path = Features;
 			sourceTree = "<group>";
 		};
-		8A5B2F27DA584E6DA8A7F3D9 /* Onboarding */ = {
+		872F43BF6D76DC7348FC348D /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				1C9F44D2A4B64729B8C2D3E4 /* IntroSheetView.swift */,
+				90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */,
+				BB20FB59689E15C57BD62E58 /* BradfordLL-Book.otf */,
+				A764D051685A514CA9E98235 /* BradfordLL-Medium.otf */,
+				4278A770D60414C1A7FE93DE /* BradfordLL-Regular.otf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		8A2B58915E77E510DB1A70DA /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				652C12E5F5D18E4C5BA08E0D /* IntroSheetView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -249,7 +275,8 @@
 			children = (
 				295B4F955515A909874DCDF6 /* CalendarService.swift */,
 				1F1FE3C03AE21E0C2F0563E3 /* ImageStorageService.swift */,
-				D1E2F30415263748A9B5C6D7 /* ReflectionService.swift */,
+				D589F23AC90A98A86AB675DC /* ManifestNotificationService.swift */,
+				7C4618C898BC88C486853851 /* ReflectionService.swift */,
 				7BF9FB726E1D289FBBC53F5C /* TimerManager.swift */,
 			);
 			path = Services;
@@ -264,52 +291,33 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		AF12BC34DE56F78901234563 /* Resources */ = {
+		A40C0CFC42E7D99CD45C41F1 /* Preview */ = {
 			isa = PBXGroup;
 			children = (
-				A901F0444444444444444444 /* Fonts */,
-				AF12BC34DE56F78901234564 /* Prompts */,
+				568741B006D7CFBC97B42BF4 /* ManifestNotificationCard.swift */,
+				8EF9B75756531C7F1777198C /* ManifestNotificationCardModel.swift */,
+				2AF8F75878D9196552AF66BB /* MomentPreviewScrollEdgeView.swift */,
+				F12CEF1897B09F366E6E6283 /* MomentPreviewViewModel.swift */,
 			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		A901F0444444444444444444 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				A901F0111111111111111111 /* BradfordLL-Book.otf */,
-				A901F0222222222222222222 /* BradfordLL-Medium.otf */,
-				A901F0333333333333333333 /* BradfordLL-Regular.otf */,
-				A901F0555555555555555555 /* BradfordLL-Bold.otf */,
-			);
-			path = Fonts;
-			sourceTree = "<group>";
-		};
-		AF12BC34DE56F78901234564 /* Prompts */ = {
-			isa = PBXGroup;
-			children = (
-				AF12BC34DE56F78901234565 /* system.txt */,
-				AF12BC34DE56F78901234566 /* past.txt */,
-				AF12BC34DE56F78901234570 /* future.txt */,
-				AF12BC34DE56F78901234572 /* manifest.txt */,
-			);
-			path = Prompts;
+			path = Preview;
 			sourceTree = "<group>";
 		};
 		BFDE012D4F382C26E35B93CA /* Moments */ = {
 			isa = PBXGroup;
 			children = (
 				F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */,
-				1810B5E3A4474B24B7421C61 /* Config.xcconfig */,
-				1810B5E3A4474B24B7421C62 /* SharedConfig.xcconfig */,
+				2B9ADEC80CA776271B65EACC /* Config.xcconfig */,
+				3404F1AFA42993EF795C65BC /* Config.xcconfig.example */,
 				16DD7DFA0319BC50C9174291 /* Info.plist */,
 				D032B9A9BACA5B224295B2E4 /* Moments.entitlements */,
 				3143AF35092DD5FA8CA97B19 /* MomentsApp.swift */,
+				AAF1CE8F6043ED9BAB4F355B /* SharedConfig.xcconfig */,
 				E5F9BF08D7D46E37915E0E0C /* Extensions */,
 				6F21C72B82D0379D827E3CD8 /* Features */,
 				D9D01F1472654923A073774B /* Models */,
 				9540726F389C28BEEAAF2446 /* Moments.xcdatamodeld */,
 				EE4170D91F6AF16D74960701 /* Persistence */,
-				AF12BC34DE56F78901234563 /* Resources */,
+				5B2DE9579DA20C5BF0BDA066 /* Resources */,
 				90B2584EB416A0E5BE988059 /* Services */,
 			);
 			path = Moments;
@@ -331,16 +339,6 @@
 				C565D10A492681A7C42E01C6 /* Countdown.swift */,
 			);
 			path = Models;
-			sourceTree = "<group>";
-		};
-		E1F2031425364758697A8B9C /* Preview */ = {
-			isa = PBXGroup;
-			children = (
-				9C22D1B2E3F4051627384950 /* MomentPreviewScrollEdgeView.swift */,
-				C1D2E3F40516273849A5B6C7 /* MomentPreviewView.swift */,
-				9C22D1B2E3F4051627384951 /* MomentPreviewViewModel.swift */,
-			);
-			path = Preview;
 			sourceTree = "<group>";
 		};
 		E5F9BF08D7D46E37915E0E0C /* Extensions */ = {
@@ -369,12 +367,23 @@
 			path = Persistence;
 			sourceTree = "<group>";
 		};
+		F1DA050FEE1F12B4C943D4E0 /* Prompts */ = {
+			isa = PBXGroup;
+			children = (
+				24E7F07CB2EBC623A6A53564 /* future.txt */,
+				01A179BD161DD902F6E4F906 /* manifest.txt */,
+				D34E6C127CF17D82614620DB /* past.txt */,
+				3577909D5081385951BC6140 /* system.txt */,
+			);
+			path = Prompts;
+			sourceTree = "<group>";
+		};
 		F48DE68C823765738F4A92A3 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
 				A454604EA8126CA30C88E46A /* Color+Hex.swift */,
 				503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */,
-				61A2B3C4D5E6F708192A3B4B /* MomentDeepLink.swift */,
+				83732CCE2F337909DE208A8F /* MomentDeepLink.swift */,
 				81644C993BB4FF389537E4C4 /* SharedDataStore.swift */,
 				B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */,
 			);
@@ -388,9 +397,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4A2A6B6E85FCE9E6DE682E2D /* Build configuration list for PBXNativeTarget "Moments" */;
 			buildPhases = (
-				B0A1C2D3E4F567890123456A /* Frameworks */,
 				B7AABD747DB74C0B3F03CBEE /* Sources */,
 				76C804615BBB58FD8BBE3A10 /* Resources */,
+				D5845F8745B0D7F2837FC1EF /* Frameworks */,
 				96174BC7E5110500E331EF59 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -400,7 +409,7 @@
 			);
 			name = Moments;
 			packageProductDependencies = (
-				B0A1C2D3E4F5678901234568 /* BlurSwiftUI */,
+				09C74FF0F9520A5B30889534 /* BlurSwiftUI */,
 			);
 			productName = Moments;
 			productReference = DBFA2E1C9FADC24754179453 /* Moments.app */;
@@ -431,12 +440,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					96A51F6082F0A50C126C394A = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					FA3E61A3D1BF9BC1A07F81A8 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -451,7 +462,7 @@
 			mainGroup = 44C09C9B7CDA9E8C293B09D6;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				B0A1C2D3E4F5678901234567 /* XCRemoteSwiftPackageReference "BlurUIKit" */,
+				30B0EC24FE4F979D67AE5D58 /* XCRemoteSwiftPackageReference "BlurUIKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 15B33884CBCC3BED21E5F72F /* Products */;
@@ -470,14 +481,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				AE7DD78D38B008A7FA9DF128 /* Assets.xcassets in Resources */,
-				AF12BC34DE56F78901234567 /* system.txt in Resources */,
-				AF12BC34DE56F78901234568 /* past.txt in Resources */,
-				AF12BC34DE56F78901234569 /* future.txt in Resources */,
-				AF12BC34DE56F78901234571 /* manifest.txt in Resources */,
-				A901F0011111111111111111 /* BradfordLL-Book.otf in Resources */,
-				A901F0022222222222222222 /* BradfordLL-Medium.otf in Resources */,
-				A901F0033333333333333333 /* BradfordLL-Regular.otf in Resources */,
-				A901F0044444444444444445 /* BradfordLL-Bold.otf in Resources */,
+				2370BD3E84893A4D96D07D59 /* BradfordLL-Bold.otf in Resources */,
+				3EDCD316B1019D39B2F75ADC /* BradfordLL-Book.otf in Resources */,
+				5B764D5CC06F34F2F6115802 /* BradfordLL-Medium.otf in Resources */,
+				70F7247B3F81F3A184CE20EC /* BradfordLL-Regular.otf in Resources */,
+				9C30BA76600FB185FBC9E392 /* future.txt in Resources */,
+				1505ADC2159BA9AE60DCF97A /* manifest.txt in Resources */,
+				B19B8BF1181B67AA9BBFB006 /* past.txt in Resources */,
+				313CB18BEF32C29F6F1006B4 /* system.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,9 +502,9 @@
 				0B8A6D770A4E8F0AB235FE7A /* Color+Hex.swift in Sources */,
 				275C10D882BC0DC41D5027FC /* CountdownAppEntity.swift in Sources */,
 				47FA59083373337CB08AC3BD /* CountdownProvider.swift in Sources */,
-				61A2B3C4D5E6F708192A3B4D /* MomentDeepLink.swift in Sources */,
 				A113A8D7FC7216CF0149F607 /* CountdownWidgetView.swift in Sources */,
 				E012AD4BC4192EA5F83B9E8D /* Date+SmartFormat.swift in Sources */,
+				4004756376065617A6CF47C9 /* MomentDeepLink.swift in Sources */,
 				C7DAAECDC98D8B1685AC8311 /* MomentsWidgetBundle.swift in Sources */,
 				C7FB49BA86E4F761B36C1DAE /* SelectCountdownIntent.swift in Sources */,
 				1715BBD8EA7CA50A9BF9E0A8 /* SharedDataStore.swift in Sources */,
@@ -519,16 +530,18 @@
 				75BCBA4F15CCDA388777BC3A /* DeveloperMenuView.swift in Sources */,
 				101945C06C7DAD4A4D717B31 /* EditCountdownView.swift in Sources */,
 				8FD3EE9907EE0F6EA1A98943 /* ImageStorageService.swift in Sources */,
-				0C6A38A3F3A94AB4B5A5A5A5 /* IntroSheetView.swift in Sources */,
-				61A2B3C4D5E6F708192A3B4C /* MomentDeepLink.swift in Sources */,
+				9CBC4B47A452C6C302B4132E /* IntroSheetView.swift in Sources */,
+				64C8DFD9822CB3E910C8F9A1 /* ManifestNotificationCard.swift in Sources */,
+				45E8A79DC8E4CA1F991D9E69 /* ManifestNotificationCardModel.swift in Sources */,
+				A3A27A0524CBAE39F298770A /* ManifestNotificationService.swift in Sources */,
+				E935628191F64BA8705ED9F1 /* MomentDeepLink.swift in Sources */,
+				C75E3E7D178119242DBA2F21 /* MomentPreviewScrollEdgeView.swift in Sources */,
+				4BA80C091AF0231BEEE61F2C /* MomentPreviewViewModel.swift in Sources */,
 				6768E6FC173F385292FDC5EB /* Moments.xcdatamodeld in Sources */,
-				8B11C0A1D2E3F40516273849 /* MomentPreviewScrollEdgeView.swift in Sources */,
-				A1B2C3D4E5F60718293A4B5C /* MomentPreviewView.swift in Sources */,
-				8B11C0A1D2E3F40516273850 /* MomentPreviewViewModel.swift in Sources */,
 				666B2CDFDDECBB03B29C1C9C /* MomentsApp.swift in Sources */,
 				4C2BA38CE636B3E4A6F5A197 /* PersistenceController.swift in Sources */,
 				5E406BAB2EE7A0FA7BC88CA2 /* ProgressStartPickerSection.swift in Sources */,
-				B1C2D3E4F5061728394A5B6C /* ReflectionService.swift in Sources */,
+				6A5D3DF9DAC961BE29DD0EA6 /* ReflectionService.swift in Sources */,
 				7DE45262ECCA220057ED3193 /* SFSymbolPickerView.swift in Sources */,
 				0BECF6ADAB031B9AE4330C96 /* SettingsView.swift in Sources */,
 				3D1243FD6B03D09E0BDA62C7 /* SharedDataStore.swift in Sources */,
@@ -553,7 +566,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -585,10 +597,9 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -602,7 +613,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -633,7 +643,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -665,10 +674,9 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -689,7 +697,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -698,7 +705,7 @@
 		};
 		82A763699C4D80B1A7125403 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1810B5E3A4474B24B7421C62 /* SharedConfig.xcconfig */;
+			baseConfigurationReference = AAF1CE8F6043ED9BAB4F355B /* SharedConfig.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
@@ -739,7 +746,7 @@
 		};
 		FBA3D172D26C40F1402D20DD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1810B5E3A4474B24B7421C62 /* SharedConfig.xcconfig */;
+			baseConfigurationReference = AAF1CE8F6043ED9BAB4F355B /* SharedConfig.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
@@ -791,20 +798,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B0A1C2D3E4F5678901234567 /* XCRemoteSwiftPackageReference "BlurUIKit" */ = {
+		30B0EC24FE4F979D67AE5D58 /* XCRemoteSwiftPackageReference "BlurUIKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TimOliver/BlurUIKit.git";
 			requirement = {
-				kind = branch;
-				branch = main;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B0A1C2D3E4F5678901234568 /* BlurSwiftUI */ = {
+		09C74FF0F9520A5B30889534 /* BlurSwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B0A1C2D3E4F5678901234567 /* XCRemoteSwiftPackageReference "BlurUIKit" */;
+			package = 30B0EC24FE4F979D67AE5D58 /* XCRemoteSwiftPackageReference "BlurUIKit" */;
 			productName = BlurSwiftUI;
 		};
 /* End XCSwiftPackageProductDependency section */
@@ -816,11 +823,12 @@
 				5D4F941463FA621F50ECB980 /* TillApp 2.xcdatamodel */,
 				1F322964288F951F948ED9E3 /* TillApp 3.xcdatamodel */,
 				72D50D912CD761E02900BE22 /* TillApp 4.xcdatamodel */,
-				9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */,
-				A7B8C9D0E1F23456789ABCDE /* TillApp 6.xcdatamodel */,
+				EC6495D3A08C241F976E4B59 /* TillApp 5.xcdatamodel */,
+				4682F02D937FCAC10D633671 /* TillApp 6.xcdatamodel */,
+				46C295C3CAEC2A8A3E2E3BF0 /* TillApp 7.xcdatamodel */,
 				D27D809EF8B82CF274B52103 /* TillApp.xcdatamodel */,
 			);
-			currentVersion = A7B8C9D0E1F23456789ABCDE /* TillApp 6.xcdatamodel */;
+			currentVersion = 46C295C3CAEC2A8A3E2E3BF0 /* TillApp 7.xcdatamodel */;
 			path = Moments.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

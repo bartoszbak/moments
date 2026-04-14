@@ -253,7 +253,10 @@ struct CountdownListView: View {
             Text("Add first event")
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(emptyStateButtonForegroundColor)
+                .lineLimit(1)
+                .padding(.horizontal, 28)
                 .frame(height: 56)
+                .frame(minWidth: 200)
                 .frame(maxWidth: emptyStateButtonWidth)
                 .background(
                     Capsule()

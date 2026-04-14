@@ -32,37 +32,10 @@ struct IntroSheetView: View {
     ]
 
     var body: some View {
-        Group {
-            if #available(iOS 26, *) {
-                introScrollView
-                    .safeAreaBar(
-                        edge: .bottom,
-                        alignment: .center,
-                        spacing: 0,
-                        content: makeSafeAreaBarContent
-                    )
-            } else {
-                introScrollView
-                    .overlay(alignment: .bottom) {
-                        Button(action: onGetStarted) {
-                            Text("Continue")
-                                .font(.headline.weight(.semibold))
-                                .foregroundStyle(primaryButtonLabelColor)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 56)
-                                .background(
-                                    Capsule()
-                                        .fill(primaryButtonColor)
-                                )
-                        }
-                        .buttonStyle(.plain)
-                        .padding(.horizontal, 24)
-                        .padding(.top, 12)
-                        .padding(.bottom, 12)
-                        .background(Color(.systemBackground))
-                    }
+        introScrollView
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                bottomInsetContent
             }
-        }
         .background(Color(.systemBackground))
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
@@ -129,7 +102,7 @@ struct IntroSheetView: View {
         }
     }
 
-    private func makeSafeAreaBarContent() -> some View {
+    private var bottomInsetContent: some View {
         Button(action: onGetStarted) {
             Text("Continue")
                 .font(.headline.weight(.semibold))
@@ -145,6 +118,7 @@ struct IntroSheetView: View {
         .padding(.horizontal, 24)
         .padding(.top, 12)
         .padding(.bottom, 12)
+        .background(Color(.systemBackground))
     }
 
     private var preferredColorScheme: ColorScheme? {

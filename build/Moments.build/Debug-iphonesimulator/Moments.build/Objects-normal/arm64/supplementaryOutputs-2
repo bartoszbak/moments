@@ -1,0 +1,30 @@
+{
+  "/Users/bartbak/Repo/Moments/Moments/Features/List/CountdownListView.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownListView.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownListView.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownListView.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownListView.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownListView.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Moments/Models/ColorPalette.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ColorPalette.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ColorPalette.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ColorPalette.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ColorPalette.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ColorPalette.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Moments/Models/Countdown.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/Countdown.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/Countdown.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/Countdown.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/Countdown.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/Countdown.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Moments/Persistence/CountdownEntity+Mapping.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownEntity+Mapping.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownEntity+Mapping.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownEntity+Mapping.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownEntity+Mapping.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/CountdownEntity+Mapping.swiftdeps"
+  }
+}

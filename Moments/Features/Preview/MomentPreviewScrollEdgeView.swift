@@ -1,5 +1,6 @@
 import BlurSwiftUI
 import SwiftUI
+import UIKit
 
 struct MomentPreviewScrollEdgeView: View {
     let countdownID: UUID
@@ -10,6 +11,7 @@ struct MomentPreviewScrollEdgeView: View {
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
     @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
+    @AppStorage(AppSettingsKeys.backgroundGradientEnabled) private var backgroundGradientEnabled = AppSettingsDefaults.backgroundGradientEnabled
 
     @StateObject private var viewModel: MomentPreviewViewModel
     @State private var showingEditSheet = false
@@ -60,33 +62,17 @@ struct MomentPreviewScrollEdgeView: View {
                 )
             }
 
-            Group {
-                if #available(iOS 26, *) {
-                    baseScreen.safeAreaBar(
-                        edge: .bottom,
-                        alignment: .center,
-                        spacing: 0,
-                        content: {
-                            bottomSafeAreaBarContent(
-                                for: countdown,
-                                viewportWidth: proxy.size.width,
-                                bottomSafeAreaInset: proxy.safeAreaInsets.bottom
-                            )
-                        }
-                    )
-                } else {
-                    baseScreen.safeAreaInset(
-                        edge: .bottom,
-                        spacing: 0,
-                        content: {
-                            legacyBottomInsetContent(
-                                for: countdown,
-                                viewportWidth: proxy.size.width
-                            )
-                        }
+            baseScreen.safeAreaInset(
+                edge: .bottom,
+                spacing: 0,
+                content: {
+                    bottomInsetContent(
+                        for: countdown,
+                        viewportWidth: proxy.size.width,
+                        bottomSafeAreaInset: proxy.safeAreaInsets.bottom
                     )
                 }
-            }
+            )
         }
         .navigationTitle("Moment")
         .navigationBarTitleDisplayMode(.inline)
@@ -148,9 +134,24 @@ struct MomentPreviewScrollEdgeView: View {
                 .padding(.horizontal, 32)
                 .padding(.top, 28)
                 .padding(.bottom, bottomContentPadding)
-                .animation(.smooth(duration: 0.4, extraBounce: 0), value: viewModel.shouldShowReflectionCard)
-                .animation(.smooth(duration: 0.4, extraBounce: 0), value: heroHeight)
-                .animation(.smooth(duration: 0.4, extraBounce: 0), value: reflectionHeight)
+                .animation(
+                    shouldAnimatePreviewLayout(for: countdown)
+                        ? .smooth(duration: 0.4, extraBounce: 0)
+                        : nil,
+                    value: viewModel.shouldShowReflectionCard
+                )
+                .animation(
+                    shouldAnimatePreviewLayout(for: countdown)
+                        ? .smooth(duration: 0.4, extraBounce: 0)
+                        : nil,
+                    value: heroHeight
+                )
+                .animation(
+                    shouldAnimatePreviewLayout(for: countdown)
+                        ? .smooth(duration: 0.4, extraBounce: 0)
+                        : nil,
+                    value: reflectionHeight
+                )
         }
         .scrollIndicators(.hidden)
     }
@@ -263,6 +264,9 @@ struct MomentPreviewScrollEdgeView: View {
                             ? primaryReflectionFont(for: countdown)
                             : .system(.body, design: .rounded),
                         color: viewModel.errorText == nil ? .primary : .secondary,
+                        fontDesignOverride: countdown.isFutureManifestation ? nil : .rounded,
+                        verticalSpacing: reflectionLineSpacing(for: countdown),
+                        paragraphSpacing: reflectionParagraphSpacing(for: countdown),
                         onRevealCompleted: handleSurfaceRevealCompleted
                     )
                 }
@@ -272,20 +276,38 @@ struct MomentPreviewScrollEdgeView: View {
                         text: viewModel.reflectionDisplayText,
                         font: primaryReflectionFont(for: countdown),
                         color: .primary,
+                        fontDesignOverride: countdown.isFutureManifestation ? nil : .rounded,
+                        verticalSpacing: reflectionLineSpacing(for: countdown),
+                        paragraphSpacing: reflectionParagraphSpacing(for: countdown),
                         onRevealCompleted: { handleRevealCompleted(for: 1) }
                     )
                     .transition(.opacity)
                 }
 
                 if !viewModel.guidanceDisplayText.isEmpty {
-                    WordRevealText(
-                        text: viewModel.guidanceDisplayText,
-                        font: secondaryReflectionFont(for: countdown),
-                        color: .primary,
-                        alignment: countdown.isFutureManifestation ? .center : .leading,
-                        onRevealCompleted: { handleRevealCompleted(for: viewModel.guidanceStage) }
-                    )
-                    .transition(.opacity)
+                    if countdown.isFutureManifestation {
+                        NativeRevealText(
+                            text: viewModel.guidanceDisplayText,
+                            font: secondaryReflectionFont(for: countdown),
+                            color: .primary,
+                            alignment: .center,
+                            fontDesignOverride: nil,
+                            onRevealCompleted: { handleRevealCompleted(for: viewModel.guidanceStage) }
+                        )
+                        .transition(.opacity)
+                    } else {
+                        WordRevealText(
+                            text: viewModel.guidanceDisplayText,
+                            font: secondaryReflectionFont(for: countdown),
+                            color: .primary,
+                            alignment: .leading,
+                            fontDesignOverride: .rounded,
+                            verticalSpacing: reflectionLineSpacing(for: countdown),
+                            paragraphSpacing: reflectionParagraphSpacing(for: countdown),
+                            onRevealCompleted: { handleRevealCompleted(for: viewModel.guidanceStage) }
+                        )
+                        .transition(.opacity)
+                    }
                 }
             }
         }
@@ -304,7 +326,7 @@ struct MomentPreviewScrollEdgeView: View {
             )
         }
 
-        return .system(.body, design: .rounded, weight: .medium)
+        return .system(size: 20, weight: .medium, design: .rounded)
     }
 
     private func secondaryReflectionFont(for countdown: Countdown) -> Font {
@@ -312,7 +334,7 @@ struct MomentPreviewScrollEdgeView: View {
             return AppTypography.manifestationFont(
                 relativeTo: .body,
                 variant: .book,
-                sizeAdjustment: 2
+                sizeAdjustment: 3
             )
         }
 
@@ -346,39 +368,61 @@ struct MomentPreviewScrollEdgeView: View {
         .allowsHitTesting(!viewModel.isLoadingReflection)
     }
 
-    @available(iOS 26.0, *)
-    private func bottomSafeAreaBarContent(
+    @ViewBuilder
+    private func bottomInsetContent(
         for countdown: Countdown,
         viewportWidth: CGFloat,
         bottomSafeAreaInset: CGFloat
     ) -> some View {
-        ZStack(alignment: .bottom) {
-            VariableBlur(direction: .up)
-                .maximumBlurRadius(2)
-                .blurStartingInset(nil)
-                .dimmingTintColor(.red)
-                .dimmingAlpha(nil)
-                .passesTouchesThrough(true)
-                .frame(maxWidth: .infinity)
-                .frame(height: bottomBlurBarHeight + (bottomSafeAreaInset * 2))
-                .offset(y: bottomSafeAreaInset)
-
-            if viewModel.showsBottomPrimaryAction {
-                primaryActionButton(for: countdown)
-                    .frame(
-                        maxWidth: readableContentWidth(
-                            for: viewportWidth,
-                            horizontalPadding: 24
-                        )
-                    )
-                    .padding(.horizontal, 24)
-                    .padding(.top, 12)
-                    .padding(.bottom, 12)
+        if #available(iOS 26, *) {
+            ZStack(alignment: .bottom) {
+                VariableBlur(direction: .up)
+                    .maximumBlurRadius(2)
+                    .blurStartingInset(nil)
+                    .dimmingTintColor(nil)
+                    .dimmingAlpha(nil)
+                    .dimmingOvershoot(nil)
+                    .dimmingStartingInset(nil)
+                    .passesTouchesThrough(true)
                     .frame(maxWidth: .infinity)
+                    .frame(height: bottomBlurGradientHeight + (bottomSafeAreaInset * 2))
+                    .offset(y: bottomSafeAreaInset)
+
+                LinearGradient(
+                    stops: [
+                        .init(color: Color(uiColor: .systemBackground).opacity(0), location: 0),
+                        .init(color: Color(uiColor: .systemBackground).opacity(1), location: 1)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: bottomBlurGradientHeight + (bottomSafeAreaInset * 2))
+                .offset(y: bottomSafeAreaInset)
+                .allowsHitTesting(false)
+
+                if viewModel.showsBottomPrimaryAction {
+                    primaryActionButton(for: countdown)
+                        .frame(
+                            maxWidth: readableContentWidth(
+                                for: viewportWidth,
+                                horizontalPadding: 24
+                            )
+                        )
+                        .padding(.horizontal, 24)
+                        .padding(.top, 12)
+                        .padding(.bottom, 12)
+                        .frame(maxWidth: .infinity)
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .bottom)
+            .ignoresSafeArea(edges: .bottom)
+        } else {
+            legacyBottomInsetContent(
+                for: countdown,
+                viewportWidth: viewportWidth
+            )
         }
-        .frame(maxWidth: .infinity, alignment: .bottom)
-        .ignoresSafeArea(edges: .bottom)
     }
 
     @ViewBuilder
@@ -398,8 +442,17 @@ struct MomentPreviewScrollEdgeView: View {
         }
     }
 
+    @ViewBuilder
     private func previewBackground(for countdown: Countdown) -> some View {
-        Color(.systemBackground)
+        if backgroundGradientEnabled {
+            LinearGradient(
+                colors: [leadingBackgroundColor, trailingBackgroundColor],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        } else {
+            Color(.systemBackground)
+        }
     }
 
     private func readableContentWidth(for viewportWidth: CGFloat, horizontalPadding: CGFloat) -> CGFloat {
@@ -471,10 +524,30 @@ struct MomentPreviewScrollEdgeView: View {
         countdown.isFutureManifestation ? 32 : 14
     }
 
+    private func reflectionLineSpacing(for countdown: Countdown) -> CGFloat {
+        countdown.isFutureManifestation ? 9 : 4
+    }
+
+    private func reflectionParagraphSpacing(for countdown: Countdown) -> CGFloat {
+        countdown.isFutureManifestation ? 22 : 18
+    }
+
     private var previewSymbolColor: Color {
         colorScheme == .dark
             ? Color.white.opacity(0.72)
             : Color.black.opacity(0.42)
+    }
+
+    private var effectiveColorScheme: ColorScheme {
+        preferredColorScheme ?? colorScheme
+    }
+
+    private var leadingBackgroundColor: Color {
+        AppTheme.baseInterfaceTintColor(from: interfaceTintHex).opacity(0.33)
+    }
+
+    private var trailingBackgroundColor: Color {
+        effectiveColorScheme == .dark ? .black : .white
     }
 
     private var editButtonColor: Color {
@@ -503,13 +576,14 @@ struct MomentPreviewScrollEdgeView: View {
 
     private var bottomContentPadding: CGFloat {
         if #available(iOS 26, *) {
-            return viewModel.showsBottomPrimaryAction ? 112 : 76
+            return viewModel.showsBottomPrimaryAction ? 112 : 44
         } else {
             return 28
         }
     }
 
     private func heroTopSpacing(for viewportHeight: CGFloat) -> CGFloat {
+        guard shouldCenterHeroVertically else { return 0 }
         guard heroHeight > 0 else { return 0 }
 
         let availableHeight = max(viewportHeight - 28 - bottomContentPadding, 0)
@@ -520,6 +594,14 @@ struct MomentPreviewScrollEdgeView: View {
     private var reflectionSectionHeight: CGFloat {
         guard viewModel.shouldShowReflectionCard else { return 0 }
         return reflectionHeight > 0 ? reflectionHeight + 28 : 0
+    }
+
+    private var shouldCenterHeroVertically: Bool {
+        !viewModel.shouldShowReflectionCard || countdown?.isFutureManifestation == true
+    }
+
+    private func shouldAnimatePreviewLayout(for countdown: Countdown) -> Bool {
+        true
     }
 
     private func handleSurfaceRevealCompleted() {
@@ -547,6 +629,11 @@ struct MomentPreviewScrollEdgeView: View {
     private var bottomBlurBarHeight: CGFloat {
         viewModel.showsBottomPrimaryAction ? 28 : 19
     }
+
+    @available(iOS 26.0, *)
+    private var bottomBlurGradientHeight: CGFloat {
+        viewModel.showsBottomPrimaryAction ? 52 : 40
+    }
 }
 
 private struct WordRevealText: View {
@@ -554,15 +641,21 @@ private struct WordRevealText: View {
     let font: Font
     let color: Color
     var alignment: HorizontalAlignment = .leading
+    var fontDesignOverride: Font.Design? = .rounded
     var verticalSpacing: CGFloat = 4
     var paragraphSpacing: CGFloat = 18
     var onRevealCompleted: (() -> Void)? = nil
 
+    @State private var availableWidth: CGFloat = 0
+    @State private var measuredLineHeight: CGFloat = 0
     @State private var revealedWordCount = 0
     @State private var revealTask: Task<Void, Never>?
 
+    private var normalizedText: String {
+        text.replacingOccurrences(of: "\r\n", with: "\n")
+    }
+
     private var paragraphs: [Paragraph] {
-        let normalizedText = text.replacingOccurrences(of: "\r\n", with: "\n")
         let rawParagraphs = normalizedText
             .components(separatedBy: "\n\n")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -578,7 +671,10 @@ private struct WordRevealText: View {
 
             guard !tokens.isEmpty else { return nil }
             defer { startIndex += tokens.count }
-            return Paragraph(tokens: tokens, startIndex: startIndex)
+            return Paragraph(
+                tokens: tokens,
+                startIndex: startIndex
+            )
         }
     }
 
@@ -598,6 +694,7 @@ private struct WordRevealText: View {
 
                         Text(token)
                             .font(font)
+                            .fontDesign(fontDesignOverride)
                             .foregroundStyle(color)
                             .opacity(globalIndex < revealedWordCount ? 1 : 0)
                             .blur(radius: globalIndex < revealedWordCount ? 0 : 14)
@@ -605,15 +702,41 @@ private struct WordRevealText: View {
                             .animation(
                                 .easeOut(duration: 0.42).delay(Double(globalIndex) * 0.045),
                                 value: revealedWordCount
-                        )
+                            )
+                            .frame(
+                                height: measuredLineHeight > 0 ? measuredLineHeight : nil,
+                                alignment: .bottomLeading
+                            )
+                            .fixedSize()
                     }
                 }
+                .frame(
+                    width: availableWidth > 0 ? availableWidth : nil,
+                    alignment: alignment == .center ? .center : .leading
+                )
                 .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
+                .padding(.bottom, measuredLineHeight > 0 ? max(measuredLineHeight * 0.08, 1) : 0)
             }
         }
         .font(nil)
-        .fontDesign(nil)
         .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
+        .overlay(alignment: .topLeading) {
+            Text("Agjp")
+                .font(font)
+                .opacity(0.001)
+                .background(HeightMeasurementView(height: $measuredLineHeight))
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+        }
+        .background {
+            GeometryReader { proxy in
+                Color.clear
+                    .task(id: proxy.size.width) {
+                        guard abs(availableWidth - proxy.size.width) > 0.5 else { return }
+                        availableWidth = proxy.size.width
+                    }
+            }
+        }
         .onAppear {
             restartReveal()
         }
@@ -647,6 +770,57 @@ private struct WordRevealText: View {
     private struct Paragraph {
         let tokens: [String]
         let startIndex: Int
+    }
+}
+
+private struct NativeRevealText: View {
+    let text: String
+    let font: Font
+    let color: Color
+    var alignment: TextAlignment = .leading
+    var fontDesignOverride: Font.Design? = .rounded
+    var onRevealCompleted: (() -> Void)? = nil
+
+    @State private var isRevealed = false
+    @State private var revealTask: Task<Void, Never>?
+
+    var body: some View {
+        Text(text)
+            .font(font)
+            .fontDesign(fontDesignOverride)
+            .foregroundStyle(color)
+            .multilineTextAlignment(alignment)
+            .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
+            .opacity(isRevealed ? 1 : 0)
+            .blur(radius: isRevealed ? 0 : 14)
+            .offset(y: isRevealed ? 0 : 8)
+            .animation(.easeOut(duration: 0.42), value: isRevealed)
+            .onAppear {
+                restartReveal()
+            }
+            .onChange(of: text) { _, _ in
+                restartReveal()
+            }
+            .onDisappear {
+                revealTask?.cancel()
+            }
+    }
+
+    private func restartReveal() {
+        revealTask?.cancel()
+        isRevealed = false
+
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+
+        revealTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(35))
+            guard !Task.isCancelled else { return }
+            isRevealed = true
+
+            try? await Task.sleep(for: .seconds(0.42))
+            guard !Task.isCancelled else { return }
+            onRevealCompleted?()
+        }
     }
 }
 

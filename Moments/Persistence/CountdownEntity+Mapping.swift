@@ -22,6 +22,9 @@ final class CountdownEntity: NSManagedObject {
     @NSManaged var reflectionExpandedText: String?
     @NSManaged var reflectionGeneratedAt: Date?
     @NSManaged var isFutureManifestation: Bool
+    @NSManaged var manifestNotificationsEnabled: Bool
+    @NSManaged var manifestNotificationRhythmRaw: String?
+    @NSManaged var manifestNotificationWeekday: Int16
 
     @nonobjc static func fetchRequest() -> NSFetchRequest<CountdownEntity> {
         NSFetchRequest<CountdownEntity>(entityName: "CountdownEntity")
@@ -50,7 +53,10 @@ final class CountdownEntity: NSManagedObject {
             reflectionPrimaryText: reflectionPrimaryText,
             reflectionExpandedText: reflectionExpandedText,
             reflectionGeneratedAt: reflectionGeneratedAt,
-            isFutureManifestation: isFutureManifestation
+            isFutureManifestation: isFutureManifestation,
+            manifestNotificationsEnabled: manifestNotificationsEnabled,
+            manifestNotificationRhythm: manifestNotificationRhythmRaw.flatMap(ManifestNotificationRhythm.init(rawValue:)),
+            manifestNotificationWeekday: manifestNotificationWeekday > 0 ? Int(manifestNotificationWeekday) : nil
         )
     }
 }

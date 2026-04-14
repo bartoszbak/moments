@@ -1,0 +1,23 @@
+{
+  "/Users/bartbak/Repo/Moments/Moments/Features/Preview/MomentPreviewViewModel.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentPreviewViewModel.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentPreviewViewModel.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentPreviewViewModel.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentPreviewViewModel.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentPreviewViewModel.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Moments/MomentsApp.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentsApp.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentsApp.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentsApp.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentsApp.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/MomentsApp.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Moments/Persistence/PersistenceController.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/PersistenceController.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/PersistenceController.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/PersistenceController.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/PersistenceController.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/PersistenceController.swiftdeps"
+  }
+}

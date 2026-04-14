@@ -1,0 +1,23 @@
+{
+  "/Users/bartbak/Repo/Moments/Moments/Features/Add/ProgressStartPickerSection.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ProgressStartPickerSection.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ProgressStartPickerSection.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ProgressStartPickerSection.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ProgressStartPickerSection.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ProgressStartPickerSection.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Moments/Features/Add/SFSymbolPickerView.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/SFSymbolPickerView.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/SFSymbolPickerView.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/SFSymbolPickerView.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/SFSymbolPickerView.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/SFSymbolPickerView.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Moments/Services/ReflectionService.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ReflectionService.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ReflectionService.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ReflectionService.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ReflectionService.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/arm64/ReflectionService.swiftdeps"
+  }
+}

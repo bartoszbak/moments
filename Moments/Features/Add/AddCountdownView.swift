@@ -1,4 +1,6 @@
 import SwiftUI
+import UIKit
+import UserNotifications
 
 struct MomentDescriptionEditorView: View {
     @Binding var text: String
@@ -57,13 +59,67 @@ struct TargetDatePickerRow: View {
     }
 }
 
+struct ManifestNotificationSettingsSection: View {
+    @Binding var isEnabled: Bool
+    @Binding var rhythm: ManifestNotificationRhythm
+    @Binding var reminderTime: Date
+
+    let authorizationStatus: UNAuthorizationStatus
+    let tintColor: Color
+    let openSettings: () -> Void
+
+    var body: some View {
+        Section {
+            Toggle("Reminder", isOn: $isEnabled)
+                .tint(tintColor)
+
+            if isEnabled {
+                Picker("Rhythm", selection: $rhythm) {
+                    ForEach(ManifestNotificationRhythm.allCases, id: \.self) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+
+                DatePicker(
+                    "Time",
+                    selection: $reminderTime,
+                    displayedComponents: .hourAndMinute
+                )
+            }
+        } header: {
+            Text("Manifestation Reminder")
+        } footer: {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Set the reminder while creating or editing this manifestation. Time applies to all manifestation reminders.")
+
+                switch authorizationStatus {
+                case .notDetermined:
+                    Text("You'll be asked for notification permission when you turn this on.")
+                case .authorized, .provisional, .ephemeral:
+                    EmptyView()
+                case .denied:
+                    Text("Notifications are blocked. Open Settings to allow manifestation reminders.")
+                    Button("Open Settings", action: openSettings)
+                @unknown default:
+                    EmptyView()
+                }
+            }
+        }
+    }
+}
+
 struct AddCountdownView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @AppStorage(AppSettingsKeys.manifestNotificationsEnabled) private var manifestNotificationsGlobalEnabled = AppSettingsDefaults.manifestNotificationsEnabled
+    @AppStorage(AppSettingsKeys.manifestNotificationsHour) private var manifestNotificationsHour = AppSettingsDefaults.manifestNotificationsHour
+    @AppStorage(AppSettingsKeys.manifestNotificationsMinute) private var manifestNotificationsMinute = AppSettingsDefaults.manifestNotificationsMinute
+    @AppStorage(AppSettingsKeys.manifestNotificationsDefaultRhythm) private var manifestNotificationsDefaultRhythm = AppSettingsDefaults.manifestNotificationsDefaultRhythm
 
+    @StateObject private var manifestNotificationService = ManifestNotificationService.shared
     @State private var title = ""
     @State private var detailsText = ""
     @State private var targetDate = Calendar.current.startOfDay(
@@ -76,8 +132,12 @@ struct AddCountdownView: View {
     @State private var sfSymbolName: String? = nil
     @State private var showSymbolPicker = false
     @State private var isFutureManifestation = false
+    @State private var manifestNotificationsEnabled = false
+    @State private var manifestNotificationRhythm: ManifestNotificationRhythm = .daily
+    @State private var manifestReminderTime = Calendar.current.startOfDay(for: Date())
     @State private var isCreating = false
     @State private var showTitleError = false
+    @State private var hasInitializedManifestNotificationSettings = false
 
     private var isValid: Bool {
         return !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -110,11 +170,27 @@ struct AddCountdownView: View {
                             .foregroundStyle(.red).font(.caption)
                     }
                 }
-                Section("Target Date") {
+                Section {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
                     if !isFutureManifestation {
                         TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                     }
+                } header: {
+                    Text("Target Date")
+                } footer: {
+                    if isFutureManifestation {
+                        Text("Optional reminder settings appear below for this manifestation.")
+                    }
+                }
+                if isFutureManifestation {
+                    ManifestNotificationSettingsSection(
+                        isEnabled: $manifestNotificationsEnabled,
+                        rhythm: $manifestNotificationRhythm,
+                        reminderTime: $manifestReminderTime,
+                        authorizationStatus: manifestNotificationService.authorizationStatus,
+                        tintColor: controlTintColor,
+                        openSettings: openAppSettings
+                    )
                 }
                 BackgroundPickerSection(
                     selection: $background
@@ -163,6 +239,13 @@ struct AddCountdownView: View {
                 showDate = false
             }
         }
+        .onChange(of: manifestNotificationsEnabled) { _, isEnabled in
+            handleManifestNotificationToggleChange(isEnabled)
+        }
+        .task {
+            initializeManifestNotificationSettingsIfNeeded()
+            await manifestNotificationService.refreshAuthorizationStatus()
+        }
         .preferredColorScheme(preferredColorScheme)
     }
 
@@ -173,6 +256,7 @@ struct AddCountdownView: View {
         isCreating = true
         let newID = UUID()
         let normalizedSymbolName = MomentSymbolPolicy.normalized(sfSymbolName)
+        persistManifestNotificationDefaults()
 
         var imagePath: String?
         var thumbPath: String?
@@ -205,8 +289,12 @@ struct AddCountdownView: View {
                 startPercentage: startPercentage,
                 showDate: showDate,
                 sfSymbolName: normalizedSymbolName,
-                isFutureManifestation: isFutureManifestation
+                isFutureManifestation: isFutureManifestation,
+                manifestNotificationsEnabled: isFutureManifestation && manifestNotificationsEnabled,
+                manifestNotificationRhythm: isFutureManifestation ? manifestNotificationRhythm : nil,
+                manifestNotificationWeekday: manifestNotificationWeekday
             )
+            reconcileManifestNotifications()
             AppHaptics.impact(.medium)
             dismiss()
         } catch { isCreating = false }
@@ -230,5 +318,68 @@ struct AddCountdownView: View {
 
     private var detailsActionTitle: String {
         detailsText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Add" : "Edit"
+    }
+
+    private var defaultManifestRhythm: ManifestNotificationRhythm {
+        ManifestNotificationRhythm(rawValue: manifestNotificationsDefaultRhythm) ?? .daily
+    }
+
+    private var storedManifestReminderTime: Date {
+        let baseDate = Calendar.current.startOfDay(for: Date())
+        return Calendar.current.date(
+            bySettingHour: manifestNotificationsHour,
+            minute: manifestNotificationsMinute,
+            second: 0,
+            of: baseDate
+        ) ?? baseDate
+    }
+
+    private var manifestNotificationWeekday: Int? {
+        guard isFutureManifestation, manifestNotificationRhythm == .weekly else { return nil }
+        return Calendar.current.component(.weekday, from: Date())
+    }
+
+    private func initializeManifestNotificationSettingsIfNeeded() {
+        guard !hasInitializedManifestNotificationSettings else { return }
+        manifestNotificationRhythm = defaultManifestRhythm
+        manifestReminderTime = storedManifestReminderTime
+        hasInitializedManifestNotificationSettings = true
+    }
+
+    private func handleManifestNotificationToggleChange(_ isEnabled: Bool) {
+        guard isEnabled else { return }
+
+        Task { @MainActor in
+            let granted = await manifestNotificationService.requestAuthorization()
+            guard granted else {
+                manifestNotificationsEnabled = false
+                return
+            }
+
+            await manifestNotificationService.refreshAuthorizationStatus()
+        }
+    }
+
+    private func persistManifestNotificationDefaults() {
+        guard isFutureManifestation else { return }
+
+        let components = Calendar.current.dateComponents([.hour, .minute], from: manifestReminderTime)
+        manifestNotificationsHour = components.hour ?? AppSettingsDefaults.manifestNotificationsHour
+        manifestNotificationsMinute = components.minute ?? AppSettingsDefaults.manifestNotificationsMinute
+
+        if manifestNotificationsEnabled {
+            manifestNotificationsGlobalEnabled = true
+        }
+    }
+
+    private func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
+    }
+
+    private func reconcileManifestNotifications() {
+        Task { @MainActor in
+            await manifestNotificationService.reconcile(countdowns: repository.countdowns)
+        }
     }
 }

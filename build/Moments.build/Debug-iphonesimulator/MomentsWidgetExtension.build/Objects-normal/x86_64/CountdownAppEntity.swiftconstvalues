@@ -1,0 +1,258 @@
+[
+  {
+    "typeName": "MomentsWidgetExtension.CountdownAppEntity",
+    "mangledTypeName": "22MomentsWidgetExtension18CountdownAppEntityV",
+    "kind": "struct",
+    "file": "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownAppEntity.swift",
+    "line": 4,
+    "conformances": [
+      "AppIntents.AppEntity",
+      "AppIntents.AppValue",
+      "AppIntents.DisplayRepresentable",
+      "Swift.Identifiable",
+      "AppIntents.PersistentlyIdentifiable",
+      "AppIntents.TypeDisplayRepresentable",
+      "AppIntents._IntentValue",
+      "Swift.Sendable",
+      "AppIntents.InstanceDisplayRepresentable",
+      "Swift.SendableMetatype",
+      "Foundation.CustomLocalizedStringResourceConvertible"
+    ],
+    "allConformances": [
+      {
+        "protocolName": "AppIntents.AppEntity",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "AppIntents.AppValue",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "AppIntents.DisplayRepresentable",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "Swift.Identifiable",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "AppIntents.PersistentlyIdentifiable",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "AppIntents.TypeDisplayRepresentable",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "AppIntents._IntentValue",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "Swift.Sendable",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "AppIntents.InstanceDisplayRepresentable",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "Swift.SendableMetatype",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "Foundation.CustomLocalizedStringResourceConvertible",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      }
+    ],
+    "associatedTypeAliases": [
+      {
+        "typeAliasName": "DefaultQuery",
+        "substitutedTypeName": "MomentsWidgetExtension.CountdownEntityQuery",
+        "substitutedMangledTypeName": "22MomentsWidgetExtension20CountdownEntityQueryV"
+      },
+      {
+        "typeAliasName": "ID",
+        "substitutedTypeName": "Foundation.UUID",
+        "substitutedMangledTypeName": "10Foundation4UUIDV"
+      },
+      {
+        "typeAliasName": "ValueType",
+        "substitutedTypeName": "MomentsWidgetExtension.CountdownAppEntity",
+        "substitutedMangledTypeName": "22MomentsWidgetExtension18CountdownAppEntityV"
+      },
+      {
+        "typeAliasName": "UnwrappedType",
+        "substitutedTypeName": "MomentsWidgetExtension.CountdownAppEntity",
+        "substitutedMangledTypeName": "22MomentsWidgetExtension18CountdownAppEntityV"
+      },
+      {
+        "typeAliasName": "Specification",
+        "substitutedTypeName": "AppIntents.EmptyResolverSpecification<MomentsWidgetExtension.CountdownAppEntity>",
+        "substitutedMangledTypeName": "10AppIntents26EmptyResolverSpecificationVy22MomentsWidgetExtension09CountdownA6EntityVG"
+      }
+    ],
+    "properties": [
+      {
+        "label": "id",
+        "type": "Foundation.UUID",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "false",
+        "isComputed": "false",
+        "file": "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownAppEntity.swift",
+        "line": 8,
+        "valueKind": "Runtime"
+      },
+      {
+        "label": "title",
+        "type": "Swift.String",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "false",
+        "isComputed": "false",
+        "file": "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownAppEntity.swift",
+        "line": 9,
+        "valueKind": "Runtime"
+      },
+      {
+        "label": "typeDisplayRepresentation",
+        "type": "AppIntents.TypeDisplayRepresentation",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "true",
+        "isComputed": "false",
+        "file": "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownAppEntity.swift",
+        "line": 5,
+        "valueKind": "RawLiteral",
+        "value": "Countdown"
+      },
+      {
+        "label": "defaultQuery",
+        "type": "MomentsWidgetExtension.CountdownEntityQuery",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "true",
+        "isComputed": "false",
+        "file": "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownAppEntity.swift",
+        "line": 6,
+        "valueKind": "InitCall",
+        "value": {
+          "type": "MomentsWidgetExtension.CountdownEntityQuery",
+          "arguments": []
+        }
+      },
+      {
+        "label": "displayRepresentation",
+        "type": "AppIntents.DisplayRepresentation",
+        "mangledTypeName": "n/a - deprecated",
+        "isStatic": "false",
+        "isComputed": "true",
+        "file": "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownAppEntity.swift",
+        "line": 11,
+        "valueKind": "InitCall",
+        "value": {
+          "type": "AppIntents.DisplayRepresentation",
+          "arguments": [
+            {
+              "label": "title",
+              "type": "Foundation.LocalizedStringResource",
+              "valueKind": "InterpolatedStringLiteral",
+              "value": {
+                "segments": [
+                  {
+                    "valueKind": "RawLiteral",
+                    "value": ""
+                  },
+                  {
+                    "valueKind": "Runtime"
+                  },
+                  {
+                    "valueKind": "RawLiteral",
+                    "value": ""
+                  }
+                ]
+              }
+            },
+            {
+              "label": "subtitle",
+              "type": "Swift.Optional<Foundation.LocalizedStringResource>",
+              "valueKind": "RawLiteral",
+              "value": "nil"
+            },
+            {
+              "label": "image",
+              "type": "Swift.Optional<AppIntents.DisplayRepresentation.Image>",
+              "valueKind": "RawLiteral",
+              "value": "nil"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "typeName": "MomentsWidgetExtension.CountdownEntityQuery",
+    "mangledTypeName": "22MomentsWidgetExtension20CountdownEntityQueryV",
+    "kind": "struct",
+    "file": "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownAppEntity.swift",
+    "line": 16,
+    "conformances": [
+      "AppIntents.EntityQuery",
+      "AppIntents.DynamicOptionsProvider",
+      "AppIntents.PersistentlyIdentifiable",
+      "Swift.Sendable",
+      "AppIntents._SupportsAppDependencies",
+      "Swift.SendableMetatype",
+      "Swift.BitwiseCopyable"
+    ],
+    "allConformances": [
+      {
+        "protocolName": "AppIntents.EntityQuery",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "AppIntents.DynamicOptionsProvider",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "AppIntents.PersistentlyIdentifiable",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "Swift.Sendable",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "AppIntents._SupportsAppDependencies",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "Swift.SendableMetatype",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      },
+      {
+        "protocolName": "Swift.BitwiseCopyable",
+        "conformanceDefiningModule": "MomentsWidgetExtension"
+      }
+    ],
+    "associatedTypeAliases": [
+      {
+        "typeAliasName": "Entity",
+        "substitutedTypeName": "MomentsWidgetExtension.CountdownAppEntity",
+        "substitutedMangledTypeName": "22MomentsWidgetExtension18CountdownAppEntityV"
+      },
+      {
+        "typeAliasName": "Result",
+        "substitutedTypeName": "Swift.Array<MomentsWidgetExtension.CountdownAppEntity>",
+        "substitutedMangledTypeName": "Say22MomentsWidgetExtension18CountdownAppEntityVG"
+      },
+      {
+        "typeAliasName": "Result",
+        "substitutedTypeName": "Swift.Array<MomentsWidgetExtension.CountdownAppEntity>",
+        "substitutedMangledTypeName": "Say22MomentsWidgetExtension18CountdownAppEntityVG"
+      },
+      {
+        "typeAliasName": "DefaultValue",
+        "substitutedTypeName": "MomentsWidgetExtension.CountdownAppEntity",
+        "substitutedMangledTypeName": "22MomentsWidgetExtension18CountdownAppEntityV"
+      }
+    ],
+    "properties": []
+  }
+]

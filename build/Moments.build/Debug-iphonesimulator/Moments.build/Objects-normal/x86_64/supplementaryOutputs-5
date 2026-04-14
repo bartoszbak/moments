@@ -1,0 +1,23 @@
+{
+  "/Users/bartbak/Repo/Moments/Moments/Features/Preview/ManifestNotificationCard.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCard.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCard.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCard.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCard.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCard.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Moments/Features/Preview/ManifestNotificationCardModel.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCardModel.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCardModel.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCardModel.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCardModel.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationCardModel.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Moments/Services/ManifestNotificationService.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationService.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationService.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationService.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationService.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/ManifestNotificationService.swiftdeps"
+  }
+}

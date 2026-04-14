@@ -1,0 +1,109 @@
+{
+  "" : {
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetExtension-primary.dia",
+    "emit-module-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetExtension-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetExtension-primary-emit-module.dia",
+    "pch" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetExtension-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetExtension-primary.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownAppEntity.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownAppEntity.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownAppEntity.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownAppEntity.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownAppEntity.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownAppEntity.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownAppEntity.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownAppEntity.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownAppEntity~partial.swiftmodule"
+  },
+  "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownProvider.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownProvider.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownProvider.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownProvider.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownProvider.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownProvider.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownProvider.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownProvider.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownProvider~partial.swiftmodule"
+  },
+  "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/CountdownWidgetView.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownWidgetView.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownWidgetView.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownWidgetView.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownWidgetView.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownWidgetView.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownWidgetView.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownWidgetView.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/CountdownWidgetView~partial.swiftmodule"
+  },
+  "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/MomentsWidgetBundle.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetBundle.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetBundle.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetBundle.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetBundle.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetBundle.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetBundle.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetBundle.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentsWidgetBundle~partial.swiftmodule"
+  },
+  "/Users/bartbak/Repo/Moments/MomentsWidgetExtension/SelectCountdownIntent.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SelectCountdownIntent.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SelectCountdownIntent.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SelectCountdownIntent.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SelectCountdownIntent.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SelectCountdownIntent.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SelectCountdownIntent.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SelectCountdownIntent.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SelectCountdownIntent~partial.swiftmodule"
+  },
+  "/Users/bartbak/Repo/Moments/Shared/Color+Hex.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Color+Hex.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Color+Hex.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Color+Hex.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Color+Hex.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Color+Hex.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Color+Hex.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Color+Hex.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Color+Hex~partial.swiftmodule"
+  },
+  "/Users/bartbak/Repo/Moments/Shared/Date+SmartFormat.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Date+SmartFormat.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Date+SmartFormat.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Date+SmartFormat.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Date+SmartFormat.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Date+SmartFormat.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Date+SmartFormat.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Date+SmartFormat.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/Date+SmartFormat~partial.swiftmodule"
+  },
+  "/Users/bartbak/Repo/Moments/Shared/MomentDeepLink.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentDeepLink.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentDeepLink.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentDeepLink.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentDeepLink.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentDeepLink.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentDeepLink.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentDeepLink.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/MomentDeepLink~partial.swiftmodule"
+  },
+  "/Users/bartbak/Repo/Moments/Shared/SharedDataStore.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SharedDataStore.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SharedDataStore.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SharedDataStore.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SharedDataStore.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SharedDataStore.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SharedDataStore.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SharedDataStore.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/SharedDataStore~partial.swiftmodule"
+  },
+  "/Users/bartbak/Repo/Moments/Shared/WidgetCountdown.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/WidgetCountdown.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/WidgetCountdown.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/WidgetCountdown.dia",
+    "index-unit-output-path" : "/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/WidgetCountdown.o",
+    "llvm-bc" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/WidgetCountdown.bc",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/WidgetCountdown.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/WidgetCountdown.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/MomentsWidgetExtension.build/Objects-normal/x86_64/WidgetCountdown~partial.swiftmodule"
+  }
+}

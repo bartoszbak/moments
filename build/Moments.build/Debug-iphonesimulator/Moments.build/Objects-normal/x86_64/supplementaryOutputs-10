@@ -1,0 +1,23 @@
+{
+  "/Users/bartbak/Repo/Moments/Moments/Extensions/View+Glass.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/View+Glass.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/View+Glass.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/View+Glass.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/View+Glass.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/View+Glass.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/Shared/WidgetCountdown.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/WidgetCountdown.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/WidgetCountdown.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/WidgetCountdown.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/WidgetCountdown.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/WidgetCountdown.swiftdeps"
+  },
+  "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/GeneratedAssetSymbols.dia",
+    "object" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/bartbak/Repo/Moments/build/Moments.build/Debug-iphonesimulator/Moments.build/Objects-normal/x86_64/GeneratedAssetSymbols.swiftdeps"
+  }
+}

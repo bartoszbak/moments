@@ -1,0 +1,11 @@
+Target dependency graph (5 targets)
+Target 'Moments' in project 'Moments'
+➜ Explicit dependency on target 'MomentsWidgetExtension' in project 'Moments'
+➜ Explicit dependency on target 'BlurSwiftUI' in project 'BlurUIKit'
+Target 'BlurSwiftUI' in project 'BlurUIKit'
+➜ Explicit dependency on target 'BlurSwiftUI' in project 'BlurUIKit'
+➜ Explicit dependency on target 'BlurUIKit' in project 'BlurUIKit'
+Target 'BlurSwiftUI' in project 'BlurUIKit'
+➜ Explicit dependency on target 'BlurUIKit' in project 'BlurUIKit'
+Target 'BlurUIKit' in project 'BlurUIKit' (no dependencies)
+Target 'MomentsWidgetExtension' in project 'Moments' (no dependencies)

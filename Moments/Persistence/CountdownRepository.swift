@@ -11,6 +11,7 @@ final class CountdownRepository: NSObject, ObservableObject {
     private let viewContext: NSManagedObjectContext
     private let backgroundContext: NSManagedObjectContext
     private let calendarService = CalendarService.shared
+    private let manifestNotificationService = ManifestNotificationService.shared
     private var fetchedResultsController: NSFetchedResultsController<CountdownEntity>!
 
     init(viewContext: NSManagedObjectContext, backgroundContext: NSManagedObjectContext) {
@@ -87,6 +88,10 @@ final class CountdownRepository: NSObject, ObservableObject {
 
         SharedDataStore.save(widgetData)
         WidgetCenter.shared.reloadAllTimelines()
+
+        Task { @MainActor in
+            await manifestNotificationService.reconcile(countdowns: countdowns)
+        }
     }
 
     private func ensureInitialSeedIfNeeded() {
@@ -168,7 +173,10 @@ final class CountdownRepository: NSObject, ObservableObject {
         reflectionPrimaryText: String? = nil,
         reflectionExpandedText: String? = nil,
         reflectionGeneratedAt: Date? = nil,
-        isFutureManifestation: Bool = false
+        isFutureManifestation: Bool = false,
+        manifestNotificationsEnabled: Bool = false,
+        manifestNotificationRhythm: ManifestNotificationRhythm? = nil,
+        manifestNotificationWeekday: Int? = nil
     ) throws {
         let context = backgroundContext
         let colorIndex = backgroundColorIndex
@@ -197,6 +205,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.reflectionExpandedText = reflectionExpandedText
             entity.reflectionGeneratedAt = reflectionGeneratedAt
             entity.isFutureManifestation = isFutureManifestation
+            entity.manifestNotificationsEnabled = manifestNotificationsEnabled
+            entity.manifestNotificationRhythmRaw = manifestNotificationRhythm?.rawValue
+            entity.manifestNotificationWeekday = Int16(manifestNotificationWeekday ?? -1)
             try context.save()
         }
 
@@ -222,8 +233,15 @@ final class CountdownRepository: NSObject, ObservableObject {
             reflectionPrimaryText: reflectionPrimaryText,
             reflectionExpandedText: reflectionExpandedText,
             reflectionGeneratedAt: reflectionGeneratedAt,
-            isFutureManifestation: isFutureManifestation
+            isFutureManifestation: isFutureManifestation,
+            manifestNotificationsEnabled: manifestNotificationsEnabled,
+            manifestNotificationRhythm: manifestNotificationRhythm,
+            manifestNotificationWeekday: manifestNotificationWeekday
         )
+
+        Task { @MainActor in
+            await self.syncManifestNotifications(for: countdown)
+        }
 
         Task { @MainActor in
             if let eventIdentifier = await calendarService.createEvent(for: countdown) {
@@ -252,7 +270,10 @@ final class CountdownRepository: NSObject, ObservableObject {
         reflectionPrimaryText: String?? = nil,
         reflectionExpandedText: String?? = nil,
         reflectionGeneratedAt: Date?? = nil,
-        isFutureManifestation: Bool? = nil
+        isFutureManifestation: Bool? = nil,
+        manifestNotificationsEnabled: Bool? = nil,
+        manifestNotificationRhythm: ManifestNotificationRhythm?? = nil,
+        manifestNotificationWeekday: Int?? = nil
     ) throws {
         let id = countdown.id
         let context = backgroundContext
@@ -295,6 +316,15 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let newReflectionExpandedText { entity.reflectionExpandedText = newReflectionExpandedText }
             if let newReflectionGeneratedAt { entity.reflectionGeneratedAt = newReflectionGeneratedAt }
             if let isFutureManifestation { entity.isFutureManifestation = isFutureManifestation }
+            if let manifestNotificationsEnabled {
+                entity.manifestNotificationsEnabled = manifestNotificationsEnabled
+            }
+            if let manifestNotificationRhythm {
+                entity.manifestNotificationRhythmRaw = manifestNotificationRhythm?.rawValue
+            }
+            if let manifestNotificationWeekday {
+                entity.manifestNotificationWeekday = Int16(manifestNotificationWeekday ?? -1)
+            }
             try context.save()
         }
 
@@ -351,8 +381,21 @@ final class CountdownRepository: NSObject, ObservableObject {
                 existing: countdown.reflectionGeneratedAt,
                 update: reflectionGeneratedAt
             ),
-            isFutureManifestation: isFutureManifestation ?? countdown.isFutureManifestation
+            isFutureManifestation: isFutureManifestation ?? countdown.isFutureManifestation,
+            manifestNotificationsEnabled: manifestNotificationsEnabled ?? countdown.manifestNotificationsEnabled,
+            manifestNotificationRhythm: resolvedValue(
+                existing: countdown.manifestNotificationRhythm,
+                update: manifestNotificationRhythm
+            ),
+            manifestNotificationWeekday: resolvedValue(
+                existing: countdown.manifestNotificationWeekday,
+                update: manifestNotificationWeekday
+            )
         )
+
+        Task { @MainActor in
+            await self.syncManifestNotifications(for: updatedCountdown)
+        }
 
         if updatedCountdown.isFutureManifestation {
             if let eventIdentifier = countdown.calendarEventIdentifier {
@@ -406,6 +449,10 @@ final class CountdownRepository: NSObject, ObservableObject {
                 await calendarService.deleteEvent(identifier: calendarEventIdentifier)
             }
         }
+
+        Task { @MainActor in
+            await manifestNotificationService.cancel(for: id)
+        }
     }
 
     private func updateCalendarIdentifier(id: UUID, eventIdentifier: String?) throws {
@@ -422,6 +469,14 @@ final class CountdownRepository: NSObject, ObservableObject {
 
     private var isCalendarIntegrationEnabled: Bool {
         UserDefaults.standard.bool(forKey: AppSettingsKeys.calendarIntegrationEnabled)
+    }
+
+    private func syncManifestNotifications(for countdown: Countdown) async {
+        if countdown.isFutureManifestation {
+            await manifestNotificationService.schedule(for: countdown)
+        } else {
+            await manifestNotificationService.cancel(for: countdown.id)
+        }
     }
 
     private func resolvedValue<T>(existing: T?, update: T??) -> T? {

@@ -12,15 +12,26 @@ settings:
     IPHONEOS_DEPLOYMENT_TARGET: "17.0"
     DEVELOPMENT_TEAM: ""
 
+packages:
+  BlurUIKit:
+    url: https://github.com/TimOliver/BlurUIKit.git
+    from: 1.1.0
+
 targets:
   Moments:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
+    configFiles:
+      Debug: Moments/SharedConfig.xcconfig
+      Release: Moments/SharedConfig.xcconfig
     sources:
       - path: Moments
         excludes:
           - "**/.DS_Store"
+          - "Config.xcconfig"
+          - "Config.xcconfig.example"
+          - "SharedConfig.xcconfig"
       - path: Shared
     settings:
       base:
@@ -36,6 +47,8 @@ targets:
         com.apple.security.application-groups:
           - group.com.tillappcounter.Moments
     dependencies:
+      - package: BlurUIKit
+        product: BlurSwiftUI
       - target: MomentsWidgetExtension
         embed: true
     info:

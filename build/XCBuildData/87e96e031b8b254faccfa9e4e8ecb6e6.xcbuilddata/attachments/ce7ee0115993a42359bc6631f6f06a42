@@ -1,0 +1,19 @@
+{
+  "" : {
+    "diagnostics" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/BlurSwiftUI-primary.dia",
+    "emit-module-dependencies" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/BlurSwiftUI-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/BlurSwiftUI-primary-emit-module.dia",
+    "pch" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/BlurSwiftUI-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/BlurSwiftUI-primary.swiftdeps"
+  },
+  "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/BlurUIKit/SwiftUI/VariableBlur.swift" : {
+    "const-values" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/VariableBlur.swiftconstvalues",
+    "dependencies" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/VariableBlur.d",
+    "diagnostics" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/VariableBlur.dia",
+    "index-unit-output-path" : "/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/VariableBlur.o",
+    "llvm-bc" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/VariableBlur.bc",
+    "object" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/VariableBlur.o",
+    "swift-dependencies" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/VariableBlur.swiftdeps",
+    "swiftmodule" : "/Users/bartbak/Library/Developer/Xcode/DerivedData/Moments-byputywlbaxwlfgzxhptoqmlgttt/SourcePackages/checkouts/BlurUIKit/build/BlurUIKit.build/Debug-iphonesimulator/BlurSwiftUI.build/Objects-normal/arm64/VariableBlur~partial.swiftmodule"
+  }
+}

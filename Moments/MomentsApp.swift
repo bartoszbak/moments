@@ -31,6 +31,10 @@ struct MomentsApp: App {
             switch phase {
             case .active:
                 timerManager.start()
+                Task { @MainActor in
+                    await ManifestNotificationService.shared.refreshAuthorizationStatus()
+                    await ManifestNotificationService.shared.reconcile(countdowns: repository.countdowns)
+                }
             case .background, .inactive:
                 timerManager.stop()
             default:
@@ -193,11 +197,6 @@ enum AppTypography {
            let postScriptName = cgFont.postScriptName as String? {
             manifestationGraphicsFonts[variant] = cgFont
             manifestationPostScriptNames[variant] = postScriptName
-
-            var registrationError: Unmanaged<CFError>?
-            CTFontManagerRegisterGraphicsFont(cgFont, &registrationError)
-        } else {
-            CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
         }
     }
 

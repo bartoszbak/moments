@@ -1,5 +1,19 @@
 import Foundation
 
+enum ManifestNotificationRhythm: String, Codable, CaseIterable, Hashable {
+    case daily
+    case weekly
+
+    var title: String {
+        switch self {
+        case .daily:
+            return "Daily"
+        case .weekly:
+            return "Weekly"
+        }
+    }
+}
+
 struct Countdown: Identifiable, Hashable {
     let id: UUID
     var title: String
@@ -21,6 +35,9 @@ struct Countdown: Identifiable, Hashable {
     var reflectionExpandedText: String?
     var reflectionGeneratedAt: Date?
     var isFutureManifestation: Bool
+    var manifestNotificationsEnabled: Bool
+    var manifestNotificationRhythm: ManifestNotificationRhythm?
+    var manifestNotificationWeekday: Int?
 
     func timeRemaining(from now: Date) -> TimeInterval {
         if isFutureManifestation { return .infinity }
