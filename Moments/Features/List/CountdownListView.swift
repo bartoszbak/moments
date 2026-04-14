@@ -10,6 +10,7 @@ struct CountdownListView: View {
     @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
     @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
+    @AppStorage(AppSettingsKeys.backgroundGradientEnabled) private var backgroundGradientEnabled = AppSettingsDefaults.backgroundGradientEnabled
     @AppStorage(AppSettingsKeys.hasSeenIntroSheet) private var hasSeenIntroSheet = AppSettingsDefaults.hasSeenIntroSheet
     @State private var showingAddSheet = false
     @State private var previewingCountdown: Countdown?
@@ -77,7 +78,7 @@ struct CountdownListView: View {
                     }
                 }
                 .scrollIndicators(.hidden)
-                .background(mainBackgroundGradient)
+                .background(mainBackgroundView)
                 .navigationTitle(isShowingPrimaryEmptyState ? "" : "Moments")
                 .navigationBarTitleDisplayMode(isShowingPrimaryEmptyState ? .inline : .large)
                 .toolbar {
@@ -314,13 +315,19 @@ struct CountdownListView: View {
         effectiveColorScheme == .dark ? .black : .white
     }
 
-    private var mainBackgroundGradient: some View {
-        LinearGradient(
-            colors: [leadingBackgroundColor, trailingBackgroundColor],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
+    @ViewBuilder
+    private var mainBackgroundView: some View {
+        if backgroundGradientEnabled {
+            LinearGradient(
+                colors: [leadingBackgroundColor, trailingBackgroundColor],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+        } else {
+            Color(.systemBackground)
+                .ignoresSafeArea()
+        }
     }
 
     private var preferredColorScheme: ColorScheme? {

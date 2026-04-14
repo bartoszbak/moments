@@ -130,7 +130,7 @@ struct AddCountdownView: View {
                     ProgressStartPickerSection(value: $startPercentage)
                 }
             }
-            .nativeGlassToggleStyleOnIPad(tintColor: controlTintColor)
+            .nativeGlassToggleStyle(tintColor: controlTintColor)
             .tint(controlTintColor)
             .navigationTitle("Add a Moment")
             .navigationBarTitleDisplayMode(.inline)

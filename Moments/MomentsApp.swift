@@ -41,7 +41,8 @@ struct MomentsApp: App {
 }
 
 enum AppTypography {
-    private static var editorialNewPostScriptNames: [EditorialNewVariant: String] = [:]
+    private static var manifestationPostScriptNames: [ManifestationVariant: String] = [:]
+    private static var manifestationGraphicsFonts: [ManifestationVariant: CGFont] = [:]
 
     static func configure() {
         registerBundledFonts()
@@ -59,42 +60,118 @@ enum AppTypography {
         UINavigationBar.appearance().compactAppearance = navigationBarAppearance
     }
 
-    static func editorialNewFont(
+    static func manifestationFont(
         relativeTo textStyle: Font.TextStyle,
-        variant: EditorialNewVariant = .regular,
+        variant: ManifestationVariant = .regular,
         sizeAdjustment: CGFloat = 0
     ) -> Font {
-        let resolvedFont = editorialNewUIFont(
+        if let resolvedFont = manifestationCTFont(
+            relativeTo: textStyle,
+            variant: variant,
+            sizeAdjustment: sizeAdjustment
+        ) {
+            return Font(resolvedFont)
+        }
+
+        let fallbackUIFont = manifestationFallbackUIFont(
             relativeTo: textStyle,
             variant: variant,
             sizeAdjustment: sizeAdjustment
         )
-        return .custom(resolvedFont.fontName, size: resolvedFont.pointSize)
+        return Font(fallbackUIFont)
     }
 
-    private static func editorialNewUIFont(
+    static func manifestationFont(
+        size: CGFloat,
         relativeTo textStyle: Font.TextStyle,
-        variant: EditorialNewVariant,
+        variant: ManifestationVariant = .regular
+    ) -> Font {
+        if let resolvedFont = manifestationCTFont(
+            size: size,
+            relativeTo: textStyle,
+            variant: variant
+        ) {
+            return Font(resolvedFont)
+        }
+
+        let fallbackUIFont = manifestationFallbackUIFont(
+            size: size,
+            relativeTo: textStyle,
+            variant: variant
+        )
+        return Font(fallbackUIFont)
+    }
+
+    private static func manifestationCTFont(
+        relativeTo textStyle: Font.TextStyle,
+        variant: ManifestationVariant,
+        sizeAdjustment: CGFloat
+    ) -> CTFont? {
+        let uiTextStyle = uiTextStyle(for: textStyle)
+        let basePointSize = UIFont.preferredFont(forTextStyle: uiTextStyle).pointSize + sizeAdjustment
+        let scaledPointSize = UIFontMetrics(forTextStyle: uiTextStyle).scaledValue(for: basePointSize)
+
+        if let graphicsFont = manifestationGraphicsFonts[variant] {
+            return CTFontCreateWithGraphicsFont(graphicsFont, scaledPointSize, nil, nil)
+        }
+
+        for fontName in manifestationResolvedNames(for: variant) {
+            if let customFont = UIFont(name: fontName, size: scaledPointSize) {
+                return customFont as CTFont
+            }
+        }
+
+        return nil
+    }
+
+    private static func manifestationCTFont(
+        size: CGFloat,
+        relativeTo textStyle: Font.TextStyle,
+        variant: ManifestationVariant
+    ) -> CTFont? {
+        let uiTextStyle = uiTextStyle(for: textStyle)
+        let scaledPointSize = UIFontMetrics(forTextStyle: uiTextStyle).scaledValue(for: size)
+
+        if let graphicsFont = manifestationGraphicsFonts[variant] {
+            return CTFontCreateWithGraphicsFont(graphicsFont, scaledPointSize, nil, nil)
+        }
+
+        for fontName in manifestationResolvedNames(for: variant) {
+            if let customFont = UIFont(name: fontName, size: scaledPointSize) {
+                return customFont as CTFont
+            }
+        }
+
+        return nil
+    }
+
+    private static func manifestationFallbackUIFont(
+        relativeTo textStyle: Font.TextStyle,
+        variant: ManifestationVariant,
         sizeAdjustment: CGFloat
     ) -> UIFont {
         let uiTextStyle = uiTextStyle(for: textStyle)
         let basePointSize = UIFont.preferredFont(forTextStyle: uiTextStyle).pointSize + sizeAdjustment
         let metrics = UIFontMetrics(forTextStyle: uiTextStyle)
-
-        for fontName in editorialNewResolvedNames(for: variant) {
-            if let customFont = UIFont(name: fontName, size: basePointSize) {
-                return metrics.scaledFont(for: customFont)
-            }
-        }
-
         let fallbackFont = UIFont.systemFont(ofSize: basePointSize, weight: variant.fallbackWeight)
         return metrics.scaledFont(for: fallbackFont)
     }
 
-    private static func editorialNewResolvedNames(for variant: EditorialNewVariant) -> [String] {
+    private static func manifestationFallbackUIFont(
+        size: CGFloat,
+        relativeTo textStyle: Font.TextStyle,
+        variant: ManifestationVariant
+    ) -> UIFont {
+        let uiTextStyle = uiTextStyle(for: textStyle)
+        let metrics = UIFontMetrics(forTextStyle: uiTextStyle)
+        let fallbackFont = UIFont.systemFont(ofSize: size, weight: variant.fallbackWeight)
+        return metrics.scaledFont(for: fallbackFont)
+    }
+
+    private static func manifestationResolvedNames(for variant: ManifestationVariant) -> [String] {
         var names: [String] = []
 
-        if let resolvedName = editorialNewPostScriptNames[variant] {
+        if let resolvedName = manifestationPostScriptNames[variant] {
             names.append(resolvedName)
         }
 
@@ -103,18 +180,19 @@ enum AppTypography {
     }
 
     private static func registerBundledFonts() {
-        for variant in EditorialNewVariant.allCases {
+        for variant in ManifestationVariant.allCases {
             registerBundledFont(for: variant)
         }
     }
 
-    private static func registerBundledFont(for variant: EditorialNewVariant) {
+    private static func registerBundledFont(for variant: ManifestationVariant) {
         guard let url = Bundle.main.url(forResource: variant.bundleFileName, withExtension: nil) else { return }
 
         if let provider = CGDataProvider(url: url as CFURL),
            let cgFont = CGFont(provider),
            let postScriptName = cgFont.postScriptName as String? {
-            editorialNewPostScriptNames[variant] = postScriptName
+            manifestationGraphicsFonts[variant] = cgFont
+            manifestationPostScriptNames[variant] = postScriptName
 
             var registrationError: Unmanaged<CFError>?
             CTFontManagerRegisterGraphicsFont(cgFont, &registrationError)
@@ -150,41 +228,48 @@ enum AppTypography {
         }
     }
 
-    enum EditorialNewVariant: CaseIterable {
-        case light
+    enum ManifestationVariant: CaseIterable {
+        case book
         case regular
         case medium
+        case bold
 
         fileprivate var bundleFileName: String {
             switch self {
-            case .light:
-                return "moments-Light.ttf"
+            case .book:
+                return "BradfordLL-Book.otf"
             case .regular:
-                return "moments-Regular.ttf"
+                return "BradfordLL-Regular.otf"
             case .medium:
-                return "moments-Medium.ttf"
+                return "BradfordLL-Medium.otf"
+            case .bold:
+                return "BradfordLL-Bold.otf"
             }
         }
 
         fileprivate var candidateFontNames: [String] {
             switch self {
-            case .light:
-                return ["EditorialNew-Light", "Editorial New Light", "Editorial New"]
+            case .book:
+                return ["BradfordLL-Book", "Bradford LL Book", "Bradford LL"]
             case .regular:
-                return ["EditorialNew-Regular", "Editorial New Regular", "Editorial New"]
+                return ["BradfordLL-Regular", "Bradford LL Regular", "Bradford LL"]
             case .medium:
-                return ["EditorialNew-Medium", "Editorial New Medium", "Editorial New"]
+                return ["BradfordLL-Medium", "Bradford LL Medium", "Bradford LL"]
+            case .bold:
+                return ["BradfordLL-Bold", "Bradford LL Bold", "Bradford LL"]
             }
         }
 
         fileprivate var fallbackWeight: UIFont.Weight {
             switch self {
-            case .light:
+            case .book:
                 return .light
             case .regular:
                 return .regular
             case .medium:
                 return .medium
+            case .bold:
+                return .bold
             }
         }
     }

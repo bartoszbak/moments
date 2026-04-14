@@ -79,7 +79,7 @@ struct EditCountdownView: View {
                     }
                 }
             }
-            .nativeGlassToggleStyleOnIPad(tintColor: controlTintColor)
+            .nativeGlassToggleStyle(tintColor: controlTintColor)
             .tint(controlTintColor)
             .sheet(isPresented: $showSymbolPicker) {
                 SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: controlTintColor)

@@ -53,21 +53,7 @@ struct CountdownTileView: View {
                 }
             } else {
                 HStack(alignment: .top, spacing: 8) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(metricValueText)
-                            .font(.system(size: 32, weight: .bold, design: .rounded))
-                            .foregroundStyle(primaryTextColor)
-                            .contentTransition(.numericText(countsDown: !isExpired))
-                            .animation(.snappy, value: metricValueText)
-
-                        Text(metricCaptionText)
-                            .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(secondaryTextColor)
-                            .lineLimit(1)
-                    }
-
                     Spacer(minLength: 0)
-
                     if let symbolName = countdown.sfSymbolName {
                         Image(systemName: symbolName)
                             .font(.system(.title3, weight: .semibold))
@@ -79,11 +65,40 @@ struct CountdownTileView: View {
 
             Spacer(minLength: 0)
 
-            Text(countdown.title)
-                .font(.system(.headline, design: .rounded, weight: .semibold))
-                .foregroundStyle(primaryTextColor)
-                .lineLimit(titleLineLimit)
-                .multilineTextAlignment(.leading)
+            if countdown.isFutureManifestation {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Manifestation")
+                        .font(titleFont)
+                        .fontDesign(nil)
+                        .foregroundStyle(secondaryTextColor)
+                        .lineLimit(1)
+
+                    Text(countdown.title)
+                        .font(titleFont)
+                        .fontDesign(nil)
+                        .foregroundStyle(primaryTextColor)
+                        .lineLimit(titleLineLimit)
+                        .lineSpacing(titleLineSpacing)
+                        .multilineTextAlignment(.leading)
+                }
+            } else {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(metricTitleText)
+                        .font(titleFont)
+                        .fontDesign(.rounded)
+                        .foregroundStyle(secondaryTextColor)
+                        .lineLimit(1)
+                        .contentTransition(.numericText(countsDown: !isExpired))
+                        .animation(.snappy, value: metricTitleText)
+
+                    Text(countdown.title)
+                        .font(titleFont)
+                        .fontDesign(.rounded)
+                        .foregroundStyle(primaryTextColor)
+                        .lineLimit(titleLineLimit)
+                        .multilineTextAlignment(.leading)
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
         .aspectRatio(1, contentMode: .fit)
@@ -103,6 +118,21 @@ struct CountdownTileView: View {
         colorScheme == .dark ? .white.opacity(0.62) : .black.opacity(0.46)
     }
 
+    private var titleLineSpacing: CGFloat {
+        countdown.isFutureManifestation ? 4 : 0
+    }
+
+    private var titleFont: Font {
+        if countdown.isFutureManifestation {
+            return AppTypography.manifestationFont(
+                relativeTo: .headline,
+                variant: .medium
+            )
+        }
+
+        return .system(.headline, design: .rounded, weight: .semibold)
+    }
+
     private var metricValueText: String {
         if countdown.isFutureManifestation {
             return "∞"
@@ -119,6 +149,10 @@ struct CountdownTileView: View {
             return "Manifest"
         }
         return isExpired ? "Days since" : "Days until"
+    }
+
+    private var metricTitleText: String {
+        "\(metricValueText) \(metricCaptionText)"
     }
 
     private var spokenMetricText: String {

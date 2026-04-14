@@ -14,6 +14,8 @@ struct MomentPreviewScrollEdgeView: View {
     @StateObject private var viewModel: MomentPreviewViewModel
     @State private var showingEditSheet = false
     @State private var completedRevealStages: Set<Int> = []
+    @State private var heroHeight: CGFloat = 0
+    @State private var reflectionHeight: CGFloat = 0
 
     init(countdownID: UUID) {
         self.countdownID = countdownID
@@ -116,7 +118,20 @@ struct MomentPreviewScrollEdgeView: View {
         viewportHeight: CGFloat
     ) -> some View {
         ScrollView {
-            previewSections(for: countdown)
+            VStack(alignment: .leading, spacing: 28) {
+                Color.clear
+                    .frame(height: heroTopSpacing(for: viewportHeight))
+
+                previewPrimarySectionStack(for: countdown)
+                    .background(HeightMeasurementView(height: $heroHeight))
+
+                if viewModel.shouldShowReflectionCard {
+                    previewReflectionSection(for: countdown)
+                        .background(HeightMeasurementView(height: $reflectionHeight))
+                }
+
+                Spacer(minLength: 0)
+            }
                 .frame(
                     maxWidth: readableContentWidth(
                         for: viewportWidth,
@@ -124,11 +139,18 @@ struct MomentPreviewScrollEdgeView: View {
                     ),
                     alignment: .leading
                 )
+                .frame(
+                    minHeight: max(viewportHeight - 28 - bottomContentPadding, 0),
+                    alignment: .top
+                )
                 .frame(maxWidth: .infinity, alignment: .top)
                 .frame(minHeight: viewportHeight, alignment: .top)
                 .padding(.horizontal, 32)
                 .padding(.top, 28)
                 .padding(.bottom, bottomContentPadding)
+                .animation(.smooth(duration: 0.4, extraBounce: 0), value: viewModel.shouldShowReflectionCard)
+                .animation(.smooth(duration: 0.4, extraBounce: 0), value: heroHeight)
+                .animation(.smooth(duration: 0.4, extraBounce: 0), value: reflectionHeight)
         }
         .scrollIndicators(.hidden)
     }
@@ -201,7 +223,14 @@ struct MomentPreviewScrollEdgeView: View {
     private func manifestationHeroCard(for countdown: Countdown) -> some View {
         VStack(alignment: .center, spacing: 18) {
             Text(countdown.title)
-                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .font(
+                    AppTypography.manifestationFont(
+                        size: 34,
+                        relativeTo: .title,
+                        variant: .bold
+                    )
+                )
+                .fontDesign(nil)
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -231,11 +260,7 @@ struct MomentPreviewScrollEdgeView: View {
                     WordRevealText(
                         text: viewModel.surfaceDisplayText,
                         font: viewModel.errorText == nil
-                            ? AppTypography.editorialNewFont(
-                                relativeTo: .body,
-                                variant: .medium,
-                                sizeAdjustment: 3
-                            )
+                            ? primaryReflectionFont(for: countdown)
                             : .system(.body, design: .rounded),
                         color: viewModel.errorText == nil ? .primary : .secondary,
                         onRevealCompleted: handleSurfaceRevealCompleted
@@ -245,11 +270,7 @@ struct MomentPreviewScrollEdgeView: View {
                 if !viewModel.reflectionDisplayText.isEmpty {
                     WordRevealText(
                         text: viewModel.reflectionDisplayText,
-                        font: AppTypography.editorialNewFont(
-                            relativeTo: .body,
-                            variant: .medium,
-                            sizeAdjustment: 3
-                        ),
+                        font: primaryReflectionFont(for: countdown),
                         color: .primary,
                         onRevealCompleted: { handleRevealCompleted(for: 1) }
                     )
@@ -259,11 +280,7 @@ struct MomentPreviewScrollEdgeView: View {
                 if !viewModel.guidanceDisplayText.isEmpty {
                     WordRevealText(
                         text: viewModel.guidanceDisplayText,
-                        font: AppTypography.editorialNewFont(
-                            relativeTo: .body,
-                            variant: .light,
-                            sizeAdjustment: 2
-                        ),
+                        font: secondaryReflectionFont(for: countdown),
                         color: .primary,
                         alignment: countdown.isFutureManifestation ? .center : .leading,
                         onRevealCompleted: { handleRevealCompleted(for: viewModel.guidanceStage) }
@@ -276,6 +293,30 @@ struct MomentPreviewScrollEdgeView: View {
         .animation(.smooth(duration: 0.28), value: viewModel.surfaceDisplayText)
         .animation(.smooth(duration: 0.28), value: viewModel.reflectionDisplayText)
         .animation(.smooth(duration: 0.28), value: viewModel.guidanceDisplayText)
+    }
+
+    private func primaryReflectionFont(for countdown: Countdown) -> Font {
+        if countdown.isFutureManifestation {
+            return AppTypography.manifestationFont(
+                relativeTo: .body,
+                variant: .medium,
+                sizeAdjustment: 3
+            )
+        }
+
+        return .system(.body, design: .rounded, weight: .medium)
+    }
+
+    private func secondaryReflectionFont(for countdown: Countdown) -> Font {
+        if countdown.isFutureManifestation {
+            return AppTypography.manifestationFont(
+                relativeTo: .body,
+                variant: .book,
+                sizeAdjustment: 2
+            )
+        }
+
+        return primaryReflectionFont(for: countdown)
     }
 
     private func primaryActionButton(for countdown: Countdown) -> some View {
@@ -468,6 +509,19 @@ struct MomentPreviewScrollEdgeView: View {
         }
     }
 
+    private func heroTopSpacing(for viewportHeight: CGFloat) -> CGFloat {
+        guard heroHeight > 0 else { return 0 }
+
+        let availableHeight = max(viewportHeight - 28 - bottomContentPadding, 0)
+        let contentHeight = heroHeight + reflectionSectionHeight
+        return max((availableHeight - contentHeight) / 2, 0)
+    }
+
+    private var reflectionSectionHeight: CGFloat {
+        guard viewModel.shouldShowReflectionCard else { return 0 }
+        return reflectionHeight > 0 ? reflectionHeight + 28 : 0
+    }
+
     private func handleSurfaceRevealCompleted() {
         handleRevealCompleted(for: 0)
     }
@@ -501,31 +555,60 @@ private struct WordRevealText: View {
     let color: Color
     var alignment: HorizontalAlignment = .leading
     var verticalSpacing: CGFloat = 4
+    var paragraphSpacing: CGFloat = 18
     var onRevealCompleted: (() -> Void)? = nil
 
     @State private var revealedWordCount = 0
     @State private var revealTask: Task<Void, Never>?
 
-    private var tokens: [String] {
-        text
-            .components(separatedBy: .whitespacesAndNewlines)
+    private var paragraphs: [Paragraph] {
+        let normalizedText = text.replacingOccurrences(of: "\r\n", with: "\n")
+        let rawParagraphs = normalizedText
+            .components(separatedBy: "\n\n")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
+
+        let effectiveParagraphs = rawParagraphs.isEmpty ? [normalizedText] : rawParagraphs
+        var startIndex = 0
+
+        return effectiveParagraphs.compactMap { paragraph in
+            let tokens = paragraph
+                .components(separatedBy: .whitespacesAndNewlines)
+                .filter { !$0.isEmpty }
+
+            guard !tokens.isEmpty else { return nil }
+            defer { startIndex += tokens.count }
+            return Paragraph(tokens: tokens, startIndex: startIndex)
+        }
+    }
+
+    private var totalTokenCount: Int {
+        paragraphs.reduce(0) { $0 + $1.tokens.count }
     }
 
     var body: some View {
-        FlowTextLayout(horizontalSpacing: 5, verticalSpacing: verticalSpacing) {
-            ForEach(Array(tokens.enumerated()), id: \.offset) { index, token in
-                Text(token)
-                    .font(font)
-                    .fontDesign(nil)
-                    .foregroundStyle(color)
-                    .opacity(index < revealedWordCount ? 1 : 0)
-                    .blur(radius: index < revealedWordCount ? 0 : 14)
-                    .offset(y: index < revealedWordCount ? 0 : 8)
-                    .animation(
-                        .easeOut(duration: 0.42).delay(Double(index) * 0.045),
-                        value: revealedWordCount
-                )
+        VStack(
+            alignment: alignment == .center ? .center : .leading,
+            spacing: paragraphSpacing
+        ) {
+            ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
+                FlowTextLayout(horizontalSpacing: 5, verticalSpacing: verticalSpacing) {
+                    ForEach(Array(paragraph.tokens.enumerated()), id: \.offset) { index, token in
+                        let globalIndex = paragraph.startIndex + index
+
+                        Text(token)
+                            .font(font)
+                            .foregroundStyle(color)
+                            .opacity(globalIndex < revealedWordCount ? 1 : 0)
+                            .blur(radius: globalIndex < revealedWordCount ? 0 : 14)
+                            .offset(y: globalIndex < revealedWordCount ? 0 : 8)
+                            .animation(
+                                .easeOut(duration: 0.42).delay(Double(globalIndex) * 0.045),
+                                value: revealedWordCount
+                        )
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
             }
         }
         .font(nil)
@@ -546,18 +629,37 @@ private struct WordRevealText: View {
         revealTask?.cancel()
         revealedWordCount = 0
 
-        guard !tokens.isEmpty else { return }
+        guard totalTokenCount > 0 else { return }
 
         revealTask = Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(35))
             guard !Task.isCancelled else { return }
-            revealedWordCount = tokens.count
+            revealedWordCount = totalTokenCount
 
-            let trailingDelay = Double(max(tokens.count - 1, 0)) * 0.045
+            let trailingDelay = Double(max(totalTokenCount - 1, 0)) * 0.045
             let completionDelay = trailingDelay + 0.42
             try? await Task.sleep(for: .seconds(completionDelay))
             guard !Task.isCancelled else { return }
             onRevealCompleted?()
+        }
+    }
+
+    private struct Paragraph {
+        let tokens: [String]
+        let startIndex: Int
+    }
+}
+
+private struct HeightMeasurementView: View {
+    @Binding var height: CGFloat
+
+    var body: some View {
+        GeometryReader { proxy in
+            Color.clear
+                .task(id: proxy.size.height) {
+                    guard abs(height - proxy.size.height) > 0.5 else { return }
+                    height = proxy.size.height
+                }
         }
     }
 }

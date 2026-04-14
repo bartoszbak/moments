@@ -142,12 +142,22 @@ struct MomentPreviewView: View {
         VStack(spacing: 14) {
             AlternatingLetterRevealText(
                 items: [dateOrManifestLabel(for: countdown), metricLabel(for: countdown)],
-                font: .system(.subheadline, design: .rounded, weight: .medium),
+                font: AppTypography.manifestationFont(
+                    relativeTo: .subheadline,
+                    variant: .medium
+                ),
                 color: .secondary
             )
 
             Text(countdown.title)
-                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .font(
+                    AppTypography.manifestationFont(
+                        size: 34,
+                        relativeTo: .title,
+                        variant: .bold
+                    )
+                )
+                .fontDesign(nil)
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -309,12 +319,8 @@ struct MomentPreviewView: View {
                 WordRevealText(
                     text: surfaceDisplayText,
                     font: surfaceText == nil && errorText != nil
-                        ? .footnote
-                        : AppTypography.editorialNewFont(
-                            relativeTo: .callout,
-                            variant: .medium,
-                            sizeAdjustment: 3
-                        ),
+                        ? .system(.footnote, design: .rounded)
+                        : primaryReflectionFont,
                     color: surfaceText == nil && errorText != nil ? .secondary : .primary
                 )
             }
@@ -323,11 +329,7 @@ struct MomentPreviewView: View {
                 if !reflectionDisplayText.isEmpty {
                     WordRevealText(
                         text: reflectionDisplayText,
-                        font: AppTypography.editorialNewFont(
-                            relativeTo: .callout,
-                            variant: .medium,
-                            sizeAdjustment: 3
-                        ),
+                        font: primaryReflectionFont,
                         color: .primary
                     )
                     .transition(.opacity)
@@ -336,11 +338,7 @@ struct MomentPreviewView: View {
                 if !guidanceDisplayText.isEmpty {
                     WordRevealText(
                         text: guidanceDisplayText,
-                        font: AppTypography.editorialNewFont(
-                            relativeTo: .callout,
-                            variant: .light,
-                            sizeAdjustment: 2
-                        ),
+                        font: secondaryReflectionFont,
                         color: .primary
                     )
                     .transition(.opacity)
@@ -352,6 +350,30 @@ struct MomentPreviewView: View {
         .animation(.smooth(duration: 0.36), value: surfaceDisplayText)
         .animation(.smooth(duration: 0.32), value: reflectionDisplayText)
         .animation(.smooth(duration: 0.32), value: guidanceDisplayText)
+    }
+
+    private var primaryReflectionFont: Font {
+        if countdown?.isFutureManifestation == true {
+            return AppTypography.manifestationFont(
+                relativeTo: .callout,
+                variant: .medium,
+                sizeAdjustment: 3
+            )
+        }
+
+        return .system(.callout, design: .rounded, weight: .medium)
+    }
+
+    private var secondaryReflectionFont: Font {
+        if countdown?.isFutureManifestation == true {
+            return AppTypography.manifestationFont(
+                relativeTo: .callout,
+                variant: .book,
+                sizeAdjustment: 2
+            )
+        }
+
+        return primaryReflectionFont
     }
 
     private func previewScrollView(proxy: GeometryProxy, countdown: Countdown) -> some View {
@@ -392,6 +414,7 @@ struct MomentPreviewView: View {
             .padding(.top, 20)
             .padding(.bottom, previewContentBottomPadding)
             .animation(.smooth(duration: 0.36), value: shouldShowReflectionCard)
+            .animation(.smooth(duration: 0.36), value: headerHeight)
             .animation(.smooth(duration: 0.36), value: reflectionHeight)
             .animation(.smooth(duration: 0.36), value: expandButtonHeight)
         }
@@ -584,30 +607,56 @@ private struct WordRevealText: View {
     let font: Font
     let color: Color
     var verticalSpacing: CGFloat = 4
+    var paragraphSpacing: CGFloat = 18
 
     @State private var revealedWordCount = 0
     @State private var revealTask: Task<Void, Never>?
 
-    private var tokens: [String] {
-        text
-            .components(separatedBy: .whitespacesAndNewlines)
+    private var paragraphs: [Paragraph] {
+        let normalizedText = text.replacingOccurrences(of: "\r\n", with: "\n")
+        let rawParagraphs = normalizedText
+            .components(separatedBy: "\n\n")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
+
+        let effectiveParagraphs = rawParagraphs.isEmpty ? [normalizedText] : rawParagraphs
+        var startIndex = 0
+
+        return effectiveParagraphs.compactMap { paragraph in
+            let tokens = paragraph
+                .components(separatedBy: .whitespacesAndNewlines)
+                .filter { !$0.isEmpty }
+
+            guard !tokens.isEmpty else { return nil }
+            defer { startIndex += tokens.count }
+            return Paragraph(tokens: tokens, startIndex: startIndex)
+        }
+    }
+
+    private var totalTokenCount: Int {
+        paragraphs.reduce(0) { $0 + $1.tokens.count }
     }
 
     var body: some View {
-        FlowTextLayout(horizontalSpacing: 5, verticalSpacing: verticalSpacing) {
-            ForEach(Array(tokens.enumerated()), id: \.offset) { index, token in
-                Text(token)
-                    .font(font)
-                    .fontDesign(nil)
-                    .foregroundStyle(color)
-                    .opacity(index < revealedWordCount ? 1 : 0)
-                    .blur(radius: index < revealedWordCount ? 0 : 14)
-                    .offset(y: index < revealedWordCount ? 0 : 8)
-                    .animation(
-                        .easeOut(duration: 0.42).delay(Double(index) * 0.045),
-                        value: revealedWordCount
-                    )
+        VStack(alignment: .leading, spacing: paragraphSpacing) {
+            ForEach(Array(paragraphs.enumerated()), id: \.offset) { _, paragraph in
+                FlowTextLayout(horizontalSpacing: 5, verticalSpacing: verticalSpacing) {
+                    ForEach(Array(paragraph.tokens.enumerated()), id: \.offset) { index, token in
+                        let globalIndex = paragraph.startIndex + index
+
+                        Text(token)
+                            .font(font)
+                            .foregroundStyle(color)
+                            .opacity(globalIndex < revealedWordCount ? 1 : 0)
+                            .blur(radius: globalIndex < revealedWordCount ? 0 : 14)
+                            .offset(y: globalIndex < revealedWordCount ? 0 : 8)
+                            .animation(
+                                .easeOut(duration: 0.42).delay(Double(globalIndex) * 0.045),
+                                value: revealedWordCount
+                            )
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .font(nil)
@@ -628,12 +677,17 @@ private struct WordRevealText: View {
         revealTask?.cancel()
         revealedWordCount = 0
 
-        guard !tokens.isEmpty else { return }
+        guard totalTokenCount > 0 else { return }
 
         revealTask = Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(35))
-            revealedWordCount = tokens.count
+            revealedWordCount = totalTokenCount
         }
+    }
+
+    private struct Paragraph {
+        let tokens: [String]
+        let startIndex: Int
     }
 }
 

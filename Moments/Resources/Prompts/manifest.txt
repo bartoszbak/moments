@@ -69,6 +69,9 @@ Examples of tone:
 - smooth, controlled flow
 - no repetition
 - no soft language like “maybe”, “I think”
+- broken into 3 short paragraphs
+- use a blank line between paragraphs
+- each paragraph should feel intentional, not like one long block
 
 ---
 

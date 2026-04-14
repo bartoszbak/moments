@@ -103,13 +103,58 @@ private enum ReflectionResponseSchema {
         if countdown.isFutureManifestation {
             let manifestation = try JSONDecoder().decode(ManifestationOutput.self, from: content)
             return ReflectionOutput(
-                surface: manifestation.instruction,
+                surface: formattedManifestInstruction(manifestation.instruction),
                 reflection: "",
                 guidance: manifestation.anchor
             )
         }
 
         return try JSONDecoder().decode(ReflectionOutput.self, from: content)
+    }
+
+    private static func formattedManifestInstruction(_ instruction: String) -> String {
+        let normalized = instruction
+            .replacingOccurrences(of: "\r\n", with: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !normalized.isEmpty else { return instruction }
+        guard !normalized.contains("\n\n") else { return normalized }
+
+        let sentenceBoundaryPattern = #"(?<=[.!?])\s+"#
+        let regex = try? NSRegularExpression(pattern: sentenceBoundaryPattern)
+        let fullRange = NSRange(normalized.startIndex..<normalized.endIndex, in: normalized)
+        let markedText = regex?.stringByReplacingMatches(
+            in: normalized,
+            options: [],
+            range: fullRange,
+            withTemplate: "<<<SPLIT>>>"
+        ) ?? normalized
+
+        let sentences = markedText
+            .components(separatedBy: "<<<SPLIT>>>")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        guard sentences.count >= 6 else { return normalized }
+
+        let paragraphCount = 3
+        let baseSize = sentences.count / paragraphCount
+        let remainder = sentences.count % paragraphCount
+        var paragraphs: [String] = []
+        var currentIndex = 0
+
+        for paragraphIndex in 0..<paragraphCount {
+            let extraSentence = paragraphIndex < remainder ? 1 : 0
+            let nextIndex = min(currentIndex + baseSize + extraSentence, sentences.count)
+            let paragraph = sentences[currentIndex..<nextIndex].joined(separator: " ")
+            paragraphs.append(paragraph)
+            currentIndex = nextIndex
+        }
+
+        return paragraphs
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .joined(separator: "\n\n")
     }
 }
 

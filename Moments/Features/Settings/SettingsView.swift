@@ -7,6 +7,7 @@ struct SettingsView: View {
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
     @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
+    @AppStorage(AppSettingsKeys.backgroundGradientEnabled) private var backgroundGradientEnabled = AppSettingsDefaults.backgroundGradientEnabled
     @AppStorage(AppSettingsKeys.calendarIntegrationEnabled) private var isCalendarIntegrationEnabled = AppSettingsDefaults.calendarIntegrationEnabled
     @AppStorage(AppSettingsKeys.hapticsEnabled) private var hapticsEnabled = AppSettingsDefaults.hapticsEnabled
 
@@ -40,6 +41,8 @@ struct SettingsView: View {
                         Text("Dark").tag("dark")
                     }
                     ColorPicker("Accent Color", selection: plusButtonColorBinding, supportsOpacity: false)
+                    Toggle("Background Gradient", isOn: $backgroundGradientEnabled)
+                        .tint(controlTintColor)
 
                     if isUsingCustomPlusButtonColor {
                         Button("Reset to Default") {
@@ -190,6 +193,7 @@ struct SettingsView: View {
 enum AppSettingsKeys {
     static let appearance = "settings.appearance"
     static let interfaceTintHex = "settings.interfaceTintHex"
+    static let backgroundGradientEnabled = "settings.backgroundGradient.enabled"
     static let calendarIntegrationEnabled = "settings.calendarIntegration.enabled"
     static let hapticsEnabled = "settings.haptics.enabled"
     static let hasSeenIntroSheet = "settings.hasSeenIntroSheet"
@@ -198,6 +202,7 @@ enum AppSettingsKeys {
 enum AppSettingsDefaults {
     static let appearance = "system"
     static let interfaceTintHex = "#D3E2FF"
+    static let backgroundGradientEnabled = true
     static let calendarIntegrationEnabled = false
     static let hapticsEnabled = true
     static let hasSeenIntroSheet = false

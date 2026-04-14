@@ -46,10 +46,10 @@ extension View {
         }
     }
 
-    /// Restores the native switch style on iPad so toggles can use the system Liquid Glass rendering.
+    /// Restores the native switch style on iOS 26+ so toggles can use the system Liquid Glass rendering.
     @ViewBuilder
-    func nativeGlassToggleStyleOnIPad(tintColor: Color) -> some View {
-        if #available(iOS 26, *), UIDevice.current.userInterfaceIdiom == .pad {
+    func nativeGlassToggleStyle(tintColor: Color) -> some View {
+        if #available(iOS 26, *) {
             self.toggleStyle(SwitchToggleStyle(tint: tintColor))
         } else {
             self
