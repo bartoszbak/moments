@@ -13,6 +13,7 @@ struct MomentPreviewScrollEdgeView: View {
 
     @StateObject private var viewModel: MomentPreviewViewModel
     @State private var showingEditSheet = false
+    @State private var completedRevealStages: Set<Int> = []
 
     init(countdownID: UUID) {
         self.countdownID = countdownID
@@ -34,6 +35,13 @@ struct MomentPreviewScrollEdgeView: View {
         .preferredColorScheme(preferredColorScheme)
         .onDisappear {
             viewModel.cancelReflection()
+        }
+        .onChange(of: viewModel.surfaceDisplayText) { _, newValue in
+            if newValue.isEmpty {
+                completedRevealStages.remove(0)
+            } else {
+                completedRevealStages.removeAll()
+            }
         }
     }
 
@@ -229,7 +237,8 @@ struct MomentPreviewScrollEdgeView: View {
                                 sizeAdjustment: 3
                             )
                             : .system(.body, design: .rounded),
-                        color: viewModel.errorText == nil ? .primary : .secondary
+                        color: viewModel.errorText == nil ? .primary : .secondary,
+                        onRevealCompleted: handleSurfaceRevealCompleted
                     )
                 }
 
@@ -241,7 +250,8 @@ struct MomentPreviewScrollEdgeView: View {
                             variant: .medium,
                             sizeAdjustment: 3
                         ),
-                        color: .primary
+                        color: .primary,
+                        onRevealCompleted: { handleRevealCompleted(for: 1) }
                     )
                     .transition(.opacity)
                 }
@@ -255,7 +265,8 @@ struct MomentPreviewScrollEdgeView: View {
                             sizeAdjustment: 2
                         ),
                         color: .primary,
-                        alignment: countdown.isFutureManifestation ? .center : .leading
+                        alignment: countdown.isFutureManifestation ? .center : .leading,
+                        onRevealCompleted: { handleRevealCompleted(for: viewModel.guidanceStage) }
                     )
                     .transition(.opacity)
                 }
@@ -454,6 +465,27 @@ struct MomentPreviewScrollEdgeView: View {
             return viewModel.showsBottomPrimaryAction ? 112 : 76
         } else {
             return 28
+        }
+    }
+
+    private func handleSurfaceRevealCompleted() {
+        handleRevealCompleted(for: 0)
+    }
+
+    private func handleRevealCompleted(for stage: Int) {
+        guard !completedRevealStages.contains(stage) else { return }
+        guard stage == viewModel.expansionStage else { return }
+        completedRevealStages.insert(stage)
+
+        guard stage < viewModel.maxExpansionStage else { return }
+
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(220))
+            guard viewModel.expansionStage == stage else { return }
+
+            withAnimation(.smooth(duration: 0.28)) {
+                viewModel.expansionStage += 1
+            }
         }
     }
 
