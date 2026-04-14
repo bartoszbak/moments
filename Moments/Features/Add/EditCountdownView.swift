@@ -79,6 +79,7 @@ struct EditCountdownView: View {
                     }
                 }
             }
+            .nativeGlassToggleStyleOnIPad(tintColor: controlTintColor)
             .tint(controlTintColor)
             .sheet(isPresented: $showSymbolPicker) {
                 SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: controlTintColor)
@@ -128,8 +129,8 @@ struct EditCountdownView: View {
                 startPercentage = countdown.startPercentage
                 showDate = countdown.showDate
                 isFutureManifestation = countdown.isFutureManifestation
-                sfSymbolName = countdown.sfSymbolName
-                showSymbol = countdown.sfSymbolName != nil
+                sfSymbolName = MomentSymbolPolicy.normalized(countdown.sfSymbolName)
+                showSymbol = sfSymbolName != nil
                 hasLoaded = true
             }
         }
@@ -143,6 +144,7 @@ struct EditCountdownView: View {
         guard !trimmed.isEmpty else { return }
         let normalizedTargetDate = Calendar.current.startOfDay(for: targetDate)
         let normalizedDetails = trimmedDetails.isEmpty ? nil : trimmedDetails
+        let normalizedSymbolName = MomentSymbolPolicy.normalized(sfSymbolName)
         let invalidatesReflection =
             trimmed != countdown.title ||
             normalizedTargetDate != Calendar.current.startOfDay(for: countdown.targetDate) ||
@@ -206,7 +208,7 @@ struct EditCountdownView: View {
             backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
             startPercentage: startPercentage,
             showDate: showDate,
-            sfSymbolName: .some(sfSymbolName),
+            sfSymbolName: .some(normalizedSymbolName),
             reflectionSurfaceText: invalidatesReflection ? .some(nil) : nil,
             reflectionText: invalidatesReflection ? .some(nil) : nil,
             reflectionGuidanceText: invalidatesReflection ? .some(nil) : nil,

@@ -95,13 +95,51 @@ struct MomentPreviewView: View {
     }
 
     private func momentHeader(for countdown: Countdown) -> some View {
+        Group {
+            if countdown.isFutureManifestation {
+                manifestationMomentHeader(for: countdown)
+            } else {
+                standardMomentHeader(for: countdown)
+            }
+        }
+    }
+
+    private func standardMomentHeader(for countdown: Countdown) -> some View {
         VStack(spacing: 14) {
+            VStack(spacing: standardHeroMetricSpacing) {
+                Text(metricValue(for: countdown))
+                    .font(.system(size: 62, weight: .bold, design: .rounded))
+                    .foregroundStyle(.primary)
+
+                Text(metricLabel(for: countdown))
+                    .font(.system(.headline, design: .rounded, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.bottom, standardHeroMetricBottomPadding)
+
+            Text(countdown.title)
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+
             if let symbolName = countdown.sfSymbolName {
                 Image(systemName: symbolName)
                     .font(.system(size: 30, weight: .semibold))
-                    .foregroundStyle(momentColor(for: countdown))
+                    .foregroundStyle(previewSymbolColor)
+                    .padding(.top, standardHeroSymbolTopPadding)
+                    .padding(.bottom, standardHeroSymbolBottomPadding)
             }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.horizontal, 8)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
+    }
 
+    private func manifestationMomentHeader(for countdown: Countdown) -> some View {
+        VStack(spacing: 14) {
             AlternatingLetterRevealText(
                 items: [dateOrManifestLabel(for: countdown), metricLabel(for: countdown)],
                 font: .system(.subheadline, design: .rounded, weight: .medium),
@@ -113,11 +151,31 @@ struct MomentPreviewView: View {
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let symbolName = countdown.sfSymbolName {
+                Image(systemName: symbolName)
+                    .font(.system(size: 30, weight: .semibold))
+                    .foregroundStyle(previewSymbolColor)
+                    .padding(.top, standardHeroSymbolTopPadding)
+                    .padding(.bottom, standardHeroSymbolBottomPadding)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.horizontal, 8)
         .padding(.top, 8)
         .padding(.bottom, 4)
+    }
+
+    private func metricValue(for countdown: Countdown) -> String {
+        if countdown.isToday(at: timerManager.currentTime) {
+            return "0"
+        }
+
+        if countdown.isExpired(at: timerManager.currentTime) {
+            return "\(countdown.daysSince(from: timerManager.currentTime))"
+        }
+
+        return "\(countdown.daysUntil(from: timerManager.currentTime))"
     }
 
     private func metricLabel(for countdown: Countdown) -> String {
@@ -129,10 +187,26 @@ struct MomentPreviewView: View {
         }
 
         if countdown.isExpired(at: timerManager.currentTime) {
-            return "\(countdown.daysSince(from: timerManager.currentTime)) days since"
+            return "Days since"
         }
 
-        return "\(countdown.daysUntil(from: timerManager.currentTime)) days until"
+        return "Days until"
+    }
+
+    private var standardHeroSymbolTopPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 16 : 0
+    }
+
+    private var standardHeroSymbolBottomPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 32 : 16
+    }
+
+    private var standardHeroMetricSpacing: CGFloat {
+        2
+    }
+
+    private var standardHeroMetricBottomPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 8 : 0
     }
 
     private func primaryActionTitle(for countdown: Countdown) -> String {
@@ -143,17 +217,10 @@ struct MomentPreviewView: View {
         countdown.isFutureManifestation ? "Manifest" : countdown.targetDate.smartFormatted
     }
 
-    private func momentColor(for countdown: Countdown) -> Color {
-        if let hex = countdown.backgroundColorHex, let customColor = Color(hex: hex) {
-            return customColor
-        }
-
-        if let index = countdown.backgroundColorIndex,
-           ColorPalette.presets.indices.contains(index) {
-            return ColorPalette.presets[index].color
-        }
-
-        return colorScheme == .dark ? Color.white.opacity(0.88) : Color.black.opacity(0.12)
+    private var previewSymbolColor: Color {
+        colorScheme == .dark
+            ? Color.white.opacity(0.72)
+            : Color.black.opacity(0.42)
     }
 
     private var actionButtonBackgroundColor: Color {
@@ -165,7 +232,7 @@ struct MomentPreviewView: View {
     }
 
     private var loadingActionButtonBackgroundColor: Color {
-        Color.secondary.opacity(colorScheme == .dark ? 0.22 : 0.12)
+        Color(uiColor: .tertiarySystemFill)
     }
 
     private var loadingActionButtonForegroundColor: Color {
@@ -241,7 +308,13 @@ struct MomentPreviewView: View {
             if !surfaceDisplayText.isEmpty {
                 WordRevealText(
                     text: surfaceDisplayText,
-                    font: surfaceText == nil && errorText != nil ? .footnote : .system(.callout, design: .rounded),
+                    font: surfaceText == nil && errorText != nil
+                        ? .footnote
+                        : AppTypography.editorialNewFont(
+                            relativeTo: .callout,
+                            variant: .medium,
+                            sizeAdjustment: 3
+                        ),
                     color: surfaceText == nil && errorText != nil ? .secondary : .primary
                 )
             }
@@ -250,7 +323,11 @@ struct MomentPreviewView: View {
                 if !reflectionDisplayText.isEmpty {
                     WordRevealText(
                         text: reflectionDisplayText,
-                        font: .system(.callout, design: .rounded),
+                        font: AppTypography.editorialNewFont(
+                            relativeTo: .callout,
+                            variant: .medium,
+                            sizeAdjustment: 3
+                        ),
                         color: .primary
                     )
                     .transition(.opacity)
@@ -259,8 +336,12 @@ struct MomentPreviewView: View {
                 if !guidanceDisplayText.isEmpty {
                     WordRevealText(
                         text: guidanceDisplayText,
-                        font: .system(.callout, design: .rounded),
-                        color: .secondary
+                        font: AppTypography.editorialNewFont(
+                            relativeTo: .callout,
+                            variant: .light,
+                            sizeAdjustment: 2
+                        ),
+                        color: .primary
                     )
                     .transition(.opacity)
                 }
@@ -339,7 +420,7 @@ struct MomentPreviewView: View {
             }
         }
         .buttonStyle(.plain)
-        .disabled(isLoadingReflection)
+        .allowsHitTesting(!isLoadingReflection)
     }
 
     @available(iOS 26.0, *)
@@ -347,18 +428,23 @@ struct MomentPreviewView: View {
         Button(action: { generateReflection(for: countdown) }) {
             Group {
                 if isLoadingReflection {
-                    ProgressView()
-                        .controlSize(.regular)
-                        .frame(minWidth: 28)
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+
+                        Text(primaryActionButtonTitle(for: countdown))
+                            .font(.headline.weight(.semibold))
+                    }
+                    .foregroundStyle(loadingActionButtonForegroundColor)
                 } else {
                     Text(primaryActionButtonTitle(for: countdown))
                         .font(.headline.weight(.semibold))
                 }
             }
         }
-        .tint(primaryButtonColor)
+        .tint(isLoadingReflection ? loadingActionButtonBackgroundColor : primaryButtonColor)
         .buttonStyle(.glassProminent)
-        .disabled(isLoadingReflection)
+        .allowsHitTesting(!isLoadingReflection)
     }
 
     @ViewBuilder
@@ -513,6 +599,7 @@ private struct WordRevealText: View {
             ForEach(Array(tokens.enumerated()), id: \.offset) { index, token in
                 Text(token)
                     .font(font)
+                    .fontDesign(nil)
                     .foregroundStyle(color)
                     .opacity(index < revealedWordCount ? 1 : 0)
                     .blur(radius: index < revealedWordCount ? 0 : 14)
@@ -523,6 +610,8 @@ private struct WordRevealText: View {
                     )
             }
         }
+        .font(nil)
+        .fontDesign(nil)
         .frame(maxWidth: .infinity, alignment: .leading)
         .onAppear {
             restartReveal()

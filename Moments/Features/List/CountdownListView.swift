@@ -18,9 +18,26 @@ struct CountdownListView: View {
     @State private var selectedFilter: CountdownFilter = .all
     @Binding var deepLinkedCountdownID: UUID?
 
-    private var gridColumns: [GridItem] {
-        let columnCount = UIDevice.current.userInterfaceIdiom == .pad ? 4 : 2
-        return Array(repeating: GridItem(.flexible(), spacing: 16), count: columnCount)
+    private var isiPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+
+    private var gridSpacing: CGFloat {
+        isiPad ? 24 : 16
+    }
+
+    private var gridHorizontalPadding: CGFloat {
+        isiPad ? 24 : 16
+    }
+
+    private func gridColumns(for size: CGSize) -> [GridItem] {
+        let columnCount = if isiPad {
+            size.width > size.height ? 4 : 2
+        } else {
+            2
+        }
+
+        return Array(repeating: GridItem(.flexible(), spacing: gridSpacing), count: columnCount)
     }
 
     private var isShowingPrimaryEmptyState: Bool {
@@ -49,56 +66,58 @@ struct CountdownListView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                if !displayedCountdowns.isEmpty {
-                    countdownGrid
-                } else {
-                    Color.clear
-                        .frame(maxWidth: .infinity, minHeight: 1)
-                }
-            }
-            .scrollIndicators(.hidden)
-            .background(mainBackgroundGradient)
-            .navigationTitle(isShowingPrimaryEmptyState ? "" : "Moments")
-            .navigationBarTitleDisplayMode(isShowingPrimaryEmptyState ? .inline : .large)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingSettings = true
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .fontWeight(.semibold)
-                            .foregroundStyle(settingsButtonColor)
+        GeometryReader { geometry in
+            NavigationStack {
+                ScrollView {
+                    if !displayedCountdowns.isEmpty {
+                        countdownGrid(in: geometry.size)
+                    } else {
+                        Color.clear
+                            .frame(maxWidth: .infinity, minHeight: 1)
                     }
                 }
+                .scrollIndicators(.hidden)
+                .background(mainBackgroundGradient)
+                .navigationTitle(isShowingPrimaryEmptyState ? "" : "Moments")
+                .navigationBarTitleDisplayMode(isShowingPrimaryEmptyState ? .inline : .large)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showingSettings = true
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .fontWeight(.semibold)
+                                .foregroundStyle(settingsButtonColor)
+                        }
+                    }
 
-                if !repository.countdowns.isEmpty && !isShowingEmptyStatePreview {
-                    ToolbarItemGroup(placement: .bottomBar) {
-                        filterMenuButton
-                        Spacer()
-                        addButton
+                    if !repository.countdowns.isEmpty && !isShowingEmptyStatePreview {
+                        ToolbarItemGroup(placement: .bottomBar) {
+                            filterMenuButton
+                            Spacer()
+                            addButton
+                        }
                     }
                 }
-            }
-            .safeAreaInset(edge: .bottom) {
-                if isShowingPrimaryEmptyState {
-                    emptyStateButton
-                }
-            }
-            .overlay {
-                if isShowingPrimaryEmptyState {
-                    emptyLibraryView
-                } else if filteredCountdowns.isEmpty {
-                    ContentUnavailableView {
-                        Label(emptyStateTitle, systemImage: "app.badge")
-                    } description: {
-                        Text(emptyStateDescription)
+                .safeAreaInset(edge: .bottom) {
+                    if isShowingPrimaryEmptyState {
+                        emptyStateButton
                     }
                 }
-            }
-            .navigationDestination(item: $previewingCountdown) { countdown in
-                MomentPreviewScrollEdgeView(countdownID: countdown.id)
+                .overlay {
+                    if isShowingPrimaryEmptyState {
+                        emptyLibraryView
+                    } else if filteredCountdowns.isEmpty {
+                        ContentUnavailableView {
+                            Label(emptyStateTitle, systemImage: "app.badge")
+                        } description: {
+                            Text(emptyStateDescription)
+                        }
+                    }
+                }
+                .navigationDestination(item: $previewingCountdown) { countdown in
+                    MomentPreviewScrollEdgeView(countdownID: countdown.id)
+                }
             }
         }
         .onChange(of: selectedFilter) {
@@ -150,24 +169,24 @@ struct CountdownListView: View {
     }
 
     @ViewBuilder
-    private var countdownGrid: some View {
+    private func countdownGrid(in size: CGSize) -> some View {
         if #available(iOS 26, *) {
-            GlassEffectContainer(spacing: 16) {
-                tileGridContent
+            GlassEffectContainer(spacing: gridSpacing) {
+                tileGridContent(in: size)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, gridHorizontalPadding)
             .padding(.top, 12)
             .padding(.bottom, 92)
         } else {
-            tileGridContent
-                .padding(.horizontal, 16)
+            tileGridContent(in: size)
+                .padding(.horizontal, gridHorizontalPadding)
                 .padding(.top, 12)
                 .padding(.bottom, 92)
         }
     }
 
-    private var tileGridContent: some View {
-        LazyVGrid(columns: gridColumns, spacing: 16) {
+    private func tileGridContent(in size: CGSize) -> some View {
+        LazyVGrid(columns: gridColumns(for: size), spacing: gridSpacing) {
             ForEach(displayedCountdowns) { countdown in
                 Button {
                     openCountdown(countdown)
@@ -233,8 +252,8 @@ struct CountdownListView: View {
             Text("Add first event")
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(emptyStateButtonForegroundColor)
-                .frame(maxWidth: .infinity)
                 .frame(height: 56)
+                .frame(maxWidth: emptyStateButtonWidth)
                 .background(
                     Capsule()
                         .fill(emptyStateButtonBackgroundColor)
@@ -244,6 +263,11 @@ struct CountdownListView: View {
         .padding(.horizontal, 24)
         .padding(.top, 12)
         .padding(.bottom, 8)
+        .frame(maxWidth: .infinity)
+    }
+
+    private var emptyStateButtonWidth: CGFloat? {
+        isiPad ? 360 : nil
     }
 
     private var filterMenuButton: some View {
@@ -376,39 +400,48 @@ private struct EmptyStateArtworkView: View {
     @StateObject private var motionController = EmptyStateMotionController()
 
     private let imageSize: CGFloat = 96
+    private let cornerRadius: CGFloat = 22
 
     var body: some View {
         Image("EmptyState")
             .resizable()
             .scaledToFit()
             .frame(width: imageSize, height: imageSize)
-        .scaleEffect(isMotionEnabled ? 1.04 : 1)
-        .offset(x: translation.width, y: translation.height)
-        .rotation3DEffect(
-            .degrees(Double(-motionController.tilt.height * 7)),
-            axis: (x: 1, y: 0, z: 0),
-            perspective: 0.55
-        )
-        .rotation3DEffect(
-            .degrees(Double(motionController.tilt.width * 7)),
-            axis: (x: 0, y: 1, z: 0),
-            perspective: 0.55
-        )
-        .shadow(
-            color: .black.opacity(isMotionEnabled ? 0.14 : 0.08),
-            radius: 18,
-            x: -translation.width * 0.35,
-            y: 12 - (translation.height * 0.35)
-        )
-        .onAppear {
-            updateMotionState(isEnabled: isMotionEnabled)
-        }
-        .onDisappear {
-            motionController.stop()
-        }
-        .onChange(of: isMotionEnabled) { _, isEnabled in
-            updateMotionState(isEnabled: isEnabled)
-        }
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(
+                        Color.primary.opacity(0.08),
+                        lineWidth: 1
+                    )
+            }
+            .scaleEffect(isMotionEnabled ? 1.04 : 1)
+            .offset(x: translation.width, y: translation.height)
+            .rotation3DEffect(
+                .degrees(Double(-motionController.tilt.height * 7)),
+                axis: (x: 1, y: 0, z: 0),
+                perspective: 0.55
+            )
+            .rotation3DEffect(
+                .degrees(Double(motionController.tilt.width * 7)),
+                axis: (x: 0, y: 1, z: 0),
+                perspective: 0.55
+            )
+            .shadow(
+                color: .black.opacity(isMotionEnabled ? 0.16 : 0.1),
+                radius: 18,
+                x: 0,
+                y: 14 - (translation.height * 0.2)
+            )
+            .onAppear {
+                updateMotionState(isEnabled: isMotionEnabled)
+            }
+            .onDisappear {
+                motionController.stop()
+            }
+            .onChange(of: isMotionEnabled) { _, isEnabled in
+                updateMotionState(isEnabled: isEnabled)
+            }
     }
 
     private var isMotionEnabled: Bool {

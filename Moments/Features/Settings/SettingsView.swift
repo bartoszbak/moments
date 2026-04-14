@@ -13,6 +13,10 @@ struct SettingsView: View {
     @StateObject private var calendarService = CalendarService.shared
     @State private var isReconcilingCalendarToggle = false
 
+    private var isiPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -80,6 +84,7 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                         .buttonStyle(.plain)
                         .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.bottom, isiPad ? 32 : 0)
                 }
             }
             .navigationTitle("Settings")

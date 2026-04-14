@@ -8,6 +8,10 @@ struct CountdownTileView: View {
 
     private let cornerRadius: CGFloat = 28
 
+    private var titleLineLimit: Int {
+        UIDevice.current.userInterfaceIdiom == .pad ? 4 : 2
+    }
+
     private var isExpired: Bool { countdown.isExpired(at: currentTime) }
     private var isToday: Bool { countdown.isToday(at: currentTime) }
     private var daysUntil: Int { countdown.daysUntil(from: currentTime) }
@@ -29,6 +33,7 @@ struct CountdownTileView: View {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                 .strokeBorder(tileBorderColor, lineWidth: 1)
         }
+        .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
     }
@@ -51,7 +56,6 @@ struct CountdownTileView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(metricValueText)
                             .font(.system(size: 32, weight: .bold, design: .rounded))
-                            .monospacedDigit()
                             .foregroundStyle(primaryTextColor)
                             .contentTransition(.numericText(countsDown: !isExpired))
                             .animation(.snappy, value: metricValueText)
@@ -78,7 +82,7 @@ struct CountdownTileView: View {
             Text(countdown.title)
                 .font(.system(.headline, design: .rounded, weight: .semibold))
                 .foregroundStyle(primaryTextColor)
-                .lineLimit(2)
+                .lineLimit(titleLineLimit)
                 .multilineTextAlignment(.leading)
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)

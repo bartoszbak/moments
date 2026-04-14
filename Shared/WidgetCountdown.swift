@@ -37,7 +37,7 @@ struct WidgetCountdown: Codable, Identifiable {
         self.backgroundImagePath = backgroundImagePath
         self.startPercentage = startPercentage
         self.showDate = showDate
-        self.sfSymbolName = sfSymbolName
+        self.sfSymbolName = MomentSymbolPolicy.normalized(sfSymbolName)
         self.isFutureManifestation = isFutureManifestation
     }
 
@@ -51,7 +51,9 @@ struct WidgetCountdown: Codable, Identifiable {
         backgroundImagePath = try container.decodeIfPresent(String.self, forKey: .backgroundImagePath)
         startPercentage = try container.decode(Double.self, forKey: .startPercentage)
         showDate = try container.decode(Bool.self, forKey: .showDate)
-        sfSymbolName = try container.decodeIfPresent(String.self, forKey: .sfSymbolName)
+        sfSymbolName = MomentSymbolPolicy.normalized(
+            try container.decodeIfPresent(String.self, forKey: .sfSymbolName)
+        )
         isFutureManifestation = try container.decodeIfPresent(Bool.self, forKey: .isFutureManifestation) ?? false
     }
 

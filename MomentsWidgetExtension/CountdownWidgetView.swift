@@ -1,5 +1,6 @@
 import SwiftUI
 import WidgetKit
+import UIKit
 
 struct CountdownWidgetView: View {
     let entry: CountdownEntry
@@ -315,29 +316,27 @@ struct CountdownWidgetView: View {
         return MomentDeepLink.previewURL(for: countdown.id)
     }
 
-    /// True when background is dark → use white text; false → use dark text.
     private var usesLightText: Bool {
-        guard let hex = entry.countdown?.backgroundColorHex else {
-            return false // default white background → dark text
+        if let image = backgroundImage {
+            return image.prefersLightForeground(afterApplyingBlackOverlay: imageOverlayAverageOpacity)
         }
-        let cleaned = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        guard cleaned.count == 6, let value = UInt64(cleaned, radix: 16) else {
-            return false
+
+        if let color = resolvedBackgroundColor {
+            return color.prefersLightForeground
         }
-        let r = Double((value >> 16) & 0xFF) / 255
-        let g = Double((value >> 8) & 0xFF) / 255
-        let b = Double(value & 0xFF) / 255
-        let luminance = 0.299 * r + 0.587 * g + 0.114 * b
-        return luminance < 0.5 // dark bg → light text
+
+        return false
     }
 
     private var fgPrimary: Color { usesLightText ? .white : .black }
-    private var fgSecondary: Color { usesLightText ? .white.opacity(0.5) : .black.opacity(0.4) }
+    private var fgSecondary: Color { usesLightText ? .white.opacity(0.72) : .black.opacity(0.58) }
 
     private var backgroundImage: UIImage? {
         guard let path = entry.countdown?.backgroundImagePath else { return nil }
         return UIImage(contentsOfFile: path)
     }
+
+    private var imageOverlayAverageOpacity: Double { 0.28 }
 
     private var containerBackground: some View {
         ZStack {
@@ -345,7 +344,16 @@ struct CountdownWidgetView: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-                Color.black.opacity(0.1)
+                    .clipped()
+
+                LinearGradient(
+                    colors: [
+                        Color.black.opacity(0.1),
+                        Color.black.opacity(0.24)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
             } else if let color = resolvedBackgroundColor {
                 color
             } else {
@@ -391,6 +399,38 @@ struct CountdownWidgetView: View {
         return countdown.isExpired && !countdown.isToday ? "Days since" : "Days until"
     }
 
+}
+
+private extension UIImage {
+    func prefersLightForeground(afterApplyingBlackOverlay overlayOpacity: Double) -> Bool {
+        let effectiveLuminance = averageLuminance * (1 - overlayOpacity)
+        return effectiveLuminance < 0.45
+    }
+
+    var averageLuminance: Double {
+        let format = UIGraphicsImageRendererFormat.default()
+        format.opaque = false
+        format.scale = 1
+
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1), format: format)
+        let renderedImage = renderer.image { _ in
+            draw(in: CGRect(origin: .zero, size: CGSize(width: 1, height: 1)))
+        }
+
+        guard
+            let cgImage = renderedImage.cgImage,
+            let data = cgImage.dataProvider?.data,
+            let bytes = CFDataGetBytePtr(data)
+        else {
+            return 1
+        }
+
+        let r = Double(bytes[0]) / 255
+        let g = Double(bytes[1]) / 255
+        let b = Double(bytes[2]) / 255
+
+        return (0.299 * r) + (0.587 * g) + (0.114 * b)
+    }
 }
 
 #Preview(as: .systemSmall) {

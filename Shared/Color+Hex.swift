@@ -3,6 +3,19 @@ import UIKit
 
 private let defaultInterfaceTintHex = "#D3E2FF"
 
+enum MomentSymbolPolicy {
+    static func normalized(_ symbolName: String?) -> String? {
+        guard let trimmed = symbolName?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !trimmed.isEmpty,
+              trimmed.hasSuffix(".fill")
+        else {
+            return nil
+        }
+
+        return trimmed
+    }
+}
+
 extension Color {
     init?(hex: String) {
         var h = hex.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -130,6 +130,7 @@ struct AddCountdownView: View {
                     ProgressStartPickerSection(value: $startPercentage)
                 }
             }
+            .nativeGlassToggleStyleOnIPad(tintColor: controlTintColor)
             .tint(controlTintColor)
             .navigationTitle("Add a Moment")
             .navigationBarTitleDisplayMode(.inline)
@@ -171,6 +172,7 @@ struct AddCountdownView: View {
         guard !trimmed.isEmpty else { showTitleError = true; return }
         isCreating = true
         let newID = UUID()
+        let normalizedSymbolName = MomentSymbolPolicy.normalized(sfSymbolName)
 
         var imagePath: String?
         var thumbPath: String?
@@ -202,7 +204,7 @@ struct AddCountdownView: View {
                 backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
                 startPercentage: startPercentage,
                 showDate: showDate,
-                sfSymbolName: sfSymbolName,
+                sfSymbolName: normalizedSymbolName,
                 isFutureManifestation: isFutureManifestation
             )
             AppHaptics.impact(.medium)

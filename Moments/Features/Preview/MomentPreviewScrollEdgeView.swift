@@ -13,7 +13,6 @@ struct MomentPreviewScrollEdgeView: View {
 
     @StateObject private var viewModel: MomentPreviewViewModel
     @State private var showingEditSheet = false
-    @State private var completedRevealStages: Set<Int> = []
 
     init(countdownID: UUID) {
         self.countdownID = countdownID
@@ -36,13 +35,6 @@ struct MomentPreviewScrollEdgeView: View {
         .onDisappear {
             viewModel.cancelReflection()
         }
-        .onChange(of: viewModel.surfaceDisplayText) { _, newValue in
-            if newValue.isEmpty {
-                completedRevealStages.remove(0)
-            } else {
-                completedRevealStages.removeAll()
-            }
-        }
     }
 
     private func previewScreen(for countdown: Countdown) -> some View {
@@ -51,7 +43,11 @@ struct MomentPreviewScrollEdgeView: View {
                 previewBackground(for: countdown)
                     .ignoresSafeArea()
 
-                previewScrollView(for: countdown, viewportHeight: proxy.size.height)
+                previewScrollView(
+                    for: countdown,
+                    viewportWidth: proxy.size.width,
+                    viewportHeight: proxy.size.height
+                )
             }
 
             Group {
@@ -63,6 +59,7 @@ struct MomentPreviewScrollEdgeView: View {
                         content: {
                             bottomSafeAreaBarContent(
                                 for: countdown,
+                                viewportWidth: proxy.size.width,
                                 bottomSafeAreaInset: proxy.safeAreaInsets.bottom
                             )
                         }
@@ -71,7 +68,12 @@ struct MomentPreviewScrollEdgeView: View {
                     baseScreen.safeAreaInset(
                         edge: .bottom,
                         spacing: 0,
-                        content: { legacyBottomInsetContent(for: countdown) }
+                        content: {
+                            legacyBottomInsetContent(
+                                for: countdown,
+                                viewportWidth: proxy.size.width
+                            )
+                        }
                     )
                 }
             }
@@ -100,9 +102,20 @@ struct MomentPreviewScrollEdgeView: View {
     }
 
     @ViewBuilder
-    private func previewScrollView(for countdown: Countdown, viewportHeight: CGFloat) -> some View {
+    private func previewScrollView(
+        for countdown: Countdown,
+        viewportWidth: CGFloat,
+        viewportHeight: CGFloat
+    ) -> some View {
         ScrollView {
             previewSections(for: countdown)
+                .frame(
+                    maxWidth: readableContentWidth(
+                        for: viewportWidth,
+                        horizontalPadding: 32
+                    ),
+                    alignment: .leading
+                )
                 .frame(maxWidth: .infinity, alignment: .top)
                 .frame(minHeight: viewportHeight, alignment: .top)
                 .padding(.horizontal, 32)
@@ -146,63 +159,52 @@ struct MomentPreviewScrollEdgeView: View {
     }
 
     private func standardHeroCard(for countdown: Countdown) -> some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(alignment: .top, spacing: 16) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(metricValue(for: countdown))
-                        .font(.system(size: 62, weight: .bold, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundStyle(.primary)
-
-                    Text(metricLabel(for: countdown))
-                        .font(.headline.weight(.medium))
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer(minLength: 0)
-
-                if let symbolName = countdown.sfSymbolName {
-                    Image(systemName: symbolName)
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(momentAccentColor(for: countdown))
-                        .frame(width: 54, height: 54)
-                        .background(momentAccentColor(for: countdown).opacity(colorScheme == .dark ? 0.24 : 0.12), in: Circle())
-                }
-            }
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text(countdown.title)
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
+        VStack(alignment: .center, spacing: 14) {
+            VStack(alignment: .center, spacing: standardHeroMetricSpacing) {
+                Text(metricValue(for: countdown))
+                    .font(.system(size: 62, weight: .bold, design: .rounded))
                     .foregroundStyle(.primary)
-                    .fixedSize(horizontal: false, vertical: true)
 
-                Text(countdown.targetDate.smartFormatted)
-                    .font(.system(.headline, design: .rounded, weight: .medium))
+                Text(metricLabel(for: countdown))
+                    .font(.headline.weight(.medium))
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
             }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.bottom, 28)
-    }
-
-    private func manifestationHeroCard(for countdown: Countdown) -> some View {
-        VStack(alignment: .center, spacing: 18) {
-            if let symbolName = countdown.sfSymbolName {
-                Image(systemName: symbolName)
-                    .font(.system(size: 28, weight: .semibold))
-                    .foregroundStyle(momentAccentColor(for: countdown))
-                    .frame(width: 54, height: 54)
-                    .background(
-                        momentAccentColor(for: countdown).opacity(colorScheme == .dark ? 0.24 : 0.12),
-                        in: Circle()
-                    )
-            }
+            .padding(.bottom, standardHeroMetricBottomPadding)
 
             Text(countdown.title)
                 .font(.system(size: 34, weight: .bold, design: .rounded))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let symbolName = countdown.sfSymbolName {
+                Image(systemName: symbolName)
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(previewSymbolColor)
+                    .padding(.top, standardHeroSymbolTopPadding)
+                    .padding(.bottom, standardHeroSymbolBottomPadding)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.bottom, 28)
+    }
+
+    private func manifestationHeroCard(for countdown: Countdown) -> some View {
+        VStack(alignment: .center, spacing: 18) {
+            Text(countdown.title)
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if let symbolName = countdown.sfSymbolName {
+                Image(systemName: symbolName)
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(previewSymbolColor)
+                    .padding(.top, standardHeroSymbolTopPadding)
+                    .padding(.bottom, standardHeroSymbolBottomPadding)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.bottom, 28)
@@ -220,18 +222,26 @@ struct MomentPreviewScrollEdgeView: View {
                 if !viewModel.surfaceDisplayText.isEmpty {
                     WordRevealText(
                         text: viewModel.surfaceDisplayText,
-                        font: .system(.body, design: .rounded),
-                        color: viewModel.errorText == nil ? .primary : .secondary,
-                        onRevealCompleted: handleSurfaceRevealCompleted
+                        font: viewModel.errorText == nil
+                            ? AppTypography.editorialNewFont(
+                                relativeTo: .body,
+                                variant: .medium,
+                                sizeAdjustment: 3
+                            )
+                            : .system(.body, design: .rounded),
+                        color: viewModel.errorText == nil ? .primary : .secondary
                     )
                 }
 
                 if !viewModel.reflectionDisplayText.isEmpty {
                     WordRevealText(
                         text: viewModel.reflectionDisplayText,
-                        font: .system(.body, design: .rounded),
-                        color: .primary,
-                        onRevealCompleted: { handleRevealCompleted(for: 1) }
+                        font: AppTypography.editorialNewFont(
+                            relativeTo: .body,
+                            variant: .medium,
+                            sizeAdjustment: 3
+                        ),
+                        color: .primary
                     )
                     .transition(.opacity)
                 }
@@ -239,21 +249,16 @@ struct MomentPreviewScrollEdgeView: View {
                 if !viewModel.guidanceDisplayText.isEmpty {
                     WordRevealText(
                         text: viewModel.guidanceDisplayText,
-                        font: .system(.body, design: .rounded),
-                        color: .secondary,
-                        alignment: countdown.isFutureManifestation ? .center : .leading,
-                        onRevealCompleted: { handleRevealCompleted(for: viewModel.guidanceStage) }
+                        font: AppTypography.editorialNewFont(
+                            relativeTo: .body,
+                            variant: .light,
+                            sizeAdjustment: 2
+                        ),
+                        color: .primary,
+                        alignment: countdown.isFutureManifestation ? .center : .leading
                     )
                     .transition(.opacity)
                 }
-            }
-
-            if shouldShowReflectionCompletionIcon {
-                Image(systemName: "sparkle")
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .transition(.opacity.combined(with: .scale(scale: 0.92)))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -269,8 +274,8 @@ struct MomentPreviewScrollEdgeView: View {
             Group {
                 if viewModel.isLoadingReflection {
                     ThinkingActionLabel(
-                        foregroundColor: primaryButtonForegroundColor,
-                        backgroundColor: primaryButtonColor
+                        foregroundColor: loadingActionButtonForegroundColor,
+                        backgroundColor: loadingActionButtonBackgroundColor
                     )
                 } else {
                     Text(primaryActionTitle(for: countdown))
@@ -286,11 +291,15 @@ struct MomentPreviewScrollEdgeView: View {
             }
         }
         .buttonStyle(.plain)
-        .disabled(viewModel.isLoadingReflection)
+        .allowsHitTesting(!viewModel.isLoadingReflection)
     }
 
     @available(iOS 26.0, *)
-    private func bottomSafeAreaBarContent(for countdown: Countdown, bottomSafeAreaInset: CGFloat) -> some View {
+    private func bottomSafeAreaBarContent(
+        for countdown: Countdown,
+        viewportWidth: CGFloat,
+        bottomSafeAreaInset: CGFloat
+    ) -> some View {
         ZStack(alignment: .bottom) {
             VariableBlur(direction: .up)
                 .maximumBlurRadius(2)
@@ -304,6 +313,12 @@ struct MomentPreviewScrollEdgeView: View {
 
             if viewModel.showsBottomPrimaryAction {
                 primaryActionButton(for: countdown)
+                    .frame(
+                        maxWidth: readableContentWidth(
+                            for: viewportWidth,
+                            horizontalPadding: 24
+                        )
+                    )
                     .padding(.horizontal, 24)
                     .padding(.top, 12)
                     .padding(.bottom, 12)
@@ -315,9 +330,15 @@ struct MomentPreviewScrollEdgeView: View {
     }
 
     @ViewBuilder
-    private func legacyBottomInsetContent(for countdown: Countdown) -> some View {
+    private func legacyBottomInsetContent(for countdown: Countdown, viewportWidth: CGFloat) -> some View {
         if viewModel.showsBottomPrimaryAction {
             primaryActionButton(for: countdown)
+                .frame(
+                    maxWidth: readableContentWidth(
+                        for: viewportWidth,
+                        horizontalPadding: 24
+                    )
+                )
                 .padding(.horizontal, 24)
                 .padding(.top, 12)
                 .padding(.bottom, 12)
@@ -327,6 +348,11 @@ struct MomentPreviewScrollEdgeView: View {
 
     private func previewBackground(for countdown: Countdown) -> some View {
         Color(.systemBackground)
+    }
+
+    private func readableContentWidth(for viewportWidth: CGFloat, horizontalPadding: CGFloat) -> CGFloat {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { return .infinity }
+        return min(700, max(viewportWidth - (horizontalPadding * 2), 0))
     }
 
     private func metricValue(for countdown: Countdown) -> String {
@@ -343,14 +369,30 @@ struct MomentPreviewScrollEdgeView: View {
 
     private func metricLabel(for countdown: Countdown) -> String {
         if countdown.isToday(at: timerManager.currentTime) {
-            return "Days until today"
+            return "Today"
         }
 
         if countdown.isExpired(at: timerManager.currentTime) {
-            return "Days since this moment"
+            return "Days since"
         }
 
-        return "Days until this moment"
+        return "Days until"
+    }
+
+    private var standardHeroSymbolTopPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 16 : 0
+    }
+
+    private var standardHeroSymbolBottomPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 32 : 16
+    }
+
+    private var standardHeroMetricSpacing: CGFloat {
+        2
+    }
+
+    private var standardHeroMetricBottomPadding: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 8 : 0
     }
 
     private var reflectionCardTitle: String {
@@ -377,17 +419,10 @@ struct MomentPreviewScrollEdgeView: View {
         countdown.isFutureManifestation ? 32 : 14
     }
 
-    private func momentAccentColor(for countdown: Countdown) -> Color {
-        if let hex = countdown.backgroundColorHex, let customColor = Color(hex: hex) {
-            return customColor
-        }
-
-        if let index = countdown.backgroundColorIndex,
-           ColorPalette.presets.indices.contains(index) {
-            return ColorPalette.presets[index].color
-        }
-
-        return colorScheme == .dark ? .white : .black
+    private var previewSymbolColor: Color {
+        colorScheme == .dark
+            ? Color.white.opacity(0.72)
+            : Color.black.opacity(0.42)
     }
 
     private var editButtonColor: Color {
@@ -402,40 +437,16 @@ struct MomentPreviewScrollEdgeView: View {
         primaryButtonColor.prefersLightForeground ? .white : .black
     }
 
+    private var loadingActionButtonBackgroundColor: Color {
+        Color(uiColor: .tertiarySystemFill)
+    }
+
+    private var loadingActionButtonForegroundColor: Color {
+        .primary
+    }
+
     private var preferredColorScheme: ColorScheme? {
         AppTheme.preferredColorScheme(for: appearanceSetting)
-    }
-
-    private var shouldShowReflectionCompletionIcon: Bool {
-        guard viewModel.errorText == nil else { return false }
-        guard !viewModel.surfaceDisplayText.isEmpty else { return false }
-
-        if viewModel.maxExpansionStage == 0 {
-            return completedRevealStages.contains(0)
-        }
-
-        return completedRevealStages.contains(viewModel.maxExpansionStage)
-    }
-
-    private func handleSurfaceRevealCompleted() {
-        handleRevealCompleted(for: 0)
-    }
-
-    private func handleRevealCompleted(for stage: Int) {
-        guard !completedRevealStages.contains(stage) else { return }
-        guard stage == viewModel.expansionStage else { return }
-        completedRevealStages.insert(stage)
-
-        guard stage < viewModel.maxExpansionStage else { return }
-
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(220))
-            guard viewModel.expansionStage == stage else { return }
-
-            withAnimation(.smooth(duration: 0.28)) {
-                viewModel.expansionStage += 1
-            }
-        }
     }
 
     private var bottomContentPadding: CGFloat {
@@ -474,6 +485,7 @@ private struct WordRevealText: View {
             ForEach(Array(tokens.enumerated()), id: \.offset) { index, token in
                 Text(token)
                     .font(font)
+                    .fontDesign(nil)
                     .foregroundStyle(color)
                     .opacity(index < revealedWordCount ? 1 : 0)
                     .blur(radius: index < revealedWordCount ? 0 : 14)
@@ -484,6 +496,8 @@ private struct WordRevealText: View {
                 )
             }
         }
+        .font(nil)
+        .fontDesign(nil)
         .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
         .onAppear {
             restartReveal()

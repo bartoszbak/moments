@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 extension View {
     /// Applies Liquid Glass on iOS 26+, falls back to ultraThinMaterial on earlier OS.
@@ -42,6 +43,16 @@ extension View {
             self.buttonStyle(.glassProminent)
         } else {
             self.buttonStyle(.borderedProminent)
+        }
+    }
+
+    /// Restores the native switch style on iPad so toggles can use the system Liquid Glass rendering.
+    @ViewBuilder
+    func nativeGlassToggleStyleOnIPad(tintColor: Color) -> some View {
+        if #available(iOS 26, *), UIDevice.current.userInterfaceIdiom == .pad {
+            self.toggleStyle(SwitchToggleStyle(tint: tintColor))
+        } else {
+            self
         }
     }
 

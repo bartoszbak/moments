@@ -7,81 +7,90 @@ private struct SymbolCategory {
 
 private let allCategories: [SymbolCategory] = uniqueCategories([
     SymbolCategory(name: "Celebrations", symbols: [
-        "party.popper", "balloon.fill", "balloon.2.fill", "star.fill", "crown.fill",
-        "gift.fill", "trophy.fill", "medal.fill", "sparkles", "rosette",
-        "fireworks", "hands.clap.fill", "checkmark.seal.fill", "flag.checkered", "bell.badge.fill",
-        "party.popper.fill", "balloon", "balloon.2", "star", "star.circle",
-        "star.circle.fill", "star.square.fill", "flag", "flag.fill", "gift",
-        "gift.circle.fill", "trophy", "trophy.circle.fill", "bell.fill", "seal.fill"
+        "party.popper.fill", "balloon.fill", "balloon.2.fill", "star.fill", "star.circle.fill",
+        "star.square.fill", "crown.fill", "gift.fill", "gift.circle.fill", "trophy.fill",
+        "trophy.circle.fill", "medal.fill", "medal.star.fill", "rosette", "checkmark.seal.fill",
+        "bell.badge.fill", "flag.fill", "flag.checkered.2.crossed", "fireworks", "sparkles"
     ]),
-    SymbolCategory(name: "Activities", symbols: [
-        "figure.run", "figure.walk", "figure.hiking", "figure.open.water.swim",
-        "figure.dance", "figure.yoga", "figure.cooldown", "dumbbell.fill",
-        "sportscourt.fill", "tent.fill",
-        "figure.skiing.downhill", "figure.outdoor.cycle", "figure.martial.arts",
-        "figure.surfing", "figure.archery",
-        "figure.walk.circle", "figure.walk.circle.fill", "figure.run.circle", "figure.run.circle.fill",
-        "figure.hiking.circle", "figure.hiking.circle.fill", "figure.dance.circle", "figure.cooldown.circle",
-        "dumbbell", "sportscourt", "tent", "bicycle.circle", "map", "figure.mind.and.body", "figure.pool.swim"
+    SymbolCategory(name: "Wellness", symbols: [
+        "figure.run.circle.fill", "figure.walk.circle.fill", "figure.hiking.circle.fill", "figure.cooldown.circle.fill",
+        "figure.mind.and.body.circle.fill", "figure.outdoor.cycle.circle.fill", "figure.open.water.swim.circle.fill",
+        "figure.yoga", "dumbbell.fill", "sportscourt.fill", "tennisball.fill", "basketball.fill",
+        "soccerball", "football.fill", "baseball.fill", "volleyball.fill",
+        "snowboard.fill", "skateboard.fill", "tent.fill", "mountain.2.fill"
     ]),
     SymbolCategory(name: "Sports", symbols: [
-        "soccerball", "basketball.fill", "football.fill", "baseball.fill",
-        "tennis.racket", "volleyball.fill", "cricket.ball.fill",
-        "skateboard.fill", "snowboard.fill", "hockey.puck.fill",
-        "figure.skiing.crosscountry", "figure.boxing", "figure.strengthtraining.traditional",
-        "target", "flag.2.crossed",
-        "soccerball.circle", "basketball", "football", "baseball", "baseball.circle",
-        "tennisball.fill", "tennisball.circle", "figure.baseball", "figure.basketball",
-        "figure.american.football", "figure.tennis", "figure.volleyball", "figure.golf", "medal.star.fill", "sportscourt.circle"
+        "basketball.fill", "football.fill", "baseball.fill", "tennisball.fill",
+        "volleyball.fill", "cricket.ball.fill", "hockey.puck.fill", "soccerball.inverse",
+        "figure.baseball.circle.fill", "figure.basketball.circle.fill", "figure.american.football.circle.fill",
+        "figure.tennis.circle.fill", "figure.golf.circle.fill", "figure.boxing.circle.fill",
+        "figure.strengthtraining.traditional.circle.fill", "target", "flag.checkered.2.crossed"
     ]),
     SymbolCategory(name: "Travel", symbols: [
-        "airplane", "airplane.departure", "airplane.arrival",
-        "car.fill", "train.side.front.car", "ferry.fill",
-        "bicycle", "map.fill", "location.fill", "globe.europe.africa.fill",
-        "mountain.2.fill", "suitcase.fill",
-        "bus.fill", "tram.fill", "signpost.right.fill",
-        "airplane.circle", "airplane.circle.fill", "car", "car.circle.fill", "sailboat.fill",
-        "ferry", "bicycle.circle.fill", "map.circle.fill", "location.circle.fill", "globe",
-        "globe.americas.fill", "mountain.2", "suitcase", "tram.circle.fill", "signpost.right"
+        "airplane.circle.fill", "car.fill", "car.circle.fill", "bus.fill",
+        "tram.fill", "ferry.fill", "sailboat.fill", "bicycle.circle.fill",
+        "map.fill", "map.circle.fill", "location.fill", "location.circle.fill",
+        "signpost.right.fill", "suitcase.fill", "globe.europe.africa.fill", "globe.americas.fill",
+        "globe.asia.australia.fill", "mountain.2.fill"
     ]),
     SymbolCategory(name: "Nature", symbols: [
-        "sun.max.fill", "moon.fill", "cloud.fill", "snowflake",
-        "flame.fill", "leaf.fill", "tree.fill", "drop.fill",
-        "bolt.fill", "rainbow", "wind",
-        "cloud.sun.fill", "cloud.rain.fill", "sun.and.horizon.fill", "tornado",
-        "sun.max", "moon.stars.fill", "cloud.sun", "cloud.rain", "cloud.bolt.fill",
-        "cloud.fog.fill", "snowflake.circle", "leaf.circle.fill", "tree", "drop.circle.fill",
-        "bolt.circle.fill", "hurricane", "thermometer.sun", "thermometer.snowflake", "aqi.low"
+        "sun.max.fill", "moon.fill", "moon.stars.fill", "cloud.fill",
+        "cloud.sun.fill", "cloud.rain.fill", "cloud.bolt.fill", "cloud.fog.fill",
+        "sun.and.horizon.fill", "snowflake.circle.fill", "flame.fill", "drop.fill",
+        "drop.circle.fill", "bolt.fill", "bolt.circle.fill", "leaf.fill",
+        "leaf.circle.fill", "tree.fill", "aqi.low", "hurricane"
     ]),
     SymbolCategory(name: "Food & Drink", symbols: [
-        "fork.knife", "cup.and.saucer.fill", "birthday.cake.fill",
-        "wineglass.fill", "mug.fill", "popcorn.fill",
-        "takeoutbag.and.cup.and.straw.fill", "carrot.fill", "fish.fill",
-        "cup.and.heat.waves.fill", "basket.fill", "cart.fill",
-        "refrigerator.fill", "microwave.fill", "bag.fill",
-        "fork.knife.circle", "fork.knife.circle.fill", "birthday.cake", "wineglass", "waterbottle",
-        "cup.and.saucer", "takeoutbag.and.cup.and.straw", "fish.circle", "cup.and.heat.waves", "basket",
-        "cart.badge.plus", "popcorn.circle.fill", "waterbottle.fill", "cart.circle.fill", "bag.circle.fill"
+        "fork.knife.circle.fill", "cup.and.saucer.fill", "cup.and.heat.waves.fill", "birthday.cake.fill",
+        "wineglass.fill", "waterbottle.fill", "mug.fill", "popcorn.fill",
+        "popcorn.circle.fill", "takeoutbag.and.cup.and.straw.fill", "basket.fill", "bag.fill",
+        "bag.circle.fill", "cart.fill", "cart.circle.fill", "carrot.fill",
+        "fish.fill", "refrigerator.fill", "microwave.fill"
     ]),
     SymbolCategory(name: "Home & Lifestyle", symbols: [
-        "house.fill", "heart.fill", "heart.circle.fill",
-        "music.note", "camera.fill", "book.fill",
-        "gamecontroller.fill", "paintbrush.fill", "bed.double.fill",
-        "sofa.fill", "tv.fill", "music.mic",
-        "headphones", "photo.fill", "movieclapper.fill",
-        "house", "heart.square.fill", "music.note.house.fill", "camera", "camera.circle.fill",
-        "books.vertical.fill", "paintpalette.fill", "bed.double", "lamp.floor.fill", "washer.fill",
-        "dishwasher.fill", "shower.fill", "theatermasks.fill", "guitars.fill", "pianokeys.inverse"
+        "house.fill", "heart.fill", "heart.circle.fill", "heart.square.fill",
+        "camera.fill", "camera.circle.fill", "photo.fill", "book.fill",
+        "books.vertical.fill", "music.note.house.fill", "gamecontroller.fill", "paintbrush.fill",
+        "paintpalette.fill", "bed.double.fill", "sofa.fill", "lamp.floor.fill",
+        "washer.fill", "dishwasher.fill", "shower.fill", "tv.fill",
+        "movieclapper.fill", "theatermasks.fill", "guitars.fill"
     ]),
     SymbolCategory(name: "Work & Education", symbols: [
-        "briefcase.fill", "graduationcap.fill", "stethoscope",
-        "hammer.fill", "wrench.fill", "pencil",
-        "laptopcomputer", "building.2.fill", "chart.bar.fill",
-        "doc.fill", "folder.fill", "person.2.fill",
-        "magnifyingglass", "lightbulb.fill", "cpu.fill",
-        "briefcase", "graduationcap", "hammer", "wrench.and.screwdriver.fill", "pencil.and.outline",
-        "desktopcomputer", "printer.fill", "doc.text.fill", "doc.on.doc.fill", "clipboard.fill",
-        "calendar", "bookmark.fill", "paperclip", "tray.full.fill", "signature"
+        "briefcase.fill", "graduationcap.fill", "building.2.fill", "person.2.fill",
+        "doc.fill", "doc.text.fill", "doc.on.doc.fill", "folder.fill",
+        "clipboard.fill", "bookmark.fill", "tray.full.fill", "printer.fill",
+        "chart.bar.fill", "chart.line.uptrend.xyaxis", "lightbulb.fill", "wrench.and.screwdriver.fill",
+        "hammer.fill", "cpu.fill", "display.and.arrow.down", "signature"
+    ]),
+    SymbolCategory(name: "Health", symbols: [
+        "cross.case.fill", "cross.vial.fill", "stethoscope.circle.fill", "pills.fill",
+        "bandage.fill", "syringe.fill", "heart.text.square.fill", "lungs.fill",
+        "allergens.fill", "facemask.fill", "figure.run.circle.fill", "figure.cooldown.circle.fill",
+        "waveform.path.ecg", "brain.head.profile", "eye.fill", "ear.fill"
+    ]),
+    SymbolCategory(name: "Technology", symbols: [
+        "laptopcomputer.and.iphone", "desktopcomputer", "ipad", "iphone",
+        "applewatch.watchface", "visionpro.fill", "airpodsmax", "headphones.circle.fill",
+        "keyboard.fill", "printer.fill", "wifi", "antenna.radiowaves.left.and.right",
+        "bolt.horizontal.circle.fill", "externaldrive.fill", "internaldrive.fill", "server.rack"
+    ]),
+    SymbolCategory(name: "Creativity", symbols: [
+        "camera.fill", "photo.stack.fill", "video.fill", "film.fill",
+        "music.note.list", "music.mic.circle.fill", "mic.fill", "pianokeys.inverse",
+        "guitars.fill", "paintbrush.pointed.fill", "paintpalette.fill", "theatermasks.fill",
+        "book.closed.fill", "book.pages.fill", "quote.bubble.fill", "sparkles.tv.fill"
+    ]),
+    SymbolCategory(name: "Finance", symbols: [
+        "creditcard.fill", "banknote.fill", "wallet.pass.fill", "chart.pie.fill",
+        "chart.bar.fill", "chart.line.uptrend.xyaxis.circle.fill", "building.columns.fill",
+        "briefcase.fill", "cart.fill", "bag.fill", "gift.fill", "medal.fill",
+        "trophy.fill", "dollarsign.circle.fill", "eurosign.circle.fill", "sterlingsign.circle.fill"
+    ]),
+    SymbolCategory(name: "Pets & Family", symbols: [
+        "dog.fill", "cat.fill", "pawprint.fill", "bird.fill",
+        "fish.fill", "tortoise.fill", "hare.fill", "person.fill",
+        "person.2.fill", "figure.2.and.child.holdinghands", "figure.and.child.holdinghands",
+        "house.heart.fill", "heart.fill", "balloon.fill", "gift.fill", "birthday.cake.fill"
     ]),
 ])
 
@@ -91,9 +100,12 @@ private func uniqueCategories(_ categories: [SymbolCategory]) -> [SymbolCategory
     var seen = Set<String>()
 
     return categories.map { category in
-        let uniqueSymbols = category.symbols.filter { seen.insert($0).inserted }
+        let uniqueSymbols = category.symbols.filter {
+            guard MomentSymbolPolicy.normalized($0) != nil else { return false }
+            return seen.insert($0).inserted
+        }
         return SymbolCategory(name: category.name, symbols: uniqueSymbols)
-    }
+    }.filter { !$0.symbols.isEmpty }
 }
 
 struct SFSymbolPickerView: View {

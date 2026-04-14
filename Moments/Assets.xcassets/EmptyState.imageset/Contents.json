@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "empty-state 2.png",
+      "filename" : "EmptyState.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "empty-state 1.png",
+      "filename" : "EmptyState 1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "empty-state.png",
+      "filename" : "EmptyState 2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

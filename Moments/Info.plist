@@ -41,6 +41,12 @@
 	<string>$(OPENROUTER_API_KEY)</string>
 	<key>OPENROUTER_MODEL</key>
 	<string>$(OPENROUTER_MODEL)</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>moments-Light.ttf</string>
+		<string>moments-Medium.ttf</string>
+		<string>moments-Regular.ttf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

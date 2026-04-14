@@ -175,6 +175,7 @@ final class CountdownRepository: NSObject, ObservableObject {
         let colorHex = backgroundColorHex
         let createdDate = Date()
         let normalizedDate = normalizedTargetDate(targetDate)
+        let normalizedSymbolName = MomentSymbolPolicy.normalized(sfSymbolName)
         try context.performAndWait {
             let entity = CountdownEntity(context: context)
             entity.id = id
@@ -187,7 +188,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.backgroundColorHex = colorHex
             entity.startPercentage = startPercentage
             entity.showDate = showDate
-            entity.sfSymbolName = sfSymbolName
+            entity.sfSymbolName = normalizedSymbolName
             entity.createdDate = createdDate
             entity.reflectionSurfaceText = reflectionSurfaceText
             entity.reflectionText = reflectionText
@@ -213,7 +214,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             createdDate: createdDate,
             startPercentage: startPercentage,
             showDate: showDate,
-            sfSymbolName: sfSymbolName,
+            sfSymbolName: normalizedSymbolName,
             calendarEventIdentifier: nil,
             reflectionSurfaceText: reflectionSurfaceText,
             reflectionText: reflectionText,
@@ -267,6 +268,7 @@ final class CountdownRepository: NSObject, ObservableObject {
         let newReflectionExpandedText = reflectionExpandedText
         let newReflectionGeneratedAt = reflectionGeneratedAt
         let newDetailsText = detailsText
+        let normalizedSymbolName = sfSymbolName.map(MomentSymbolPolicy.normalized)
         let updatedCreatedDate = normalizedDate == nil ? countdown.createdDate : Date()
         try context.performAndWait {
             let request = CountdownEntity.fetchRequest()
@@ -285,7 +287,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let newColorHex { entity.backgroundColorHex = newColorHex }
             if let startPercentage { entity.startPercentage = startPercentage }
             if let showDate { entity.showDate = showDate }
-            if let sfSymbolName { entity.sfSymbolName = sfSymbolName }
+            if let normalizedSymbolName { entity.sfSymbolName = normalizedSymbolName }
             if let newReflectionSurfaceText { entity.reflectionSurfaceText = newReflectionSurfaceText }
             if let newReflectionText { entity.reflectionText = newReflectionText }
             if let newReflectionGuidanceText { entity.reflectionGuidanceText = newReflectionGuidanceText }
@@ -323,7 +325,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             createdDate: updatedCreatedDate,
             startPercentage: startPercentage ?? countdown.startPercentage,
             showDate: showDate ?? countdown.showDate,
-            sfSymbolName: sfSymbolName != nil ? sfSymbolName! : countdown.sfSymbolName,
+            sfSymbolName: normalizedSymbolName != nil ? normalizedSymbolName! : countdown.sfSymbolName,
             calendarEventIdentifier: countdown.calendarEventIdentifier,
             reflectionSurfaceText: resolvedValue(
                 existing: countdown.reflectionSurfaceText,

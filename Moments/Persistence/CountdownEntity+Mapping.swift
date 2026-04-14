@@ -42,7 +42,7 @@ final class CountdownEntity: NSManagedObject {
             createdDate: createdDate,
             startPercentage: startPercentage > 0 ? startPercentage : 1.0,
             showDate: showDate,
-            sfSymbolName: sfSymbolName,
+            sfSymbolName: MomentSymbolPolicy.normalized(sfSymbolName),
             calendarEventIdentifier: calendarEventIdentifier,
             reflectionSurfaceText: reflectionSurfaceText,
             reflectionText: reflectionText,

@@ -40,6 +40,9 @@
 		8B11C0A1D2E3F40516273850 /* MomentPreviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C22D1B2E3F4051627384951 /* MomentPreviewViewModel.swift */; };
 		8FD3EE9907EE0F6EA1A98943 /* ImageStorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1FE3C03AE21E0C2F0563E3 /* ImageStorageService.swift */; };
 		9CEA28060EB697D45D69F140 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDD7F362590382735CAFACE /* WidgetKit.framework */; };
+		A901F0011111111111111111 /* moments-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A901F0111111111111111111 /* moments-Light.ttf */; };
+		A901F0022222222222222222 /* moments-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A901F0222222222222222222 /* moments-Medium.ttf */; };
+		A901F0033333333333333333 /* moments-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A901F0333333333333333333 /* moments-Regular.ttf */; };
 		B0A1C2D3E4F5678901234569 /* BlurSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C2D3E4F5678901234568 /* BlurSwiftUI */; };
 		A113A8D7FC7216CF0149F607 /* CountdownWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D212718BD9096D60168E8BC /* CountdownWidgetView.swift */; };
 		A13786BFC0E5C2118EA783D6 /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */; };
@@ -116,6 +119,9 @@
 		9C22D1B2E3F4051627384950 /* MomentPreviewScrollEdgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewScrollEdgeView.swift; sourceTree = "<group>"; };
 		9C22D1B2E3F4051627384951 /* MomentPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewViewModel.swift; sourceTree = "<group>"; };
 		9F4B8C7D6E5A43210ABCDEF1 /* TillApp 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 5.xcdatamodel"; sourceTree = "<group>"; };
+		A901F0111111111111111111 /* moments-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "moments-Light.ttf"; sourceTree = "<group>"; };
+		A901F0222222222222222222 /* moments-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "moments-Medium.ttf"; sourceTree = "<group>"; };
+		A901F0333333333333333333 /* moments-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "moments-Regular.ttf"; sourceTree = "<group>"; };
 		A454604EA8126CA30C88E46A /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		A7B8C9D0E1F23456789ABCDE /* TillApp 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 6.xcdatamodel"; sourceTree = "<group>"; };
 		A878F14CB50B697ADBFCEDD5 /* CountdownListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownListView.swift; sourceTree = "<group>"; };
@@ -259,9 +265,20 @@
 		AF12BC34DE56F78901234563 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A901F0444444444444444444 /* Fonts */,
 				AF12BC34DE56F78901234564 /* Prompts */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		A901F0444444444444444444 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				A901F0111111111111111111 /* moments-Light.ttf */,
+				A901F0222222222222222222 /* moments-Medium.ttf */,
+				A901F0333333333333333333 /* moments-Regular.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		AF12BC34DE56F78901234564 /* Prompts */ = {
@@ -454,6 +471,9 @@
 				AF12BC34DE56F78901234568 /* past.txt in Resources */,
 				AF12BC34DE56F78901234569 /* future.txt in Resources */,
 				AF12BC34DE56F78901234571 /* manifest.txt in Resources */,
+				A901F0011111111111111111 /* moments-Light.ttf in Resources */,
+				A901F0022222222222222222 /* moments-Medium.ttf in Resources */,
+				A901F0033333333333333333 /* moments-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
