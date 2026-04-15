@@ -124,17 +124,36 @@ final class CountdownRepository: NSObject, ObservableObject {
         try seedCountdowns(items: initialSeedItems(now: Date()))
     }
 
-    private func initialSeedItems(now: Date) -> [(title: String, targetDate: Date, backgroundColorIndex: Int)] {
+    private func initialSeedItems(now: Date) -> [SeedCountdownItem] {
         let calendar = Calendar.current
 
         return [
-            ("Picnic", calendar.date(byAdding: .day, value: 7, to: now)!, 0),
-            ("Weekend Treasure Hunt", calendar.date(byAdding: .day, value: 14, to: now)!, 1),
-            ("The Super Duper Neighborhood Picnic With Way Too Many Snacks", calendar.date(byAdding: .day, value: 21, to: now)!, 2),
+            SeedCountdownItem(
+                title: "Relationship Anniversary",
+                detailsText: "A day that still reminds you how much love can deepen when two people keep choosing each other.",
+                targetDate: calendar.date(byAdding: .year, value: -1, to: now)!,
+                backgroundColorIndex: 3,
+                sfSymbolName: MomentSymbolPolicy.defaultSymbolName
+            ),
+            SeedCountdownItem(
+                title: "Euro Trip with Jordan",
+                detailsText: "Six months from now, you are stepping into a trip filled with train rides, long dinners, and stories you will keep retelling.",
+                targetDate: calendar.date(byAdding: .month, value: 6, to: now)!,
+                backgroundColorIndex: 2,
+                sfSymbolName: MomentSymbolPolicy.defaultSymbolName
+            ),
+            SeedCountdownItem(
+                title: "Amazing People Around Me",
+                detailsText: "You naturally attract kind, inspiring, emotionally healthy people who make life feel lighter and more expansive.",
+                targetDate: now,
+                backgroundColorIndex: 1,
+                sfSymbolName: MomentSymbolPolicy.defaultSymbolName,
+                isFutureManifestation: true
+            ),
         ]
     }
 
-    private func seedCountdowns(items: [(title: String, targetDate: Date, backgroundColorIndex: Int)]) throws {
+    private func seedCountdowns(items: [SeedCountdownItem]) throws {
         let now = Date()
         let context = viewContext
 
@@ -142,15 +161,43 @@ final class CountdownRepository: NSObject, ObservableObject {
             let entity = CountdownEntity(context: context)
             entity.id = UUID()
             entity.title = item.title
+            entity.detailsText = item.detailsText
             entity.targetDate = normalizedTargetDate(item.targetDate)
             entity.backgroundColorIndex = Int16(item.backgroundColorIndex)
             entity.backgroundColorHex = ColorPalette.presets[item.backgroundColorIndex].hexString
             entity.startPercentage = 1.0
             entity.createdDate = now
+            entity.sfSymbolName = MomentSymbolPolicy.normalized(item.sfSymbolName)
+            entity.isFutureManifestation = item.isFutureManifestation
         }
 
         if context.hasChanges {
             try context.save()
+        }
+    }
+
+    private struct SeedCountdownItem {
+        let title: String
+        let detailsText: String?
+        let targetDate: Date
+        let backgroundColorIndex: Int
+        let sfSymbolName: String?
+        let isFutureManifestation: Bool
+
+        init(
+            title: String,
+            detailsText: String? = nil,
+            targetDate: Date,
+            backgroundColorIndex: Int,
+            sfSymbolName: String? = nil,
+            isFutureManifestation: Bool = false
+        ) {
+            self.title = title
+            self.detailsText = detailsText
+            self.targetDate = targetDate
+            self.backgroundColorIndex = backgroundColorIndex
+            self.sfSymbolName = sfSymbolName
+            self.isFutureManifestation = isFutureManifestation
         }
     }
 
