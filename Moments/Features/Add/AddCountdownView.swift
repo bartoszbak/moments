@@ -59,7 +59,7 @@ struct TargetDatePickerRow: View {
     }
 }
 
-struct ManifestNotificationSettingsSection: View {
+struct ManifestNotificationSettingsRows: View {
     @Binding var isEnabled: Bool
     @Binding var rhythm: ManifestNotificationRhythm
     @Binding var reminderTime: Date
@@ -69,23 +69,21 @@ struct ManifestNotificationSettingsSection: View {
     let openSettings: () -> Void
 
     var body: some View {
-        Section {
-            Toggle("Notification", isOn: $isEnabled)
-                .tint(tintColor)
+        Toggle("Notification", isOn: $isEnabled)
+            .tint(tintColor)
 
-            if isEnabled {
-                Picker("Rhythm", selection: $rhythm) {
-                    ForEach(ManifestNotificationRhythm.allCases, id: \.self) { option in
-                        Text(option.title).tag(option)
-                    }
+        if isEnabled {
+            Picker("Rhythm", selection: $rhythm) {
+                ForEach(ManifestNotificationRhythm.allCases, id: \.self) { option in
+                    Text(option.title).tag(option)
                 }
-
-                DatePicker(
-                    "Time",
-                    selection: $reminderTime,
-                    displayedComponents: .hourAndMinute
-                )
             }
+
+            DatePicker(
+                "Time",
+                selection: $reminderTime,
+                displayedComponents: .hourAndMinute
+            )
         }
     }
 }
@@ -160,21 +158,20 @@ struct AddCountdownView: View {
                 }
                 Section {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
-                    if !isFutureManifestation {
+                    if isFutureManifestation {
+                        ManifestNotificationSettingsRows(
+                            isEnabled: $manifestNotificationsEnabled,
+                            rhythm: $manifestNotificationRhythm,
+                            reminderTime: $manifestReminderTime,
+                            authorizationStatus: manifestNotificationService.authorizationStatus,
+                            tintColor: controlTintColor,
+                            openSettings: openAppSettings
+                        )
+                    } else {
                         TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                     }
                 } header: {
                     Text("Time")
-                }
-                if isFutureManifestation {
-                    ManifestNotificationSettingsSection(
-                        isEnabled: $manifestNotificationsEnabled,
-                        rhythm: $manifestNotificationRhythm,
-                        reminderTime: $manifestReminderTime,
-                        authorizationStatus: manifestNotificationService.authorizationStatus,
-                        tintColor: controlTintColor,
-                        openSettings: openAppSettings
-                    )
                 }
                 BackgroundPickerSection(
                     selection: $background

@@ -66,21 +66,20 @@ struct EditCountdownView: View {
                 }
                 Section {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
-                    if !isFutureManifestation {
+                    if isFutureManifestation {
+                        ManifestNotificationSettingsRows(
+                            isEnabled: $manifestNotificationsEnabled,
+                            rhythm: $manifestNotificationRhythm,
+                            reminderTime: $manifestReminderTime,
+                            authorizationStatus: manifestNotificationService.authorizationStatus,
+                            tintColor: controlTintColor,
+                            openSettings: openAppSettings
+                        )
+                    } else {
                         TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                     }
                 } header: {
                     Text("Time")
-                }
-                if isFutureManifestation {
-                    ManifestNotificationSettingsSection(
-                        isEnabled: $manifestNotificationsEnabled,
-                        rhythm: $manifestNotificationRhythm,
-                        reminderTime: $manifestReminderTime,
-                        authorizationStatus: manifestNotificationService.authorizationStatus,
-                        tintColor: controlTintColor,
-                        openSettings: openAppSettings
-                    )
                 }
                 BackgroundPickerSection(
                     selection: $background,

@@ -118,7 +118,10 @@ struct CountdownListView: View {
         .onChange(of: selectedTimeFilter) {
             AppHaptics.impact(.light)
         }
-        .onChange(of: selectedTypeFilter) {
+        .onChange(of: selectedTypeFilter) { _, newValue in
+            if newValue == .manifest && selectedTimeFilter == .past {
+                selectedTimeFilter = .all
+            }
             AppHaptics.impact(.light)
         }
         .onChange(of: forceIntroSheetOnLaunch) { _, isEnabled in
@@ -203,16 +206,12 @@ struct CountdownListView: View {
 
     private var emptyStateTitle: String {
         switch (selectedTimeFilter, selectedTypeFilter) {
-        case (.past, .manifest):
-            "No Past Manifest"
-        case (.upcoming, .manifest):
-            "No Upcoming Manifest"
+        case (_, .manifest):
+            "No Manifest"
         case (.past, .events):
             "No Past Events"
         case (.upcoming, .events):
             "No Upcoming Events"
-        case (.all, .manifest):
-            "No Manifest"
         case (.all, .events):
             "No Events"
         case (.past, .all):
@@ -230,17 +229,17 @@ struct CountdownListView: View {
         }
 
         switch (selectedTimeFilter, selectedTypeFilter) {
+        case (_, .manifest):
+            return "Change the filter to see events."
         case (.all, .all):
             return ""
         case (.past, .all):
             return "Change the filter to see upcoming countdowns."
         case (.upcoming, .all):
             return "Change the filter to see past countdowns."
-        case (.all, .manifest):
-            return "Change the filter to see events."
         case (.all, .events):
             return "Change the filter to see manifest moments."
-        case (.past, .manifest), (.upcoming, .manifest), (.past, .events), (.upcoming, .events):
+        case (.past, .events), (.upcoming, .events):
             return "Adjust the filters to see more moments."
         }
     }
@@ -291,18 +290,20 @@ struct CountdownListView: View {
 
     private var filterMenuButton: some View {
         Menu {
-            Section("Time") {
-                Picker("Time", selection: $selectedTimeFilter) {
-                    ForEach(CountdownTimeFilter.allCases) { filter in
+            Section("Type") {
+                Picker("Type", selection: $selectedTypeFilter) {
+                    ForEach(CountdownTypeFilter.allCases) { filter in
                         Text(filter.title).tag(filter)
                     }
                 }
             }
 
-            Section("Type") {
-                Picker("Type", selection: $selectedTypeFilter) {
-                    ForEach(CountdownTypeFilter.allCases) { filter in
-                        Text(filter.title).tag(filter)
+            if selectedTypeFilter != .manifest {
+                Section("Time") {
+                    Picker("Time", selection: $selectedTimeFilter) {
+                        ForEach(CountdownTimeFilter.allCases) { filter in
+                            Text(filter.title).tag(filter)
+                        }
                     }
                 }
             }
@@ -405,13 +406,17 @@ struct CountdownListView: View {
     }
 
     private func matchesTimeFilter(_ countdown: Countdown) -> Bool {
+        if selectedTypeFilter == .manifest {
+            return countdown.isFutureManifestation
+        }
+
         switch selectedTimeFilter {
         case .all:
-            true
+            return true
         case .past:
-            countdown.isExpired(at: timerManager.currentTime)
+            return countdown.isExpired(at: timerManager.currentTime)
         case .upcoming:
-            !countdown.isExpired(at: timerManager.currentTime)
+            return !countdown.isExpired(at: timerManager.currentTime)
         }
     }
 

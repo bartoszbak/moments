@@ -413,9 +413,23 @@ final class CountdownRepository: NSObject, ObservableObject {
             }
         } else if let eventIdentifier = countdown.calendarEventIdentifier {
             Task { @MainActor in
-                await calendarService.updateEvent(identifier: eventIdentifier, for: updatedCountdown)
+                let shouldSync = self.shouldSyncToCalendar(updatedCountdown)
+
+                if shouldSync {
+                    let updatedIdentifier = await calendarService.updateEvent(
+                        identifier: eventIdentifier,
+                        for: updatedCountdown
+                    )
+
+                    if updatedIdentifier != eventIdentifier {
+                        try? self.updateCalendarIdentifier(id: countdown.id, eventIdentifier: updatedIdentifier)
+                    }
+                } else {
+                    await calendarService.deleteEvent(identifier: eventIdentifier)
+                    try? self.updateCalendarIdentifier(id: countdown.id, eventIdentifier: nil)
+                }
             }
-        } else if isCalendarIntegrationEnabled {
+        } else if shouldSyncToCalendar(updatedCountdown) {
             Task { @MainActor in
                 if let eventIdentifier = await calendarService.createEvent(for: updatedCountdown) {
                     try? self.updateCalendarIdentifier(id: countdown.id, eventIdentifier: eventIdentifier)
@@ -478,12 +492,42 @@ final class CountdownRepository: NSObject, ObservableObject {
         UserDefaults.standard.bool(forKey: AppSettingsKeys.calendarIntegrationEnabled)
     }
 
+    func reconcileCalendarEvents() async {
+        let enabled = isCalendarIntegrationEnabled
+
+        for countdown in countdowns {
+            let shouldSync = enabled && shouldSyncToCalendar(countdown)
+
+            if shouldSync {
+                if let eventIdentifier = countdown.calendarEventIdentifier {
+                    let updatedIdentifier = await calendarService.updateEvent(
+                        identifier: eventIdentifier,
+                        for: countdown
+                    )
+
+                    if updatedIdentifier != eventIdentifier {
+                        try? updateCalendarIdentifier(id: countdown.id, eventIdentifier: updatedIdentifier)
+                    }
+                } else if let newIdentifier = await calendarService.createEvent(for: countdown) {
+                    try? updateCalendarIdentifier(id: countdown.id, eventIdentifier: newIdentifier)
+                }
+            } else if let eventIdentifier = countdown.calendarEventIdentifier {
+                await calendarService.deleteEvent(identifier: eventIdentifier)
+                try? updateCalendarIdentifier(id: countdown.id, eventIdentifier: nil)
+            }
+        }
+    }
+
     private func syncManifestNotifications(for countdown: Countdown) async {
         if countdown.isFutureManifestation {
             await manifestNotificationService.schedule(for: countdown)
         } else {
             await manifestNotificationService.cancel(for: countdown.id)
         }
+    }
+
+    private func shouldSyncToCalendar(_ countdown: Countdown) -> Bool {
+        !countdown.isFutureManifestation && !countdown.isExpired(at: Date())
     }
 
     private func resolvedValue<T>(existing: T?, update: T??) -> T? {

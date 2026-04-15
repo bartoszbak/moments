@@ -13,9 +13,7 @@ struct SettingsView: View {
     @AppStorage(AppSettingsKeys.manifestNotificationsEnabled) private var manifestNotificationsEnabled = AppSettingsDefaults.manifestNotificationsEnabled
     @AppStorage(AppSettingsKeys.hapticsEnabled) private var hapticsEnabled = AppSettingsDefaults.hapticsEnabled
 
-    @StateObject private var calendarService = CalendarService.shared
     @StateObject private var manifestNotificationService = ManifestNotificationService.shared
-    @State private var isReconcilingCalendarToggle = false
     @State private var isReconcilingManifestNotificationToggle = false
 
     private var isiPad: Bool {
@@ -58,15 +56,14 @@ struct SettingsView: View {
                     Text("Appearance")
                 }
 
-                Section {
-                    Toggle("Add moments to Calendar", isOn: $isCalendarIntegrationEnabled)
-                        .tint(controlTintColor)
-                } header: {
-                    Text("Calendar")
-                } footer: {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Moments will appear as events in your Apple calendar.")
-                        calendarFooter
+                Section("Calendar") {
+                    NavigationLink {
+                        CalendarSyncSettingsView()
+                    } label: {
+                        LabeledContent("Calendar Sync") {
+                            Text(calendarSyncStatusText)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
 
@@ -110,12 +107,7 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .tint(controlTintColor)
             .task {
-                reconcileCalendarAccessState()
                 await reconcileManifestNotificationAccessState()
-            }
-            .onChange(of: isCalendarIntegrationEnabled) { _, isEnabled in
-                guard !isReconcilingCalendarToggle else { return }
-                handleCalendarToggleChange(isEnabled)
             }
             .onChange(of: manifestNotificationsEnabled) { _, isEnabled in
                 guard !isReconcilingManifestNotificationToggle else { return }
@@ -165,23 +157,6 @@ struct SettingsView: View {
     }
 
     @ViewBuilder
-    private var calendarFooter: some View {
-        switch calendarService.authorizationStatus {
-        case .notDetermined:
-            EmptyView()
-        case .fullAccess:
-            EmptyView()
-        case .denied, .restricted, .writeOnly:
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Access denied. Open Settings to allow calendar access.")
-                Button("Open Settings", action: openAppSettings)
-            }
-        @unknown default:
-            EmptyView()
-        }
-    }
-
-    @ViewBuilder
     private var manifestNotificationFooter: some View {
         switch manifestNotificationService.authorizationStatus {
         case .notDetermined:
@@ -195,17 +170,6 @@ struct SettingsView: View {
             }
         @unknown default:
             EmptyView()
-        }
-    }
-
-    private func handleCalendarToggleChange(_ isEnabled: Bool) {
-        guard isEnabled else { return }
-
-        Task { @MainActor in
-            let granted = await calendarService.requestAccess()
-            if !granted {
-                setCalendarIntegrationEnabled(false)
-            }
         }
     }
 
@@ -225,25 +189,12 @@ struct SettingsView: View {
         }
     }
 
-    private func reconcileCalendarAccessState() {
-        calendarService.refreshAuthorizationStatus()
-        if isCalendarIntegrationEnabled && calendarService.authorizationStatus != .fullAccess {
-            setCalendarIntegrationEnabled(false)
-        }
-    }
-
     private func reconcileManifestNotificationAccessState() async {
         await manifestNotificationService.refreshAuthorizationStatus()
         if manifestNotificationsEnabled && !manifestNotificationsAuthorized {
             setManifestNotificationsEnabled(false)
         }
         reconcileManifestNotifications()
-    }
-
-    private func setCalendarIntegrationEnabled(_ isEnabled: Bool) {
-        isReconcilingCalendarToggle = true
-        isCalendarIntegrationEnabled = isEnabled
-        isReconcilingCalendarToggle = false
     }
 
     private func setManifestNotificationsEnabled(_ isEnabled: Bool) {
@@ -271,6 +222,139 @@ struct SettingsView: View {
         guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
         UIApplication.shared.open(url)
     }
+
+    private var calendarSyncStatusText: String {
+        isCalendarIntegrationEnabled ? "On" : "Off"
+    }
+}
+
+struct CalendarSyncSettingsView: View {
+    @EnvironmentObject private var repository: CountdownRepository
+
+    @AppStorage(AppSettingsKeys.calendarIntegrationEnabled) private var isCalendarIntegrationEnabled = AppSettingsDefaults.calendarIntegrationEnabled
+    @AppStorage(AppSettingsKeys.calendarSyncCalendarIdentifier) private var selectedCalendarIdentifier = AppSettingsDefaults.calendarSyncCalendarIdentifier
+
+    @StateObject private var calendarService = CalendarService.shared
+    @State private var isReconcilingCalendarToggle = false
+
+    var body: some View {
+        Form {
+            Section("Calendar Sync") {
+                Toggle("Sync future events", isOn: $isCalendarIntegrationEnabled)
+                    .tint(controlTintColor)
+            }
+
+            Section {
+                if calendarService.availableCalendars.isEmpty {
+                    LabeledContent("Calendar") {
+                        Text("No iCloud calendar")
+                            .foregroundStyle(.secondary)
+                    }
+                } else {
+                    Picker("Calendar", selection: $selectedCalendarIdentifier) {
+                        ForEach(calendarService.availableCalendars) { option in
+                            Text(option.displayName).tag(option.id)
+                        }
+                    }
+                    .disabled(!isCalendarIntegrationEnabled)
+                }
+            } header: {
+                Text("Sync To")
+            } footer: {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Choose which calendar receives synced future events.")
+                    calendarFooter
+                }
+            }
+        }
+        .navigationTitle("Calendar Sync")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            reconcileCalendarAccessState()
+            ensureSelectedCalendarIdentifier()
+        }
+        .onChange(of: isCalendarIntegrationEnabled) { _, isEnabled in
+            guard !isReconcilingCalendarToggle else { return }
+            handleCalendarToggleChange(isEnabled)
+        }
+        .onChange(of: selectedCalendarIdentifier) { oldValue, newValue in
+            guard oldValue != newValue, !newValue.isEmpty else { return }
+
+            Task { @MainActor in
+                await repository.reconcileCalendarEvents()
+            }
+        }
+    }
+
+    private var controlTintColor: Color {
+        .blue
+    }
+
+    @ViewBuilder
+    private var calendarFooter: some View {
+        switch calendarService.authorizationStatus {
+        case .notDetermined:
+            EmptyView()
+        case .fullAccess:
+            EmptyView()
+        case .denied, .restricted, .writeOnly:
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Access denied. Open Settings to allow calendar access.")
+                Button("Open Settings", action: openAppSettings)
+            }
+        @unknown default:
+            EmptyView()
+        }
+    }
+
+    private func handleCalendarToggleChange(_ isEnabled: Bool) {
+        if !isEnabled {
+            Task { @MainActor in
+                await repository.reconcileCalendarEvents()
+            }
+            return
+        }
+
+        Task { @MainActor in
+            let granted = await calendarService.requestAccess()
+            if granted {
+                ensureSelectedCalendarIdentifier()
+                await repository.reconcileCalendarEvents()
+            } else {
+                setCalendarIntegrationEnabled(false)
+            }
+        }
+    }
+
+    private func reconcileCalendarAccessState() {
+        calendarService.refreshAuthorizationStatus()
+        if isCalendarIntegrationEnabled && calendarService.authorizationStatus != .fullAccess {
+            setCalendarIntegrationEnabled(false)
+        }
+    }
+
+    private func ensureSelectedCalendarIdentifier() {
+        calendarService.refreshAvailableCalendars()
+
+        if calendarService.availableCalendars.contains(where: { $0.id == selectedCalendarIdentifier }) {
+            return
+        }
+
+        if let firstIdentifier = calendarService.availableCalendars.first?.id {
+            selectedCalendarIdentifier = firstIdentifier
+        }
+    }
+
+    private func setCalendarIntegrationEnabled(_ isEnabled: Bool) {
+        isReconcilingCalendarToggle = true
+        isCalendarIntegrationEnabled = isEnabled
+        isReconcilingCalendarToggle = false
+    }
+
+    private func openAppSettings() {
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        UIApplication.shared.open(url)
+    }
 }
 
 enum AppSettingsKeys {
@@ -278,6 +362,7 @@ enum AppSettingsKeys {
     static let interfaceTintHex = "settings.interfaceTintHex"
     static let backgroundGradientEnabled = "settings.backgroundGradient.enabled"
     static let calendarIntegrationEnabled = "settings.calendarIntegration.enabled"
+    static let calendarSyncCalendarIdentifier = "settings.calendarIntegration.calendarIdentifier"
     static let manifestNotificationsEnabled = "settings.manifestNotifications.enabled"
     static let manifestNotificationsDefaultRhythm = "settings.manifestNotifications.defaultRhythm"
     static let manifestNotificationsHour = "settings.manifestNotifications.hour"
@@ -291,6 +376,7 @@ enum AppSettingsDefaults {
     static let interfaceTintHex = "#D3E2FF"
     static let backgroundGradientEnabled = true
     static let calendarIntegrationEnabled = false
+    static let calendarSyncCalendarIdentifier = ""
     static let manifestNotificationsEnabled = false
     static let manifestNotificationsDefaultRhythm = ManifestNotificationRhythm.daily.rawValue
     static let manifestNotificationsHour = 9
