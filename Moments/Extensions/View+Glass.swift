@@ -66,4 +66,14 @@ extension View {
             self.background(Color.black.opacity(0.85), in: Circle())
         }
     }
+
+    /// Accent-tinted circular Liquid Glass on iOS 26+, tinted circle fallback on earlier OS.
+    @ViewBuilder
+    func tintedGlassCircle(tintColor: Color) -> some View {
+        if #available(iOS 26, *) {
+            self.glassEffect(.regular.tint(tintColor), in: .circle)
+        } else {
+            self.background(tintColor, in: Circle())
+        }
+    }
 }

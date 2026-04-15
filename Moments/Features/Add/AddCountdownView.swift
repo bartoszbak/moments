@@ -10,23 +10,35 @@ struct MomentDescriptionEditorView: View {
     @Binding var text: String
 
     var body: some View {
-        Form {
-            Section {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
                 ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .fill(Color(uiColor: .secondarySystemGroupedBackground))
+
                     if text.isEmpty {
                         Text("Optional")
                             .foregroundStyle(.tertiary)
-                            .padding(.top, 8)
-                            .padding(.leading, 5)
+                            .padding(.top, 20)
+                            .padding(.leading, 20)
                     }
 
                     TextEditor(text: $text)
-                        .frame(minHeight: 220)
+                        .scrollContentBackground(.hidden)
+                        .frame(minHeight: 240)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 12)
                 }
-            } footer: {
+                .frame(maxWidth: .infinity, minHeight: 240, alignment: .top)
+
                 Text("Example: \"I'm going for the meetup to hang out and chill.\"")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 4)
             }
+            .padding(16)
         }
+        .background(Color(uiColor: .systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("Description")
         .navigationBarTitleDisplayMode(.inline)
         .onDisappear {

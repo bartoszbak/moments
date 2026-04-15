@@ -353,6 +353,7 @@ struct CountdownListView: View {
                         if selectedFilter == filter {
                             Spacer()
                             Image(systemName: "checkmark")
+                                .foregroundStyle(.black)
                         }
                     }
                 }
@@ -566,11 +567,11 @@ private enum CountdownMenuFilter: String, CaseIterable, Identifiable {
         case .all:
             "All"
         case .past:
-            "Past"
+            "Past moments"
         case .upcoming:
-            "Upcoming"
+            "Upcoming moments"
         case .present:
-            "Present"
+            "Manifestations"
         }
     }
 }

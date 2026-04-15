@@ -15,6 +15,9 @@ struct SettingsView: View {
 
     @StateObject private var manifestNotificationService = ManifestNotificationService.shared
     @State private var isReconcilingManifestNotificationToggle = false
+    @State private var selectedAppIcon = AppIconOption.current
+    @State private var isUpdatingAppIcon = false
+    @State private var appIconErrorMessage: String?
 
     private var isiPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
@@ -54,6 +57,36 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Appearance")
+                }
+
+                Section {
+                    HStack(spacing: 12) {
+                        ForEach(AppIconOption.allCases) { option in
+                            Button {
+                                updateAppIcon(to: option)
+                            } label: {
+                                appIconPreview(option, size: 64, cornerRadius: 16)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(6)
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                            .strokeBorder(
+                                                selectedAppIcon == option ? controlTintColor : .clear,
+                                                lineWidth: 2
+                                            )
+                                    }
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(isUpdatingAppIcon || !supportsAlternateIcons)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                } header: {
+                    Text("App Icon")
+                } footer: {
+                    if let appIconErrorMessage {
+                        Text(appIconErrorMessage)
+                    }
                 }
 
                 Section("Calendar") {
@@ -107,6 +140,7 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .tint(controlTintColor)
             .task {
+                syncSelectedAppIcon()
                 await reconcileManifestNotificationAccessState()
             }
             .onChange(of: manifestNotificationsEnabled) { _, isEnabled in
@@ -226,6 +260,53 @@ struct SettingsView: View {
     private var calendarSyncStatusText: String {
         isCalendarIntegrationEnabled ? "On" : "Off"
     }
+
+    private var supportsAlternateIcons: Bool {
+        UIApplication.shared.supportsAlternateIcons
+    }
+
+    private func syncSelectedAppIcon() {
+        selectedAppIcon = AppIconOption.current
+    }
+
+    private func updateAppIcon(to option: AppIconOption) {
+        guard supportsAlternateIcons else { return }
+
+        isUpdatingAppIcon = true
+        appIconErrorMessage = nil
+
+        UIApplication.shared.setAlternateIconName(option.alternateIconName) { error in
+            Task { @MainActor in
+                isUpdatingAppIcon = false
+
+                if let error {
+                    appIconErrorMessage = error.localizedDescription
+                    syncSelectedAppIcon()
+                    return
+                }
+
+                selectedAppIcon = option
+            }
+        }
+    }
+
+    private func appIconPreview(
+        _ option: AppIconOption,
+        size: CGFloat = 44,
+        cornerRadius: CGFloat = 10
+    ) -> some View {
+        Image(option.previewAssetName)
+            .resizable()
+            .scaledToFill()
+            .frame(width: size, height: size)
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
+            }
+            .shadow(color: .black.opacity(0.10), radius: 8, y: 3)
+    }
+
 }
 
 struct CalendarSyncSettingsView: View {
@@ -396,4 +477,82 @@ enum AppSettingsDefaults {
     static let manifestNotificationsMinute = 0
     static let hapticsEnabled = true
     static let hasSeenIntroSheet = false
+}
+
+enum AppIconOption: String, CaseIterable, Identifiable {
+    case original
+    case fog
+    case dark
+    case rainbow
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .original:
+            return "Original"
+        case .fog:
+            return "Fog"
+        case .dark:
+            return "Dark"
+        case .rainbow:
+            return "Rainbow"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .original:
+            return "The current Moments icon."
+        case .fog:
+            return "A softer monochrome variant."
+        case .dark:
+            return "A darker monochrome variant."
+        case .rainbow:
+            return "A multicolor variant."
+        }
+    }
+
+    var alternateIconName: String? {
+        switch self {
+        case .original:
+            return nil
+        case .fog:
+            return "AppIconFog"
+        case .dark:
+            return "AppIconDark"
+        case .rainbow:
+            return "AppIconRainbow"
+        }
+    }
+
+    var previewAssetName: String {
+        switch self {
+        case .original:
+            return "AppIconOriginalPreview"
+        case .fog:
+            return "AppIconFogPreview"
+        case .dark:
+            return "AppIconDarkPreview"
+        case .rainbow:
+            return "AppIconRainbowPreview"
+        }
+    }
+
+    static var current: AppIconOption {
+        let alternateIconName = UIApplication.shared.alternateIconName
+        return allCases.first(where: { $0.alternateIconName == alternateIconName }) ?? .original
+    }
+}
+
+private extension Color {
+    var resolvedLuminance: Double {
+        let uiColor = UIColor(self).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: nil)
+        return 0.2126 * Double(red) + 0.7152 * Double(green) + 0.0722 * Double(blue)
+    }
 }

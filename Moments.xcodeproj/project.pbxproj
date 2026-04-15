@@ -710,10 +710,15 @@
 		82A763699C4D80B1A7125403 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AAF1CE8F6043ED9BAB4F355B /* SharedConfig.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				buildSettings = {
+					ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
+						AppIconFog,
+						AppIconDark,
+						AppIconRainbow,
+					);
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
+					CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = Moments/Info.plist;
@@ -753,10 +758,15 @@
 		FBA3D172D26C40F1402D20DD /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AAF1CE8F6043ED9BAB4F355B /* SharedConfig.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				buildSettings = {
+					ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
+						AppIconFog,
+						AppIconDark,
+						AppIconRainbow,
+					);
+					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
+					CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = Moments/Info.plist;
