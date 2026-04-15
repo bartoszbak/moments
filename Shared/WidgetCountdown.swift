@@ -8,13 +8,14 @@ struct WidgetCountdown: Codable, Identifiable {
     let backgroundColorHex: String?
     let backgroundImagePath: String?
     let startPercentage: Double
+    let showProgress: Bool
     let showDate: Bool
     let sfSymbolName: String?
     let isFutureManifestation: Bool
 
     enum CodingKeys: String, CodingKey {
         case id, title, targetDate, createdDate, backgroundColorHex, backgroundImagePath
-        case startPercentage, showDate, sfSymbolName, isFutureManifestation
+        case startPercentage, showProgress, showDate, sfSymbolName, isFutureManifestation
     }
 
     init(
@@ -25,6 +26,7 @@ struct WidgetCountdown: Codable, Identifiable {
         backgroundColorHex: String?,
         backgroundImagePath: String?,
         startPercentage: Double,
+        showProgress: Bool,
         showDate: Bool,
         sfSymbolName: String?,
         isFutureManifestation: Bool
@@ -36,6 +38,7 @@ struct WidgetCountdown: Codable, Identifiable {
         self.backgroundColorHex = backgroundColorHex
         self.backgroundImagePath = backgroundImagePath
         self.startPercentage = startPercentage
+        self.showProgress = showProgress
         self.showDate = showDate
         self.sfSymbolName = MomentSymbolPolicy.normalized(sfSymbolName)
         self.isFutureManifestation = isFutureManifestation
@@ -50,6 +53,7 @@ struct WidgetCountdown: Codable, Identifiable {
         backgroundColorHex = try container.decodeIfPresent(String.self, forKey: .backgroundColorHex)
         backgroundImagePath = try container.decodeIfPresent(String.self, forKey: .backgroundImagePath)
         startPercentage = try container.decode(Double.self, forKey: .startPercentage)
+        showProgress = try container.decodeIfPresent(Bool.self, forKey: .showProgress) ?? true
         showDate = try container.decode(Bool.self, forKey: .showDate)
         sfSymbolName = MomentSymbolPolicy.normalized(
             try container.decodeIfPresent(String.self, forKey: .sfSymbolName)
@@ -109,6 +113,7 @@ extension WidgetCountdown {
         backgroundColorHex: nil,
         backgroundImagePath: nil,
         startPercentage: 1.0,
+        showProgress: true,
         showDate: true,
         sfSymbolName: nil,
         isFutureManifestation: false

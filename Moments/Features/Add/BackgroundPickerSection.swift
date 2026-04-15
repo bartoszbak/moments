@@ -19,7 +19,7 @@ struct BackgroundPickerSection: View {
 
     var body: some View {
         Section(
-            header: Text("Widget Background"),
+            header: Text("Widget"),
             footer: Text("Photo will have priority over color.")
         ) {
             colorRow
@@ -183,35 +183,48 @@ struct BackgroundPickerSection: View {
 struct WidgetOptionsSection: View {
     var allowsDateOption: Bool = true
     @Binding var showDate: Bool
-    @Binding var showSymbol: Bool
-    @Binding var sfSymbolName: String?
-    @Binding var showSymbolPicker: Bool
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         Section {
             if allowsDateOption {
                 Toggle("Show Date on Widget", isOn: $showDate)
             }
-            Toggle("Add a Symbol", isOn: $showSymbol.animation())
-                .onChange(of: showSymbol) { _, enabled in
-                    if !enabled { sfSymbolName = nil }
+        }
+    }
+}
+
+struct SymbolOptionsRows: View {
+    @Binding var showSymbol: Bool
+    @Binding var sfSymbolName: String?
+    @Binding var showSymbolPicker: Bool
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        Toggle("Add Symbol", isOn: $showSymbol.animation())
+            .onChange(of: showSymbol) { _, enabled in
+                if enabled {
+                    if sfSymbolName == nil {
+                        sfSymbolName = MomentSymbolPolicy.defaultSymbolName
+                    }
+                } else {
+                    sfSymbolName = nil
                 }
-            if showSymbol {
-                Button { showSymbolPicker = true } label: {
-                    LabeledContent("Symbol") {
-                        if let name = sfSymbolName {
-                            Image(systemName: name)
-                                .font(.title3)
-                                .foregroundStyle(symbolButtonColor)
-                        } else {
-                            Text("Choose…")
-                                .foregroundStyle(.secondary)
-                        }
+            }
+
+        if showSymbol {
+            Button { showSymbolPicker = true } label: {
+                LabeledContent("Symbol") {
+                    if let name = MomentSymbolPolicy.normalized(sfSymbolName) {
+                        Image(systemName: name)
+                            .font(.title3)
+                            .foregroundStyle(symbolButtonColor)
+                    } else {
+                        Text("Choose…")
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .foregroundStyle(.primary)
             }
+            .foregroundStyle(.primary)
         }
     }
 

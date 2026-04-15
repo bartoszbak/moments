@@ -157,7 +157,10 @@ enum AppTypography {
         let uiTextStyle = uiTextStyle(for: textStyle)
         let basePointSize = UIFont.preferredFont(forTextStyle: uiTextStyle).pointSize + sizeAdjustment
         let metrics = UIFontMetrics(forTextStyle: uiTextStyle)
-        let fallbackFont = UIFont.systemFont(ofSize: basePointSize, weight: variant.fallbackWeight)
+        let fallbackFont = manifestationFallbackBaseFont(
+            size: basePointSize,
+            variant: variant
+        )
         return metrics.scaledFont(for: fallbackFont)
     }
 
@@ -168,8 +171,26 @@ enum AppTypography {
     ) -> UIFont {
         let uiTextStyle = uiTextStyle(for: textStyle)
         let metrics = UIFontMetrics(forTextStyle: uiTextStyle)
-        let fallbackFont = UIFont.systemFont(ofSize: size, weight: variant.fallbackWeight)
+        let fallbackFont = manifestationFallbackBaseFont(
+            size: size,
+            variant: variant
+        )
         return metrics.scaledFont(for: fallbackFont)
+    }
+
+    private static func manifestationFallbackBaseFont(
+        size: CGFloat,
+        variant: ManifestationVariant
+    ) -> UIFont {
+        let baseFont = UIFont.systemFont(ofSize: size, weight: variant.fallbackWeight)
+
+        guard variant.isItalic,
+              let italicDescriptor = baseFont.fontDescriptor.withSymbolicTraits(.traitItalic)
+        else {
+            return baseFont
+        }
+
+        return UIFont(descriptor: italicDescriptor, size: size)
     }
 
     private static func manifestationResolvedNames(for variant: ManifestationVariant) -> [String] {
@@ -231,6 +252,7 @@ enum AppTypography {
         case book
         case regular
         case medium
+        case mediumItalic
         case bold
 
         fileprivate var bundleFileName: String {
@@ -241,6 +263,8 @@ enum AppTypography {
                 return "BradfordLL-Regular.otf"
             case .medium:
                 return "BradfordLL-Medium.otf"
+            case .mediumItalic:
+                return "BradfordLL-MediumItalic.otf"
             case .bold:
                 return "BradfordLL-Bold.otf"
             }
@@ -254,6 +278,8 @@ enum AppTypography {
                 return ["BradfordLL-Regular", "Bradford LL Regular", "Bradford LL"]
             case .medium:
                 return ["BradfordLL-Medium", "Bradford LL Medium", "Bradford LL"]
+            case .mediumItalic:
+                return ["BradfordLL-MediumItalic", "Bradford LL Medium Italic", "Bradford LL Italic"]
             case .bold:
                 return ["BradfordLL-Bold", "Bradford LL Bold", "Bradford LL"]
             }
@@ -267,8 +293,19 @@ enum AppTypography {
                 return .regular
             case .medium:
                 return .medium
+            case .mediumItalic:
+                return .medium
             case .bold:
                 return .bold
+            }
+        }
+
+        fileprivate var isItalic: Bool {
+            switch self {
+            case .mediumItalic:
+                return true
+            case .book, .regular, .medium, .bold:
+                return false
             }
         }
     }

@@ -148,11 +148,23 @@ struct CountdownTileView: View {
         if countdown.isFutureManifestation {
             return "Manifest"
         }
-        return isExpired ? "Days since" : "Days until"
+        if isToday {
+            return "Today"
+        }
+
+        return "\(dayUnit(for: isExpired ? daysSince : daysUntil)) \(isExpired ? "since" : "until")"
     }
 
     private var metricTitleText: String {
-        "\(metricValueText) \(metricCaptionText)"
+        if countdown.isFutureManifestation {
+            return "\(metricValueText) \(metricCaptionText)"
+        }
+
+        if isToday {
+            return "Today"
+        }
+
+        return "\(metricValueText) \(metricCaptionText)"
     }
 
     private var spokenMetricText: String {
@@ -160,14 +172,18 @@ struct CountdownTileView: View {
             return "future manifestation"
         }
         if isToday {
-            return "0 days until"
+            return "Today"
         }
 
         if isExpired {
-            return "\(daysSince) days since"
+            return "\(daysSince) \(dayUnit(for: daysSince).lowercased()) since"
         }
 
-        return "\(daysUntil) days until"
+        return "\(daysUntil) \(dayUnit(for: daysUntil).lowercased()) until"
+    }
+
+    private func dayUnit(for count: Int) -> String {
+        count == 1 ? "Day" : "Days"
     }
 
     private var accessibilityLabel: String {

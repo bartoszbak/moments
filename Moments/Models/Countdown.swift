@@ -25,6 +25,7 @@ struct Countdown: Identifiable, Hashable {
     var backgroundColorHex: String?  // custom color hex; overrides preset if set
     let createdDate: Date
     var startPercentage: Double      // progress bar starting fill (0.5 – 1.0)
+    var showProgress: Bool           // whether to show the progress bar in the widget
     var showDate: Bool               // whether to show the target date in the widget
     var sfSymbolName: String?        // optional SF Symbol shown on the widget
     var calendarEventIdentifier: String?

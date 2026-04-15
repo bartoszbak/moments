@@ -235,6 +235,7 @@ struct MomentPreviewScrollEdgeView: View {
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 42)
 
             if let symbolName = countdown.sfSymbolName {
                 Image(systemName: symbolName)
@@ -333,7 +334,7 @@ struct MomentPreviewScrollEdgeView: View {
         if countdown.isFutureManifestation {
             return AppTypography.manifestationFont(
                 relativeTo: .body,
-                variant: .book,
+                variant: .mediumItalic,
                 sizeAdjustment: 3
             )
         }
@@ -478,10 +479,14 @@ struct MomentPreviewScrollEdgeView: View {
         }
 
         if countdown.isExpired(at: timerManager.currentTime) {
-            return "Days since"
+            return "\(dayUnit(for: countdown.daysSince(from: timerManager.currentTime))) since"
         }
 
-        return "Days until"
+        return "\(dayUnit(for: countdown.daysUntil(from: timerManager.currentTime))) until"
+    }
+
+    private func dayUnit(for count: Int) -> String {
+        count == 1 ? "Day" : "Days"
     }
 
     private var standardHeroSymbolTopPadding: CGFloat {

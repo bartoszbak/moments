@@ -20,6 +20,7 @@ struct EditCountdownView: View {
     @State private var targetDate = Date()
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
+    @State private var showProgress: Bool = true
     @State private var showDate: Bool = true
     @State private var showSymbol: Bool = false
     @State private var isFutureManifestation = false
@@ -46,7 +47,7 @@ struct EditCountdownView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Title") {
+                Section("Details") {
                     TextField("Countdown name", text: $title)
                     NavigationLink {
                         MomentDescriptionEditorView(text: $detailsText)
@@ -57,6 +58,11 @@ struct EditCountdownView: View {
                                 .foregroundStyle(.tint)
                         }
                     }
+                    SymbolOptionsRows(
+                        showSymbol: $showSymbol,
+                        sfSymbolName: $sfSymbolName,
+                        showSymbolPicker: $showSymbolPicker
+                    )
                 }
                 Section {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
@@ -64,11 +70,7 @@ struct EditCountdownView: View {
                         TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                     }
                 } header: {
-                    Text("Target Date")
-                } footer: {
-                    if isFutureManifestation {
-                        Text("Reminder settings for this manifestation live here.")
-                    }
+                    Text("Time")
                 }
                 if isFutureManifestation {
                     ManifestNotificationSettingsSection(
@@ -86,13 +88,13 @@ struct EditCountdownView: View {
                 )
                 WidgetOptionsSection(
                     allowsDateOption: !isFutureManifestation,
-                    showDate: $showDate,
-                    showSymbol: $showSymbol,
-                    sfSymbolName: $sfSymbolName,
-                    showSymbolPicker: $showSymbolPicker
+                    showDate: $showDate
                 )
                 if showsProgressIndicatorSection {
-                    ProgressStartPickerSection(value: $startPercentage)
+                    ProgressStartPickerSection(
+                        isEnabled: $showProgress,
+                        value: $startPercentage
+                    )
                 }
                 Section {
                     Button(role: .destructive) {
@@ -154,6 +156,7 @@ struct EditCountdownView: View {
                     existingThumbPath = thumbURL.path
                 }
                 startPercentage = countdown.startPercentage
+                showProgress = countdown.showProgress
                 showDate = countdown.showDate
                 isFutureManifestation = countdown.isFutureManifestation
                 manifestNotificationsEnabled = countdown.manifestNotificationsEnabled
@@ -249,6 +252,7 @@ struct EditCountdownView: View {
             backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
             backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
             startPercentage: startPercentage,
+            showProgress: showProgress,
             showDate: showDate,
             sfSymbolName: .some(normalizedSymbolName),
             reflectionSurfaceText: invalidatesReflection ? .some(nil) : nil,

@@ -16,7 +16,8 @@ struct CountdownListView: View {
     @State private var previewingCountdown: Countdown?
     @State private var showingSettings = false
     @State private var showingIntroSheet = false
-    @State private var selectedFilter: CountdownFilter = .all
+    @State private var selectedTimeFilter: CountdownTimeFilter = .all
+    @State private var selectedTypeFilter: CountdownTypeFilter = .all
     @Binding var deepLinkedCountdownID: UUID?
 
     private var isiPad: Bool {
@@ -55,14 +56,7 @@ struct CountdownListView: View {
 
     private var filteredCountdowns: [Countdown] {
         repository.countdowns.filter { countdown in
-            switch selectedFilter {
-            case .all:
-                true
-            case .past:
-                countdown.isExpired(at: timerManager.currentTime)
-            case .upcoming:
-                !countdown.isExpired(at: timerManager.currentTime)
-            }
+            matchesTimeFilter(countdown) && matchesTypeFilter(countdown)
         }
     }
 
@@ -121,7 +115,10 @@ struct CountdownListView: View {
                 }
             }
         }
-        .onChange(of: selectedFilter) {
+        .onChange(of: selectedTimeFilter) {
+            AppHaptics.impact(.light)
+        }
+        .onChange(of: selectedTypeFilter) {
             AppHaptics.impact(.light)
         }
         .onChange(of: forceIntroSheetOnLaunch) { _, isEnabled in
@@ -205,13 +202,25 @@ struct CountdownListView: View {
     }
 
     private var emptyStateTitle: String {
-        switch selectedFilter {
-        case .all:
-            "No Countdowns"
-        case .past:
+        switch (selectedTimeFilter, selectedTypeFilter) {
+        case (.past, .manifest):
+            "No Past Manifest"
+        case (.upcoming, .manifest):
+            "No Upcoming Manifest"
+        case (.past, .events):
+            "No Past Events"
+        case (.upcoming, .events):
+            "No Upcoming Events"
+        case (.all, .manifest):
+            "No Manifest"
+        case (.all, .events):
+            "No Events"
+        case (.past, .all):
             "No Past Countdowns"
-        case .upcoming:
+        case (.upcoming, .all):
             "No Upcoming Countdowns"
+        case (.all, .all):
+            "No Countdowns"
         }
     }
 
@@ -220,13 +229,19 @@ struct CountdownListView: View {
             return ""
         }
 
-        switch selectedFilter {
-        case .all:
+        switch (selectedTimeFilter, selectedTypeFilter) {
+        case (.all, .all):
             return ""
-        case .past:
+        case (.past, .all):
             return "Change the filter to see upcoming countdowns."
-        case .upcoming:
+        case (.upcoming, .all):
             return "Change the filter to see past countdowns."
+        case (.all, .manifest):
+            return "Change the filter to see events."
+        case (.all, .events):
+            return "Change the filter to see manifest moments."
+        case (.past, .manifest), (.upcoming, .manifest), (.past, .events), (.upcoming, .events):
+            return "Adjust the filters to see more moments."
         }
     }
 
@@ -276,19 +291,33 @@ struct CountdownListView: View {
 
     private var filterMenuButton: some View {
         Menu {
-            Picker("Filter", selection: $selectedFilter) {
-                ForEach(CountdownFilter.allCases) { filter in
-                    Text(filter.title).tag(filter)
+            Section("Time") {
+                Picker("Time", selection: $selectedTimeFilter) {
+                    ForEach(CountdownTimeFilter.allCases) { filter in
+                        Text(filter.title).tag(filter)
+                    }
+                }
+            }
+
+            Section("Type") {
+                Picker("Type", selection: $selectedTypeFilter) {
+                    ForEach(CountdownTypeFilter.allCases) { filter in
+                        Text(filter.title).tag(filter)
+                    }
                 }
             }
         } label: {
-            Image(systemName: selectedFilter == .all ? "line.3.horizontal.decrease" : "line.3.horizontal.decrease.circle.fill")
+            Image(systemName: isShowingActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(settingsButtonColor)
                 .frame(width: 48, height: 48)
         }
         .adaptiveGlassButtonStyle()
         .accessibilityLabel("Filter countdowns")
+    }
+
+    private var isShowingActiveFilters: Bool {
+        selectedTimeFilter != .all || selectedTypeFilter != .all
     }
 
     private var addButton: some View {
@@ -374,9 +403,31 @@ struct CountdownListView: View {
         AppHaptics.impact(.soft)
         previewingCountdown = countdown
     }
+
+    private func matchesTimeFilter(_ countdown: Countdown) -> Bool {
+        switch selectedTimeFilter {
+        case .all:
+            true
+        case .past:
+            countdown.isExpired(at: timerManager.currentTime)
+        case .upcoming:
+            !countdown.isExpired(at: timerManager.currentTime)
+        }
+    }
+
+    private func matchesTypeFilter(_ countdown: Countdown) -> Bool {
+        switch selectedTypeFilter {
+        case .all:
+            true
+        case .events:
+            !countdown.isFutureManifestation
+        case .manifest:
+            countdown.isFutureManifestation
+        }
+    }
 }
 
-private enum CountdownFilter: String, CaseIterable, Identifiable {
+private enum CountdownTimeFilter: String, CaseIterable, Identifiable {
     case all
     case past
     case upcoming
@@ -391,6 +442,25 @@ private enum CountdownFilter: String, CaseIterable, Identifiable {
             "Past"
         case .upcoming:
             "Upcoming"
+        }
+    }
+}
+
+private enum CountdownTypeFilter: String, CaseIterable, Identifiable {
+    case all
+    case events
+    case manifest
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .all:
+            "All"
+        case .events:
+            "Events"
+        case .manifest:
+            "Manifest"
         }
     }
 }

@@ -64,6 +64,7 @@ final class CountdownRepository: NSObject, ObservableObject {
                 backgroundColorHex: countdown.backgroundColorHex,
                 backgroundImagePath: sharedImagePath,
                 startPercentage: countdown.startPercentage,
+                showProgress: countdown.showProgress,
                 showDate: countdown.showDate,
                 sfSymbolName: countdown.sfSymbolName,
                 isFutureManifestation: countdown.isFutureManifestation
@@ -165,6 +166,7 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundColorIndex: Int? = nil,
         backgroundColorHex: String? = nil,
         startPercentage: Double = 1.0,
+        showProgress: Bool = true,
         showDate: Bool = true,
         sfSymbolName: String? = nil,
         reflectionSurfaceText: String? = nil,
@@ -195,6 +197,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.backgroundColorIndex = colorIndex.map { Int16($0) } ?? -1
             entity.backgroundColorHex = colorHex
             entity.startPercentage = startPercentage
+            entity.showProgress = showProgress
             entity.showDate = showDate
             entity.sfSymbolName = normalizedSymbolName
             entity.createdDate = createdDate
@@ -224,6 +227,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             backgroundColorHex: backgroundColorHex,
             createdDate: createdDate,
             startPercentage: startPercentage,
+            showProgress: showProgress,
             showDate: showDate,
             sfSymbolName: normalizedSymbolName,
             calendarEventIdentifier: nil,
@@ -262,6 +266,7 @@ final class CountdownRepository: NSObject, ObservableObject {
         backgroundColorIndex: Int?? = nil,
         backgroundColorHex: String?? = nil,
         startPercentage: Double? = nil,
+        showProgress: Bool? = nil,
         showDate: Bool? = nil,
         sfSymbolName: String?? = nil,
         reflectionSurfaceText: String?? = nil,
@@ -307,6 +312,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let newColorIndex { entity.backgroundColorIndex = newColorIndex.map { Int16($0) } ?? -1 }
             if let newColorHex { entity.backgroundColorHex = newColorHex }
             if let startPercentage { entity.startPercentage = startPercentage }
+            if let showProgress { entity.showProgress = showProgress }
             if let showDate { entity.showDate = showDate }
             if let normalizedSymbolName { entity.sfSymbolName = normalizedSymbolName }
             if let newReflectionSurfaceText { entity.reflectionSurfaceText = newReflectionSurfaceText }
@@ -354,6 +360,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             ),
             createdDate: updatedCreatedDate,
             startPercentage: startPercentage ?? countdown.startPercentage,
+            showProgress: showProgress ?? countdown.showProgress,
             showDate: showDate ?? countdown.showDate,
             sfSymbolName: normalizedSymbolName != nil ? normalizedSymbolName! : countdown.sfSymbolName,
             calendarEventIdentifier: countdown.calendarEventIdentifier,

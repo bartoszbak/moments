@@ -67,12 +67,18 @@ struct CountdownWidgetView: View {
                         Spacer()
 
                         if !countdown.isFutureManifestation {
-                            VStack(alignment: .trailing, spacing: 0) {
-                                Text("Days")
-                                Text(relationLabel(for: countdown))
+                            if countdown.isToday {
+                                Text("Today")
+                                    .font(.system(.caption, design: .rounded))
+                                    .foregroundStyle(fgSecondary)
+                            } else {
+                                VStack(alignment: .trailing, spacing: 0) {
+                                    Text(dayUnit(for: countdown.isExpired ? countdown.daysSince : countdown.daysUntil))
+                                    Text(relationLabel(for: countdown))
+                                }
+                                .font(.system(.caption, design: .rounded))
+                                .foregroundStyle(fgSecondary)
                             }
-                            .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(fgSecondary)
                         }
                     }
                 } else {
@@ -103,7 +109,7 @@ struct CountdownWidgetView: View {
                     .truncationMode(.tail)
                     .padding(.bottom, 6)
 
-                if !countdown.isExpired && !countdown.isFutureManifestation {
+                if countdown.showProgress && !countdown.isExpired && !countdown.isFutureManifestation {
                     progressBar(progress: countdown.barProgress)
                 }
 
@@ -162,12 +168,18 @@ struct CountdownWidgetView: View {
                         Spacer()
 
                         if !countdown.isFutureManifestation {
-                            VStack(alignment: .trailing, spacing: 0) {
-                                Text("Days")
-                                Text(relationLabel(for: countdown))
+                            if countdown.isToday {
+                                Text("Today")
+                                    .font(.system(.caption, design: .rounded))
+                                    .foregroundStyle(fgSecondary)
+                            } else {
+                                VStack(alignment: .trailing, spacing: 0) {
+                                    Text(dayUnit(for: countdown.isExpired ? countdown.daysSince : countdown.daysUntil))
+                                    Text(relationLabel(for: countdown))
+                                }
+                                .font(.system(.caption, design: .rounded))
+                                .foregroundStyle(fgSecondary)
                             }
-                            .font(.system(.caption, design: .rounded))
-                            .foregroundStyle(fgSecondary)
                         }
                     }
                 } else {
@@ -198,7 +210,7 @@ struct CountdownWidgetView: View {
                     .truncationMode(.tail)
                     .padding(.bottom, 8)
 
-                if !countdown.isExpired && !countdown.isFutureManifestation {
+                if countdown.showProgress && !countdown.isExpired && !countdown.isFutureManifestation {
                     progressBar(progress: countdown.barProgress)
                 }
 
@@ -296,7 +308,7 @@ struct CountdownWidgetView: View {
     private var accessoryInlineView: some View {
         Group {
             if let countdown = entry.countdown {
-                Text("\(countdown.title) · \(daysLabel(for: countdown))")
+                Text(inlineLabel(for: countdown))
             } else {
                 Text("No countdown")
             }
@@ -380,8 +392,8 @@ struct CountdownWidgetView: View {
     private func daysLabel(for countdown: WidgetCountdown) -> String {
         if countdown.isFutureManifestation { return "Manifest" }
         if countdown.isToday { return "Today" }
-        if countdown.isExpired { return "\(countdown.daysSince) days since" }
-        return "\(countdown.daysUntil) days until"
+        if countdown.isExpired { return "\(countdown.daysSince) \(dayUnit(for: countdown.daysSince)) since" }
+        return "\(countdown.daysUntil) \(dayUnit(for: countdown.daysUntil)) until"
     }
 
     private func relationLabel(for countdown: WidgetCountdown) -> String {
@@ -396,7 +408,21 @@ struct CountdownWidgetView: View {
 
     private func metricTitle(for countdown: WidgetCountdown) -> String {
         if countdown.isFutureManifestation { return "Manifest" }
-        return countdown.isExpired && !countdown.isToday ? "Days since" : "Days until"
+        if countdown.isToday { return "Today" }
+        let dayCount = countdown.isExpired ? countdown.daysSince : countdown.daysUntil
+        return "\(dayUnit(for: dayCount)) \(countdown.isExpired ? "since" : "until")"
+    }
+
+    private func inlineLabel(for countdown: WidgetCountdown) -> String {
+        if countdown.isFutureManifestation {
+            return "Manifest \(countdown.title)"
+        }
+
+        return "\(daysLabel(for: countdown)) \(countdown.title)"
+    }
+
+    private func dayUnit(for count: Int) -> String {
+        count == 1 ? "Day" : "Days"
     }
 
 }

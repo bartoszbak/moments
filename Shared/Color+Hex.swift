@@ -4,15 +4,29 @@ import UIKit
 private let defaultInterfaceTintHex = "#D3E2FF"
 
 enum MomentSymbolPolicy {
+    static let defaultSymbolName = "sparkle"
+
     static func normalized(_ symbolName: String?) -> String? {
         guard let trimmed = symbolName?.trimmingCharacters(in: .whitespacesAndNewlines),
-              !trimmed.isEmpty,
-              trimmed.hasSuffix(".fill")
+              !trimmed.isEmpty
         else {
             return nil
         }
 
-        return trimmed
+        let normalizedName: String
+
+        switch trimmed.lowercased() {
+        case "sparkle", "sparkles":
+            normalizedName = defaultSymbolName
+        default:
+            normalizedName = trimmed
+        }
+
+        guard UIImage(systemName: normalizedName) != nil else {
+            return nil
+        }
+
+        return normalizedName
     }
 }
 

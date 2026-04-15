@@ -16,6 +16,7 @@
 		1505ADC2159BA9AE60DCF97A /* manifest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 01A179BD161DD902F6E4F906 /* manifest.txt */; };
 		1715BBD8EA7CA50A9BF9E0A8 /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81644C993BB4FF389537E4C4 /* SharedDataStore.swift */; };
 		2370BD3E84893A4D96D07D59 /* BradfordLL-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */; };
+		B7A1F1C2D3E4F50617283940 /* BradfordLL-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */; };
 		275C10D882BC0DC41D5027FC /* CountdownAppEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */; };
 		29AC6602E2B1E80B4811F659 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A454604EA8126CA30C88E46A /* Color+Hex.swift */; };
 		313CB18BEF32C29F6F1006B4 /* system.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3577909D5081385951BC6140 /* system.txt */; };
@@ -111,9 +112,11 @@
 		355DA3487DC073A60B6857A7 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		3577909D5081385951BC6140 /* system.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = system.txt; sourceTree = "<group>"; };
 		4278A770D60414C1A7FE93DE /* BradfordLL-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Regular.otf"; sourceTree = "<group>"; };
+		C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-MediumItalic.otf"; sourceTree = "<group>"; };
 		45F0161881DF6012EE26C4F0 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		4682F02D937FCAC10D633671 /* TillApp 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 6.xcdatamodel"; sourceTree = "<group>"; };
 		46C295C3CAEC2A8A3E2E3BF0 /* TillApp 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 7.xcdatamodel"; sourceTree = "<group>"; };
+		46F3D81A7B9C4E1D2A5F6087 /* TillApp 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 8.xcdatamodel"; sourceTree = "<group>"; };
 		4D212718BD9096D60168E8BC /* CountdownWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownWidgetView.swift; sourceTree = "<group>"; };
 		503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+SmartFormat.swift"; sourceTree = "<group>"; };
 		55909B66699820B699EED0F6 /* SFSymbolPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFSymbolPickerView.swift; sourceTree = "<group>"; };
@@ -151,7 +154,7 @@
 		EC6495D3A08C241F976E4B59 /* TillApp 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 5.xcdatamodel"; sourceTree = "<group>"; };
 		F12CEF1897B09F366E6E6283 /* MomentPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewViewModel.swift; sourceTree = "<group>"; };
 		F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		FF69A41376D167C2EE412AA6 /* MomentsWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = MomentsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FF69A41376D167C2EE412AA6 /* MomentsWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MomentsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -257,6 +260,7 @@
 				90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */,
 				BB20FB59689E15C57BD62E58 /* BradfordLL-Book.otf */,
 				A764D051685A514CA9E98235 /* BradfordLL-Medium.otf */,
+				C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */,
 				4278A770D60414C1A7FE93DE /* BradfordLL-Regular.otf */,
 			);
 			path = Fonts;
@@ -443,11 +447,9 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					96A51F6082F0A50C126C394A = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					FA3E61A3D1BF9BC1A07F81A8 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -484,6 +486,7 @@
 				2370BD3E84893A4D96D07D59 /* BradfordLL-Bold.otf in Resources */,
 				3EDCD316B1019D39B2F75ADC /* BradfordLL-Book.otf in Resources */,
 				5B764D5CC06F34F2F6115802 /* BradfordLL-Medium.otf in Resources */,
+				B7A1F1C2D3E4F50617283940 /* BradfordLL-MediumItalic.otf in Resources */,
 				70F7247B3F81F3A184CE20EC /* BradfordLL-Regular.otf in Resources */,
 				9C30BA76600FB185FBC9E392 /* future.txt in Resources */,
 				1505ADC2159BA9AE60DCF97A /* manifest.txt in Resources */,
@@ -624,6 +627,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MomentsWidgetExtension/Moments.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = MomentsWidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -711,6 +715,7 @@
 				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = Moments/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -729,6 +734,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MomentsWidgetExtension/Moments.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = MomentsWidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -752,6 +758,7 @@
 				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = Moments/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -826,9 +833,10 @@
 				EC6495D3A08C241F976E4B59 /* TillApp 5.xcdatamodel */,
 				4682F02D937FCAC10D633671 /* TillApp 6.xcdatamodel */,
 				46C295C3CAEC2A8A3E2E3BF0 /* TillApp 7.xcdatamodel */,
+				46F3D81A7B9C4E1D2A5F6087 /* TillApp 8.xcdatamodel */,
 				D27D809EF8B82CF274B52103 /* TillApp.xcdatamodel */,
 			);
-			currentVersion = 46C295C3CAEC2A8A3E2E3BF0 /* TillApp 7.xcdatamodel */;
+			currentVersion = 46F3D81A7B9C4E1D2A5F6087 /* TillApp 8.xcdatamodel */;
 			path = Moments.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

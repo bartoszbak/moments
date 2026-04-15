@@ -70,7 +70,7 @@ struct ManifestNotificationSettingsSection: View {
 
     var body: some View {
         Section {
-            Toggle("Reminder", isOn: $isEnabled)
+            Toggle("Notification", isOn: $isEnabled)
                 .tint(tintColor)
 
             if isEnabled {
@@ -85,24 +85,6 @@ struct ManifestNotificationSettingsSection: View {
                     selection: $reminderTime,
                     displayedComponents: .hourAndMinute
                 )
-            }
-        } header: {
-            Text("Manifestation Reminder")
-        } footer: {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Set the reminder while creating or editing this manifestation. Time applies to all manifestation reminders.")
-
-                switch authorizationStatus {
-                case .notDetermined:
-                    Text("You'll be asked for notification permission when you turn this on.")
-                case .authorized, .provisional, .ephemeral:
-                    EmptyView()
-                case .denied:
-                    Text("Notifications are blocked. Open Settings to allow manifestation reminders.")
-                    Button("Open Settings", action: openSettings)
-                @unknown default:
-                    EmptyView()
-                }
             }
         }
     }
@@ -127,9 +109,10 @@ struct AddCountdownView: View {
     )
     @State private var background: BackgroundSelection = .none
     @State private var startPercentage: Double = 1.0
+    @State private var showProgress: Bool = true
     @State private var showDate: Bool = true
-    @State private var showSymbol: Bool = false
-    @State private var sfSymbolName: String? = nil
+    @State private var showSymbol: Bool = true
+    @State private var sfSymbolName: String? = MomentSymbolPolicy.defaultSymbolName
     @State private var showSymbolPicker = false
     @State private var isFutureManifestation = false
     @State private var manifestNotificationsEnabled = false
@@ -151,7 +134,7 @@ struct AddCountdownView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Title") {
+                Section("Details") {
                     TextField("e.g. New Year, Vacation…", text: $title)
                         .onChange(of: title) { _, _ in
                             if showTitleError, !title.isEmpty { showTitleError = false }
@@ -165,6 +148,11 @@ struct AddCountdownView: View {
                                 .foregroundStyle(.tint)
                         }
                     }
+                    SymbolOptionsRows(
+                        showSymbol: $showSymbol,
+                        sfSymbolName: $sfSymbolName,
+                        showSymbolPicker: $showSymbolPicker
+                    )
                     if showTitleError {
                         Label("Title is required", systemImage: "exclamationmark.circle.fill")
                             .foregroundStyle(.red).font(.caption)
@@ -176,11 +164,7 @@ struct AddCountdownView: View {
                         TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                     }
                 } header: {
-                    Text("Target Date")
-                } footer: {
-                    if isFutureManifestation {
-                        Text("Optional reminder settings appear below for this manifestation.")
-                    }
+                    Text("Time")
                 }
                 if isFutureManifestation {
                     ManifestNotificationSettingsSection(
@@ -197,13 +181,13 @@ struct AddCountdownView: View {
                 )
                 WidgetOptionsSection(
                     allowsDateOption: !isFutureManifestation,
-                    showDate: $showDate,
-                    showSymbol: $showSymbol,
-                    sfSymbolName: $sfSymbolName,
-                    showSymbolPicker: $showSymbolPicker
+                    showDate: $showDate
                 )
                 if showsProgressIndicatorSection {
-                    ProgressStartPickerSection(value: $startPercentage)
+                    ProgressStartPickerSection(
+                        isEnabled: $showProgress,
+                        value: $startPercentage
+                    )
                 }
             }
             .nativeGlassToggleStyle(tintColor: controlTintColor)
@@ -287,6 +271,7 @@ struct AddCountdownView: View {
                 backgroundImagePath: imagePath, thumbnailImagePath: thumbPath,
                 backgroundColorIndex: colorIndex, backgroundColorHex: colorHex,
                 startPercentage: startPercentage,
+                showProgress: showProgress,
                 showDate: showDate,
                 sfSymbolName: normalizedSymbolName,
                 isFutureManifestation: isFutureManifestation,
