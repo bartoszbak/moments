@@ -251,7 +251,7 @@ struct CalendarSyncSettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 } else {
-                    Picker("Calendar", selection: $selectedCalendarIdentifier) {
+                    Picker("Calendar", selection: calendarSelectionBinding) {
                         ForEach(calendarService.availableCalendars) { option in
                             Text(option.displayName).tag(option.id)
                         }
@@ -288,6 +288,19 @@ struct CalendarSyncSettingsView: View {
 
     private var controlTintColor: Color {
         .blue
+    }
+
+    private var calendarSelectionBinding: Binding<String> {
+        Binding(
+            get: {
+                if calendarService.availableCalendars.contains(where: { $0.id == selectedCalendarIdentifier }) {
+                    return selectedCalendarIdentifier
+                }
+
+                return calendarService.availableCalendars.first?.id ?? selectedCalendarIdentifier
+            },
+            set: { selectedCalendarIdentifier = $0 }
+        )
     }
 
     @ViewBuilder
