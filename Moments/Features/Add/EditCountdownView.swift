@@ -3,6 +3,7 @@ import UIKit
 
 struct EditCountdownView: View {
     let countdownID: UUID
+    var onDelete: (() -> Void)? = nil
 
     @EnvironmentObject private var repository: CountdownRepository
     @Environment(\.dismiss) private var dismiss
@@ -274,7 +275,11 @@ struct EditCountdownView: View {
         guard let countdown else { return }
         try? repository.delete(countdown)
         AppHaptics.impact(.medium)
-        dismiss()
+        if let onDelete {
+            onDelete()
+        } else {
+            dismiss()
+        }
     }
 
     private var preferredColorScheme: ColorScheme? {

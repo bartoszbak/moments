@@ -7,6 +7,7 @@ struct MomentPreviewScrollEdgeView: View {
 
     @EnvironmentObject private var repository: CountdownRepository
     @EnvironmentObject private var timerManager: TimerManager
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
@@ -86,13 +87,21 @@ struct MomentPreviewScrollEdgeView: View {
             }
         }
         .sheet(isPresented: $showingEditSheet) {
-            EditCountdownView(countdownID: countdownID)
+            EditCountdownView(countdownID: countdownID) {
+                showingEditSheet = false
+                dismiss()
+            }
         }
         .onAppear {
             viewModel.syncSavedReflection(from: countdown)
         }
         .onChange(of: repository.countdowns) { _, _ in
-            guard let updatedCountdown = self.countdown else { return }
+            guard let updatedCountdown = self.countdown else {
+                if !showingEditSheet {
+                    dismiss()
+                }
+                return
+            }
             viewModel.syncSavedReflection(from: updatedCountdown)
         }
     }

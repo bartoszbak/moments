@@ -2,6 +2,10 @@ import SwiftUI
 import UIKit
 import UserNotifications
 
+extension Notification.Name {
+    static let countdownCreated = Notification.Name("countdownCreated")
+}
+
 struct MomentDescriptionEditorView: View {
     @Binding var text: String
 
@@ -25,6 +29,9 @@ struct MomentDescriptionEditorView: View {
         }
         .navigationTitle("Description")
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -278,6 +285,7 @@ struct AddCountdownView: View {
             )
             reconcileManifestNotifications()
             AppHaptics.impact(.medium)
+            NotificationCenter.default.post(name: .countdownCreated, object: nil)
             dismiss()
         } catch { isCreating = false }
     }
@@ -364,4 +372,5 @@ struct AddCountdownView: View {
             await manifestNotificationService.reconcile(countdowns: repository.countdowns)
         }
     }
+
 }

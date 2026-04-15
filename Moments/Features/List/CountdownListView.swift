@@ -1,3 +1,4 @@
+import BlurSwiftUI
 import CoreMotion
 import SwiftUI
 
@@ -16,8 +17,10 @@ struct CountdownListView: View {
     @State private var previewingCountdown: Countdown?
     @State private var showingSettings = false
     @State private var showingIntroSheet = false
-    @State private var selectedTimeFilter: CountdownTimeFilter = .all
-    @State private var selectedTypeFilter: CountdownTypeFilter = .all
+    @State private var selectedFilter: CountdownMenuFilter = .all
+    @State private var momentCountDisplayText = ""
+    @State private var pendingMomentCountReveal = false
+    @State private var momentCountRevealTrigger = 0
     @Binding var deepLinkedCountdownID: UUID?
 
     private var isiPad: Bool {
@@ -56,7 +59,7 @@ struct CountdownListView: View {
 
     private var filteredCountdowns: [Countdown] {
         repository.countdowns.filter { countdown in
-            matchesTimeFilter(countdown) && matchesTypeFilter(countdown)
+            matchesSelectedFilter(countdown)
         }
     }
 
@@ -85,19 +88,9 @@ struct CountdownListView: View {
                                 .foregroundStyle(settingsButtonColor)
                         }
                     }
-
-                    if !repository.countdowns.isEmpty && !isShowingEmptyStatePreview {
-                        ToolbarItemGroup(placement: .bottomBar) {
-                            filterMenuButton
-                            Spacer()
-                            addButton
-                        }
-                    }
                 }
-                .safeAreaInset(edge: .bottom) {
-                    if isShowingPrimaryEmptyState {
-                        emptyStateButton
-                    }
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    bottomInsetContent(bottomSafeAreaInset: geometry.safeAreaInsets.bottom)
                 }
                 .overlay {
                     if isShowingPrimaryEmptyState {
@@ -115,14 +108,9 @@ struct CountdownListView: View {
                 }
             }
         }
-        .onChange(of: selectedTimeFilter) {
+        .onChange(of: selectedFilter) {
             AppHaptics.impact(.light)
-        }
-        .onChange(of: selectedTypeFilter) { _, newValue in
-            if newValue == .manifest && selectedTimeFilter == .past {
-                selectedTimeFilter = .all
-            }
-            AppHaptics.impact(.light)
+            syncMomentCountDisplayTextIfNeeded()
         }
         .onChange(of: forceIntroSheetOnLaunch) { _, isEnabled in
             if isEnabled {
@@ -134,10 +122,15 @@ struct CountdownListView: View {
         }
         .onChange(of: repository.countdowns) { _, _ in
             openDeepLinkedCountdownIfNeeded()
+            syncMomentCountDisplayTextIfNeeded()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .countdownCreated)) { _ in
+            pendingMomentCountReveal = true
         }
         .task {
             showingIntroSheet = !hasSeenIntroSheet || forceIntroSheetOnLaunch
             openDeepLinkedCountdownIfNeeded()
+            syncMomentCountDisplayTextIfNeeded(force: true)
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
@@ -148,7 +141,10 @@ struct CountdownListView: View {
                 showingIntroSheet = false
             }
         }
-        .sheet(isPresented: $showingAddSheet) {
+        .sheet(
+            isPresented: $showingAddSheet,
+            onDismiss: handleAddSheetDismissed
+        ) {
             AddCountdownView()
         }
     }
@@ -205,21 +201,15 @@ struct CountdownListView: View {
     }
 
     private var emptyStateTitle: String {
-        switch (selectedTimeFilter, selectedTypeFilter) {
-        case (_, .manifest):
-            "No Manifest"
-        case (.past, .events):
-            "No Past Events"
-        case (.upcoming, .events):
-            "No Upcoming Events"
-        case (.all, .events):
-            "No Events"
-        case (.past, .all):
-            "No Past Countdowns"
-        case (.upcoming, .all):
-            "No Upcoming Countdowns"
-        case (.all, .all):
+        switch selectedFilter {
+        case .all:
             "No Countdowns"
+        case .past:
+            "No Past Events"
+        case .upcoming:
+            "No Upcoming Events"
+        case .present:
+            "No Present Moments"
         }
     }
 
@@ -228,19 +218,15 @@ struct CountdownListView: View {
             return ""
         }
 
-        switch (selectedTimeFilter, selectedTypeFilter) {
-        case (_, .manifest):
-            return "Change the filter to see events."
-        case (.all, .all):
+        switch selectedFilter {
+        case .all:
             return ""
-        case (.past, .all):
+        case .past:
             return "Change the filter to see upcoming countdowns."
-        case (.upcoming, .all):
+        case .upcoming:
             return "Change the filter to see past countdowns."
-        case (.all, .events):
-            return "Change the filter to see manifest moments."
-        case (.past, .events), (.upcoming, .events):
-            return "Adjust the filters to see more moments."
+        case .present:
+            return "Change the filter to see events."
         }
     }
 
@@ -284,41 +270,105 @@ struct CountdownListView: View {
         .frame(maxWidth: .infinity)
     }
 
+    @ViewBuilder
+    private func bottomInsetContent(bottomSafeAreaInset: CGFloat) -> some View {
+        if isShowingPrimaryEmptyState {
+            emptyStateButton
+        } else if !repository.countdowns.isEmpty && !isShowingEmptyStatePreview {
+            if #available(iOS 26, *) {
+                ZStack(alignment: .bottom) {
+                    VariableBlur(direction: .up)
+                        .maximumBlurRadius(2)
+                        .blurStartingInset(nil)
+                        .dimmingTintColor(nil)
+                        .dimmingAlpha(nil)
+                        .dimmingOvershoot(nil)
+                        .dimmingStartingInset(nil)
+                        .passesTouchesThrough(true)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: bottomBlurGradientHeight + (bottomSafeAreaInset * 2))
+                        .offset(y: bottomSafeAreaInset)
+
+                    LinearGradient(
+                        stops: [
+                            .init(color: Color(uiColor: .systemBackground).opacity(0), location: 0),
+                            .init(color: Color(uiColor: .systemBackground).opacity(1), location: 1)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: bottomBlurGradientHeight + (bottomSafeAreaInset * 2))
+                    .offset(y: bottomSafeAreaInset)
+                    .allowsHitTesting(false)
+
+                    HStack(spacing: 16) {
+                        filterMenuButton
+                        Spacer(minLength: 0)
+                        momentCountLabel
+                        Spacer(minLength: 0)
+                        addButton
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 8)
+                    .frame(maxWidth: .infinity)
+                }
+                .frame(maxWidth: .infinity, alignment: .bottom)
+                .ignoresSafeArea(edges: .bottom)
+            } else {
+                HStack(spacing: 16) {
+                    filterMenuButton
+                    Spacer(minLength: 0)
+                    momentCountLabel
+                    Spacer(minLength: 0)
+                    addButton
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
+                .frame(maxWidth: .infinity)
+                .background(Color(.systemBackground))
+            }
+        }
+    }
+
     private var emptyStateButtonWidth: CGFloat? {
         isiPad ? 360 : nil
     }
 
+    @available(iOS 26.0, *)
+    private var bottomBlurGradientHeight: CGFloat {
+        52
+    }
+
     private var filterMenuButton: some View {
         Menu {
-            Section("Type") {
-                Picker("Type", selection: $selectedTypeFilter) {
-                    ForEach(CountdownTypeFilter.allCases) { filter in
-                        Text(filter.title).tag(filter)
-                    }
-                }
-            }
-
-            if selectedTypeFilter != .manifest {
-                Section("Time") {
-                    Picker("Time", selection: $selectedTimeFilter) {
-                        ForEach(CountdownTimeFilter.allCases) { filter in
-                            Text(filter.title).tag(filter)
+            ForEach(CountdownMenuFilter.allCases) { filter in
+                Button {
+                    selectedFilter = filter
+                } label: {
+                    HStack {
+                        Text(filter.title)
+                        if selectedFilter == filter {
+                            Spacer()
+                            Image(systemName: "checkmark")
                         }
                     }
                 }
             }
         } label: {
             Image(systemName: isShowingActiveFilters ? "line.3.horizontal.decrease.circle.fill" : "line.3.horizontal.decrease")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.system(size: 19, weight: .semibold))
                 .foregroundStyle(settingsButtonColor)
-                .frame(width: 48, height: 48)
+                .frame(width: 44, height: 44)
         }
         .adaptiveGlassButtonStyle()
         .accessibilityLabel("Filter countdowns")
     }
 
     private var isShowingActiveFilters: Bool {
-        selectedTimeFilter != .all || selectedTypeFilter != .all
+        selectedFilter != .all
     }
 
     private var addButton: some View {
@@ -326,14 +376,29 @@ struct CountdownListView: View {
             presentAddCountdown()
         } label: {
             Image(systemName: "plus")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.system(size: 19, weight: .semibold))
                 .foregroundStyle(addButtonSymbolColor)
-                .frame(width: 48, height: 48)
+                .frame(width: 44, height: 44)
         }
         .id(themeRefreshKey)
         .tint(addButtonBackgroundColor)
         .adaptiveGlassProminentButtonStyle()
         .accessibilityLabel("Add countdown")
+    }
+
+    private var momentCountLabel: some View {
+        SingleRunLetterRevealText(
+            text: momentCountDisplayText,
+            font: .subheadline.weight(.medium),
+            color: .secondary,
+            trigger: momentCountRevealTrigger
+        )
+        .lineLimit(1)
+    }
+
+    private var momentCountText: String {
+        let count = displayedCountdowns.count
+        return count == 1 ? "1 moment" : "\(count) moments"
     }
 
     private var interfaceTintColor: Color {
@@ -400,42 +465,99 @@ struct CountdownListView: View {
         showingAddSheet = true
     }
 
+    private func handleAddSheetDismissed() {
+        guard pendingMomentCountReveal else { return }
+        pendingMomentCountReveal = false
+        momentCountDisplayText = momentCountText
+        momentCountRevealTrigger += 1
+    }
+
+    private func syncMomentCountDisplayTextIfNeeded(force: Bool = false) {
+        guard force || (!showingAddSheet && !pendingMomentCountReveal) else { return }
+        momentCountDisplayText = momentCountText
+    }
+
     private func openCountdown(_ countdown: Countdown) {
         AppHaptics.impact(.soft)
         previewingCountdown = countdown
     }
 
-    private func matchesTimeFilter(_ countdown: Countdown) -> Bool {
-        if selectedTypeFilter == .manifest {
-            return countdown.isFutureManifestation
-        }
-
-        switch selectedTimeFilter {
+    private func matchesSelectedFilter(_ countdown: Countdown) -> Bool {
+        switch selectedFilter {
         case .all:
             return true
         case .past:
-            return countdown.isExpired(at: timerManager.currentTime)
+            return !countdown.isFutureManifestation && countdown.isExpired(at: timerManager.currentTime)
         case .upcoming:
-            return !countdown.isExpired(at: timerManager.currentTime)
-        }
-    }
-
-    private func matchesTypeFilter(_ countdown: Countdown) -> Bool {
-        switch selectedTypeFilter {
-        case .all:
-            true
-        case .events:
-            !countdown.isFutureManifestation
-        case .manifest:
-            countdown.isFutureManifestation
+            return !countdown.isFutureManifestation && !countdown.isExpired(at: timerManager.currentTime)
+        case .present:
+            return countdown.isFutureManifestation
         }
     }
 }
 
-private enum CountdownTimeFilter: String, CaseIterable, Identifiable {
+private struct SingleRunLetterRevealText: View {
+    let text: String
+    let font: Font
+    let color: Color
+    let trigger: Int
+
+    @State private var revealedCharacterCount = Int.max
+    @State private var revealTask: Task<Void, Never>?
+
+    private var characters: [String] {
+        text.map(String.init)
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(Array(characters.enumerated()), id: \.offset) { index, character in
+                Text(character)
+                    .font(font)
+                    .foregroundStyle(color)
+                    .opacity(index < revealedCharacterCount ? 1 : 0)
+                    .blur(radius: index < revealedCharacterCount ? 0 : 12)
+                    .offset(y: index < revealedCharacterCount ? 0 : 4)
+                    .animation(
+                        .easeOut(duration: 0.28).delay(Double(index) * 0.028),
+                        value: revealedCharacterCount
+                    )
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .onAppear {
+            revealedCharacterCount = characters.count
+        }
+        .onChange(of: text) { _, _ in
+            revealedCharacterCount = characters.count
+        }
+        .onChange(of: trigger) { _, _ in
+            startReveal()
+        }
+        .onDisappear {
+            revealTask?.cancel()
+        }
+    }
+
+    private func startReveal() {
+        revealTask?.cancel()
+        revealedCharacterCount = 0
+
+        guard !characters.isEmpty else { return }
+
+        revealTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(45))
+            guard !Task.isCancelled else { return }
+            revealedCharacterCount = characters.count
+        }
+    }
+}
+
+private enum CountdownMenuFilter: String, CaseIterable, Identifiable {
     case all
     case past
     case upcoming
+    case present
 
     var id: Self { self }
 
@@ -447,25 +569,8 @@ private enum CountdownTimeFilter: String, CaseIterable, Identifiable {
             "Past"
         case .upcoming:
             "Upcoming"
-        }
-    }
-}
-
-private enum CountdownTypeFilter: String, CaseIterable, Identifiable {
-    case all
-    case events
-    case manifest
-
-    var id: Self { self }
-
-    var title: String {
-        switch self {
-        case .all:
-            "All"
-        case .events:
-            "Events"
-        case .manifest:
-            "Manifest"
+        case .present:
+            "Present"
         }
     }
 }
