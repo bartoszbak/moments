@@ -5,6 +5,9 @@ struct DeveloperMenuView: View {
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
+    @AppStorage(DeveloperSettingsKeys.forcePaywallOnLaunch) private var forcePaywallOnLaunch = false
+    @AppStorage(DeveloperSettingsKeys.paywallAccessStateOverride) private var paywallAccessStateOverrideRawValue = DeveloperPaywallAccessOverride.live.rawValue
+    @AppStorage(DeveloperSettingsKeys.paywallOfferingStateOverride) private var paywallOfferingStateOverrideRawValue = DeveloperPaywallOfferingOverride.live.rawValue
     @State private var statusMessage: String? = nil
 
     var body: some View {
@@ -46,6 +49,31 @@ struct DeveloperMenuView: View {
                     Text("Preview")
                 } footer: {
                     Text("Use these to force preview flows without changing stored countdowns.")
+                }
+
+                Section {
+                    Toggle("Force Paywall on Launch", isOn: $forcePaywallOnLaunch)
+
+                    Picker("Access State", selection: $paywallAccessStateOverrideRawValue) {
+                        ForEach(DeveloperPaywallAccessOverride.allCases) { option in
+                            Text(option.displayName).tag(option.rawValue)
+                        }
+                    }
+
+                    Picker("Offering State", selection: $paywallOfferingStateOverrideRawValue) {
+                        ForEach(DeveloperPaywallOfferingOverride.allCases) { option in
+                            Text(option.displayName).tag(option.rawValue)
+                        }
+                    }
+
+                    Button("Reset Paywall Overrides") {
+                        resetPaywallOverrides()
+                    }
+                    .disabled(paywallOverridesAreDefault)
+                } header: {
+                    Text("Paywall")
+                } footer: {
+                    Text("Use these to exercise paywall launch, entitlement, and offering states while the RevenueCat flow is being wired up.")
                 }
 
                 // MARK: - Info
@@ -294,6 +322,19 @@ struct DeveloperMenuView: View {
         }
     }
 
+    private var paywallOverridesAreDefault: Bool {
+        !forcePaywallOnLaunch
+        && paywallAccessStateOverrideRawValue == DeveloperPaywallAccessOverride.live.rawValue
+        && paywallOfferingStateOverrideRawValue == DeveloperPaywallOfferingOverride.live.rawValue
+    }
+
+    private func resetPaywallOverrides() {
+        forcePaywallOnLaunch = false
+        paywallAccessStateOverrideRawValue = DeveloperPaywallAccessOverride.live.rawValue
+        paywallOfferingStateOverrideRawValue = DeveloperPaywallOfferingOverride.live.rawValue
+        flash("Reset paywall overrides")
+    }
+
     private struct SeedDraft {
         let title: String
         let detailsText: String?
@@ -333,4 +374,54 @@ struct DeveloperMenuView: View {
 enum DeveloperSettingsKeys {
     static let showEmptyStatePreview = "developer.showEmptyStatePreview"
     static let forceIntroSheetOnLaunch = "developer.forceIntroSheetOnLaunch"
+    static let forcePaywallOnLaunch = "developer.paywall.forceOnLaunch"
+    static let paywallAccessStateOverride = "developer.paywall.accessStateOverride"
+    static let paywallOfferingStateOverride = "developer.paywall.offeringStateOverride"
+}
+
+enum DeveloperPaywallAccessOverride: String, CaseIterable, Identifiable {
+    case live
+    case free
+    case premiumSubscription
+    case premiumLifetime
+    case loading
+    case failed
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .live:
+            return "Live"
+        case .free:
+            return "Free"
+        case .premiumSubscription:
+            return "Premium: Subscription"
+        case .premiumLifetime:
+            return "Premium: Lifetime"
+        case .loading:
+            return "Loading"
+        case .failed:
+            return "Failed"
+        }
+    }
+}
+
+enum DeveloperPaywallOfferingOverride: String, CaseIterable, Identifiable {
+    case live
+    case available
+    case unavailable
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .live:
+            return "Live"
+        case .available:
+            return "Available"
+        case .unavailable:
+            return "Unavailable"
+        }
+    }
 }

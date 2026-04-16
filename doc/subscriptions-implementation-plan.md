@@ -55,6 +55,40 @@ For this feature, the implementation priority should still be:
 5. `revenuecat`
 6. `axiom-swiftui`
 
+## Design Reference
+
+Primary reference:
+- Figma file: `Moments - Paywall`
+- URL: `https://www.figma.com/design/xhLcHqk3c4cffEXCMFnZX0/Moments---Paywall?node-id=0-1&t=sFxZqyNrGRs8Zhzm-1`
+
+Primary implementation frame:
+- `daily-003-2-1` (`node-id=8:606`)
+
+Secondary comparison frame:
+- `daily-003-2` (`node-id=8:694`)
+
+Design details to preserve in implementation:
+- Present the paywall as a rounded sheet with a custom top toolbar, centered title, and a leading close control.
+- Keep the hierarchy identical to the design: hero mark, two-line support headline, included-features card, legal actions row, plan selector rail, primary CTA, and billing note.
+- Default the yearly plan as the selected and recommended option.
+- Keep the annual CTA copy and billing note aligned with the reference:
+  - CTA: `Start 1 week free trial`
+  - Billing note: `Try free for 1 week, then $49.99/year`
+- Reuse the app’s existing rounded type and Liquid Glass helpers rather than introducing a separate premium theme.
+- Match the visual balance of the plan cards:
+  - monthly and lifetime read as secondary, tinted cards
+  - yearly reads as the primary selected card with a stronger border and a savings badge
+- Keep the feature list copy anchored to the Figma draft for now:
+  - `Unlimited moments`
+  - `AI manifestations, and reflections`
+  - `Full customization options`
+  - `Calendar sync and notifications`
+  - `Future premium features`
+
+Implementation note:
+- The first code pass should establish the premium state boundary, paywall view, and entry point using this design.
+- RevenueCat and StoreKit purchase wiring should be layered into that surface next, not mixed into the initial UI composition work.
+
 ## Product Model
 
 Use one entitlement and three App Store products.

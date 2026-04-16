@@ -3,6 +3,7 @@ import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject private var repository: CountdownRepository
+    @EnvironmentObject private var premiumStore: PremiumStore
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
@@ -18,6 +19,7 @@ struct SettingsView: View {
     @State private var selectedAppIcon = AppIconOption.current
     @State private var isUpdatingAppIcon = false
     @State private var appIconErrorMessage: String?
+    @State private var showingPremiumPaywall = false
 
     private var isiPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
@@ -37,6 +39,33 @@ struct SettingsView: View {
                     }
                     .listRowInsets(EdgeInsets(top: 12, leading: 0, bottom: 12, trailing: 0))
                     .listRowBackground(Color.clear)
+                }
+
+                Section {
+                    Button {
+                        showingPremiumPaywall = true
+                    } label: {
+                        HStack(spacing: 16) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Get Moments Plus")
+                                    .font(.headline)
+                                    .foregroundStyle(.primary)
+
+                                Text(premiumStore.settingsDescriptionText)
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+
+                            Spacer(minLength: 12)
+
+                            Image(subscriberBadgeAssetName)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 64, height: 64)
+                        }
+                    }
+                    .buttonStyle(.plain)
                 }
 
                 Section {
@@ -156,6 +185,10 @@ struct SettingsView: View {
         }
         .id(appearanceSetting)
         .preferredColorScheme(preferredColorScheme)
+        .sheet(isPresented: $showingPremiumPaywall) {
+            PremiumPaywallView()
+                .environmentObject(premiumStore)
+        }
     }
 
     private var plusButtonColorBinding: Binding<Color> {
@@ -183,6 +216,10 @@ struct SettingsView: View {
 
     private var doneButtonColor: Color {
         effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var subscriberBadgeAssetName: String {
+        effectiveColorScheme == .dark ? "SubscriberBadgeDark" : "SubscriberBadge"
     }
 
     private var buildNumberText: String {

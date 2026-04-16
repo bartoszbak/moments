@@ -6,6 +6,7 @@ import CoreText
 struct MomentsApp: App {
     @StateObject private var repository: CountdownRepository
     @StateObject private var timerManager = TimerManager()
+    @StateObject private var premiumStore = PremiumStore.shared
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
 
     @Environment(\.scenePhase) private var scenePhase
@@ -25,6 +26,7 @@ struct MomentsApp: App {
             AppThemeRootView()
                 .environmentObject(repository)
                 .environmentObject(timerManager)
+                .environmentObject(premiumStore)
                 .preferredColorScheme(AppTheme.preferredColorScheme(for: appearanceSetting))
         }
         .onChange(of: scenePhase) { _, phase in
