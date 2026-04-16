@@ -6,7 +6,7 @@ import CoreText
 struct MomentsApp: App {
     @StateObject private var repository: CountdownRepository
     @StateObject private var timerManager = TimerManager()
-    @StateObject private var premiumStore = PremiumStore.shared
+    @StateObject private var subscriptionService = SubscriptionService.shared
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
 
     @Environment(\.scenePhase) private var scenePhase
@@ -26,14 +26,18 @@ struct MomentsApp: App {
             AppThemeRootView()
                 .environmentObject(repository)
                 .environmentObject(timerManager)
-                .environmentObject(premiumStore)
+                .environmentObject(subscriptionService)
                 .preferredColorScheme(AppTheme.preferredColorScheme(for: appearanceSetting))
+                .task {
+                    await subscriptionService.configure()
+                }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
                 timerManager.start()
                 Task { @MainActor in
+                    await subscriptionService.refreshCustomerInfo()
                     await ManifestNotificationService.shared.refreshAuthorizationStatus()
                     await ManifestNotificationService.shared.reconcile(countdowns: repository.countdowns)
                 }

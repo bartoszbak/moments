@@ -3,7 +3,7 @@ import UIKit
 
 struct SettingsView: View {
     @EnvironmentObject private var repository: CountdownRepository
-    @EnvironmentObject private var premiumStore: PremiumStore
+    @EnvironmentObject private var subscriptionService: SubscriptionService
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
@@ -51,7 +51,7 @@ struct SettingsView: View {
                                     .font(.headline)
                                     .foregroundStyle(.primary)
 
-                                Text(premiumStore.settingsDescriptionText)
+                                Text(subscriptionService.settingsDescriptionText)
                                     .font(.footnote)
                                     .foregroundStyle(.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -187,7 +187,7 @@ struct SettingsView: View {
         .preferredColorScheme(preferredColorScheme)
         .sheet(isPresented: $showingPremiumPaywall) {
             PremiumPaywallView()
-                .environmentObject(premiumStore)
+                .environmentObject(subscriptionService)
         }
     }
 

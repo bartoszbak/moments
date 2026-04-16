@@ -1,124 +1,11 @@
 import SwiftUI
 import UIKit
 
-@MainActor
-final class PremiumStore: ObservableObject {
-    static let shared = PremiumStore()
-
-    @Published private(set) var accessState: PremiumAccessState = .free
-    @Published var selectedPackageID: PremiumPackageID = .yearly
-
-    let packages: [PremiumPackage] = [
-        .init(
-            id: .monthly,
-            priceTitle: "$2.99",
-            periodTitle: "for 1 month",
-            badgeText: nil,
-            ctaTitle: "Continue with Monthly",
-            billingNote: "$2.99 billed monthly."
-        ),
-        .init(
-            id: .yearly,
-            priceTitle: "$49.99",
-            periodTitle: "for 12 months",
-            badgeText: "-28%",
-            ctaTitle: "Start 1 week free trial",
-            billingNote: "Try free for 1 week, then $49.99/year"
-        ),
-        .init(
-            id: .lifetime,
-            priceTitle: "$99.99",
-            periodTitle: "Lifetime deal",
-            badgeText: nil,
-            ctaTitle: "Unlock Lifetime",
-            billingNote: "One-time payment of $99.99."
-        )
-    ]
-
-    private init() {}
-
-    var selectedPackage: PremiumPackage {
-        packages.first(where: { $0.id == selectedPackageID }) ?? packages[1]
-    }
-
-    var isPremium: Bool {
-        if case .premium = accessState {
-            return true
-        }
-
-        return false
-    }
-
-    var settingsStatusText: String {
-        switch accessState {
-        case .free:
-            return "Preview"
-        case .premium(.subscription):
-            return "Active"
-        case .premium(.lifetime):
-            return "Lifetime"
-        }
-    }
-
-    var settingsDescriptionText: String {
-        switch accessState {
-        case .free:
-            return "Support Moments and unlock the paywall flow now; purchase wiring lands next."
-        case .premium:
-            return "Premium access is active."
-        }
-    }
-
-    func select(packageID: PremiumPackageID) {
-        guard selectedPackageID != packageID else { return }
-        selectedPackageID = packageID
-        AppHaptics.impact(.light)
-    }
-}
-
-enum PremiumAccessState: Equatable {
-    case free
-    case premium(PremiumAccessSource)
-}
-
-enum PremiumAccessSource: Equatable {
-    case subscription
-    case lifetime
-}
-
-enum PremiumPackageID: String, CaseIterable, Identifiable {
-    case monthly
-    case yearly
-    case lifetime
-
-    var id: String { rawValue }
-}
-
-struct PremiumPackage: Identifiable, Equatable {
-    let id: PremiumPackageID
-    let priceTitle: String
-    let periodTitle: String
-    let badgeText: String?
-    let ctaTitle: String
-    let billingNote: String
-
-    var minimumCardWidth: CGFloat {
-        switch id {
-        case .monthly:
-            return 124
-        case .yearly:
-            return 186
-        case .lifetime:
-            return 138
-        }
-    }
-}
-
 struct PremiumPaywallView: View {
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
-    @EnvironmentObject private var premiumStore: PremiumStore
+    @EnvironmentObject private var subscriptionService: SubscriptionService
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
     @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
@@ -180,6 +67,14 @@ struct PremiumPaywallView: View {
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
         .preferredColorScheme(preferredColorScheme)
+        .task {
+            await subscriptionService.refreshOfferings()
+        }
+        .onChange(of: subscriptionService.accessState) { _, newValue in
+            if case .premium = newValue {
+                dismiss()
+            }
+        }
         .alert(item: $alertItem) { item in
             Alert(
                 title: Text(item.title),
@@ -292,23 +187,23 @@ struct PremiumPaywallView: View {
     private var bottomCheckoutRail: some View {
         VStack(spacing: 16) {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(premiumStore.packages) { package in
-                        PremiumOfferCard(
-                            package: package,
-                            isSelected: premiumStore.selectedPackageID == package.id,
-                            selectedIconColor: selectedOfferIconColor,
-                            action: { premiumStore.select(packageID: package.id) }
-                        )
-                    }
-                }
+                        HStack(spacing: 12) {
+                            ForEach(subscriptionService.packages) { package in
+                                PremiumOfferCard(
+                                    package: package,
+                                    isSelected: subscriptionService.selectedPackageID == package.id,
+                                    selectedIconColor: selectedOfferIconColor,
+                                    action: { subscriptionService.select(packageID: package.id) }
+                                )
+                            }
+                        }
                 .padding(.horizontal, 16)
             }
 
             Button {
                 handlePrimaryActionTapped()
             } label: {
-                Text(premiumStore.selectedPackage.ctaTitle)
+                Text(subscriptionService.selectedPackage.ctaTitle)
                     .font(.system(size: 17, weight: .semibold, design: .rounded))
                     .foregroundStyle(primaryButtonLabelColor)
                     .frame(maxWidth: .infinity)
@@ -322,7 +217,7 @@ struct PremiumPaywallView: View {
             .shadow(color: primaryButtonColor.opacity(0.28), radius: 16, y: 8)
             .padding(.horizontal, 24)
 
-            Text(premiumStore.selectedPackage.billingNote)
+            Text(subscriptionService.selectedPackage.billingNote)
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -380,18 +275,49 @@ struct PremiumPaywallView: View {
 
     private func handlePrimaryActionTapped() {
         AppHaptics.impact(.medium)
-        alertItem = .init(
-            title: "Purchase wiring next",
-            message: "The paywall UI and package-selection state are now in place. RevenueCat and StoreKit purchase handling are the next integration step."
-        )
+
+        Task { @MainActor in
+            do {
+                try await subscriptionService.purchaseSelectedPackage()
+            } catch {
+                if case SubscriptionActionError.userCancelled = error {
+                    return
+                }
+
+                alertItem = .init(
+                    title: "Purchase unavailable",
+                    message: error.localizedDescription
+                )
+            }
+        }
     }
 
     private func handleRestoreTapped() {
         AppHaptics.impact(.light)
-        alertItem = .init(
-            title: "Restore not connected yet",
-            message: "Restore purchases will be wired once RevenueCat is configured in the app target."
-        )
+
+        Task { @MainActor in
+            do {
+                let outcome = try await subscriptionService.restorePurchases()
+
+                switch outcome {
+                case .restoredPremium:
+                    alertItem = .init(
+                        title: "Purchases restored",
+                        message: "Your premium access is active again."
+                    )
+                case .nothingToRestore:
+                    alertItem = .init(
+                        title: "Nothing to restore",
+                        message: "No previous Moments Plus purchase was found for this App Store account."
+                    )
+                }
+            } catch {
+                alertItem = .init(
+                    title: "Restore unavailable",
+                    message: error.localizedDescription
+                )
+            }
+        }
     }
 
     private func handleTermsTapped() {
@@ -487,5 +413,5 @@ private struct PremiumAlertItem: Identifiable {
 
 #Preview {
     PremiumPaywallView()
-        .environmentObject(PremiumStore.shared)
+        .environmentObject(SubscriptionService.shared)
 }
