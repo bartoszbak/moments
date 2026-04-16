@@ -4,6 +4,7 @@ import SwiftUI
 
 struct CountdownListView: View {
     @EnvironmentObject private var repository: CountdownRepository
+    @EnvironmentObject private var subscriptionService: SubscriptionService
     @EnvironmentObject private var timerManager: TimerManager
     @Environment(\.colorScheme) private var colorScheme
 
@@ -17,6 +18,7 @@ struct CountdownListView: View {
     @State private var previewingCountdown: Countdown?
     @State private var showingSettings = false
     @State private var showingIntroSheet = false
+    @State private var paywallFeature: PremiumFeature?
     @State private var selectedFilter: CountdownMenuFilter = .all
     @State private var momentCountDisplayText = ""
     @State private var pendingMomentCountReveal = false
@@ -134,6 +136,10 @@ struct CountdownListView: View {
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
+        }
+        .sheet(item: $paywallFeature) { feature in
+            PremiumPaywallView(highlightedFeature: feature)
+                .environmentObject(subscriptionService)
         }
         .sheet(isPresented: $showingIntroSheet) {
             IntroSheetView {
@@ -463,6 +469,11 @@ struct CountdownListView: View {
 
     private func presentAddCountdown() {
         AppHaptics.impact(.medium)
+        if subscriptionService.shouldShowCreationUpsell {
+            paywallFeature = .unlimitedMoments
+            return
+        }
+
         showingAddSheet = true
     }
 

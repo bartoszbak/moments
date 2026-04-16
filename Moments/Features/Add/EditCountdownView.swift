@@ -6,6 +6,7 @@ struct EditCountdownView: View {
     var onDelete: (() -> Void)? = nil
 
     @EnvironmentObject private var repository: CountdownRepository
+    @EnvironmentObject private var subscriptionService: SubscriptionService
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
@@ -35,6 +36,7 @@ struct EditCountdownView: View {
     @State private var photoChanged = false
     @State private var existingImagePath: String? = nil
     @State private var existingThumbPath: String? = nil
+    @State private var highlightedPaywallFeature: PremiumFeature?
 
     private var countdown: Countdown? {
         repository.countdowns.first { $0.id == countdownID }
@@ -68,14 +70,20 @@ struct EditCountdownView: View {
                 Section {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
                     if isFutureManifestation {
-                        ManifestNotificationSettingsRows(
-                            isEnabled: $manifestNotificationsEnabled,
-                            rhythm: $manifestNotificationRhythm,
-                            reminderTime: $manifestReminderTime,
-                            authorizationStatus: manifestNotificationService.authorizationStatus,
-                            tintColor: controlTintColor,
-                            openSettings: openAppSettings
-                        )
+                        if subscriptionService.isPremium {
+                            ManifestNotificationSettingsRows(
+                                isEnabled: $manifestNotificationsEnabled,
+                                rhythm: $manifestNotificationRhythm,
+                                reminderTime: $manifestReminderTime,
+                                authorizationStatus: manifestNotificationService.authorizationStatus,
+                                tintColor: controlTintColor,
+                                openSettings: openAppSettings
+                            )
+                        } else {
+                            PremiumLockedRowButton("Manifestation Reminder") {
+                                highlightedPaywallFeature = .manifestationReminders
+                            }
+                        }
                     } else {
                         TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                     }
@@ -112,6 +120,10 @@ struct EditCountdownView: View {
             .tint(controlTintColor)
             .sheet(isPresented: $showSymbolPicker) {
                 SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: controlTintColor)
+            }
+            .sheet(item: $highlightedPaywallFeature) { feature in
+                PremiumPaywallView(highlightedFeature: feature)
+                    .environmentObject(subscriptionService)
             }
             .alert("Delete this moment?", isPresented: $showDeleteConfirmation) {
                 Button("Delete", role: .destructive, action: delete)

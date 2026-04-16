@@ -23,7 +23,10 @@ final class SubscriptionService: ObservableObject {
     }
 
     var selectedPackage: PremiumPackage {
-        packages.first(where: { $0.id == selectedPackageID }) ?? packages[1]
+        packages.first(where: { $0.id == selectedPackageID })
+            ?? packages.first(where: { $0.id == .yearly })
+            ?? packages.first
+            ?? PremiumPackage.defaultPackages[1]
     }
 
     var isPremium: Bool {
@@ -32,6 +35,10 @@ final class SubscriptionService: ObservableObject {
         }
 
         return false
+    }
+
+    var privacyPolicyURL: URL? {
+        MonetizationConfig.privacyPolicyURL
     }
 
     var settingsStatusText: String {
@@ -139,6 +146,11 @@ final class SubscriptionService: ObservableObject {
     func purchase(packageID: PremiumPackageID) async throws {
         select(packageID: packageID)
 
+        if shouldSimulateSuccessfulPurchase {
+            activateDeveloperPremiumOverride(for: packageID)
+            return
+        }
+
         guard MonetizationConfig.revenueCatAPIKey != nil else {
             let issue = SubscriptionRuntimeIssue.missingAPIKey
             lastRuntimeIssue = issue
@@ -176,6 +188,74 @@ final class SubscriptionService: ObservableObject {
 
     var manageSubscriptionsURL: URL? {
         URL(string: "https://apps.apple.com/account/subscriptions")
+    }
+
+    var freeCreatedMomentAllowance: Int {
+        3
+    }
+
+    var freeAIGenerationAllowance: Int {
+        3
+    }
+
+    var freeCreatedMomentCount: Int {
+        UserDefaults.standard.integer(forKey: AppSettingsKeys.freeCreatedMomentCount)
+    }
+
+    var freeAIGenerationCount: Int {
+        UserDefaults.standard.integer(forKey: AppSettingsKeys.freeAIGenerationCount)
+    }
+
+    var freeAIGenerationsRemaining: Int {
+        max(freeAIGenerationAllowance - freeAIGenerationCount, 0)
+    }
+
+    var shouldShowCreationUpsell: Bool {
+        !isPremium && freeCreatedMomentCount >= freeCreatedMomentAllowance
+    }
+
+    func recordCreatedMoment() {
+        guard !isPremium else { return }
+        UserDefaults.standard.set(
+            freeCreatedMomentCount + 1,
+            forKey: AppSettingsKeys.freeCreatedMomentCount
+        )
+    }
+
+    func recordAIGeneration() {
+        guard !isPremium else { return }
+        UserDefaults.standard.set(
+            freeAIGenerationCount + 1,
+            forKey: AppSettingsKeys.freeAIGenerationCount
+        )
+    }
+
+    func isUnlocked(_ feature: PremiumFeature, currentMomentCount: Int? = nil) -> Bool {
+        if isPremium {
+            return true
+        }
+
+        switch feature {
+        case .unlimitedMoments:
+            return true
+        case .aiReflections,
+             .calendarSync,
+             .manifestationReminders,
+             .alternateIcons,
+             .advancedThemes,
+             .premiumWidgets:
+            if feature == .aiReflections {
+                return freeAIGenerationCount < freeAIGenerationAllowance
+            }
+            return false
+        }
+    }
+
+    func shouldPresentUpgrade(
+        for feature: PremiumFeature,
+        currentMomentCount: Int? = nil
+    ) -> Bool {
+        !isUnlocked(feature, currentMomentCount: currentMomentCount)
     }
 
     private func applyDeveloperOverridesOrFallback() {
@@ -252,7 +332,14 @@ final class SubscriptionService: ObservableObject {
         }
 
         revenueCatPackages = resolvedPackages
-        packages = PremiumPackage.defaultPackages
+        packages = PremiumPackage.resolvedPackages(
+            from: resolvedPackages,
+            fallback: PremiumPackage.defaultPackages
+        )
+        selectedPackageID = PremiumPackage.preferredSelection(
+            availablePackageIDs: packages.map(\.id),
+            currentSelection: selectedPackageID
+        )
 
         if resolvedPackages.isEmpty {
             offeringState = .unavailable(reason: "The default offering has no mapped packages yet.")
@@ -317,6 +404,24 @@ final class SubscriptionService: ObservableObject {
                 continuation.resume(returning: customerInfo)
             }
         }
+    }
+
+    private var shouldSimulateSuccessfulPurchase: Bool {
+        UserDefaults.standard.bool(forKey: DeveloperSettingsKeys.simulateSuccessfulPurchase)
+    }
+
+    private func activateDeveloperPremiumOverride(for packageID: PremiumPackageID) {
+        let overrideValue: DeveloperPaywallAccessOverride = packageID == .lifetime
+            ? .premiumLifetime
+            : .premiumSubscription
+
+        UserDefaults.standard.set(
+            overrideValue.rawValue,
+            forKey: DeveloperSettingsKeys.paywallAccessStateOverride
+        )
+
+        accessState = developerAccessOverride ?? .premium(.subscription)
+        lastRuntimeIssue = nil
     }
 
     private func restorePurchasesFromRevenueCat() async throws -> CustomerInfo {
@@ -406,6 +511,70 @@ enum PremiumPackageID: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
+enum PremiumFeature: String, Identifiable, CaseIterable {
+    case unlimitedMoments
+    case aiReflections
+    case calendarSync
+    case manifestationReminders
+    case alternateIcons
+    case advancedThemes
+    case premiumWidgets
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .unlimitedMoments:
+            return "Unlimited moments"
+        case .aiReflections:
+            return "AI reflections"
+        case .calendarSync:
+            return "Calendar sync"
+        case .manifestationReminders:
+            return "Manifestation reminders"
+        case .alternateIcons:
+            return "Alternate app icons"
+        case .advancedThemes:
+            return "Advanced themes"
+        case .premiumWidgets:
+            return "Premium widgets"
+        }
+    }
+
+    var paywallMessage: String {
+        switch self {
+        case .unlimitedMoments:
+            return "Free includes 3 created moments. Upgrade to keep adding more."
+        case .aiReflections:
+            return "Free includes 3 AI generations. Upgrade to keep generating reflections and manifestations."
+        case .calendarSync:
+            return "Upgrade to sync future moments into your calendar."
+        case .manifestationReminders:
+            return "Upgrade to unlock manifestation reminder scheduling."
+        case .alternateIcons:
+            return ""
+        case .advancedThemes:
+            return "Upgrade to unlock deeper visual customization."
+        case .premiumWidgets:
+            return "Upgrade to unlock richer widget styles and premium presentation."
+        }
+    }
+
+    var freeMomentLimit: Int? {
+        switch self {
+        case .unlimitedMoments:
+            return 2
+        case .aiReflections,
+             .calendarSync,
+             .manifestationReminders,
+             .alternateIcons,
+             .advancedThemes,
+             .premiumWidgets:
+            return nil
+        }
+    }
+}
+
 struct PremiumPackage: Identifiable, Equatable {
     let id: PremiumPackageID
     let priceTitle: String
@@ -413,6 +582,22 @@ struct PremiumPackage: Identifiable, Equatable {
     let badgeText: String?
     let ctaTitle: String
     let billingNote: String
+
+    init(
+        id: PremiumPackageID,
+        priceTitle: String,
+        periodTitle: String,
+        badgeText: String?,
+        ctaTitle: String,
+        billingNote: String
+    ) {
+        self.id = id
+        self.priceTitle = priceTitle
+        self.periodTitle = periodTitle
+        self.badgeText = badgeText
+        self.ctaTitle = ctaTitle
+        self.billingNote = billingNote
+    }
 
     static let defaultPackages: [PremiumPackage] = [
         .init(
@@ -450,6 +635,176 @@ struct PremiumPackage: Identifiable, Equatable {
         case .lifetime:
             return 138
         }
+    }
+
+    static func resolvedPackages(
+        from packagesByID: [PremiumPackageID: RevenueCat.Package],
+        fallback: [PremiumPackage]
+    ) -> [PremiumPackage] {
+        let orderedIDs = PremiumPackageID.allCases
+        let resolved = orderedIDs.compactMap { id -> PremiumPackage? in
+            guard let package = packagesByID[id] else { return nil }
+            return PremiumPackage(
+                id: id,
+                package: package,
+                monthlyPackage: packagesByID[.monthly]
+            )
+        }
+
+        return resolved.isEmpty ? fallback : resolved
+    }
+
+    static func preferredSelection(
+        availablePackageIDs: [PremiumPackageID],
+        currentSelection: PremiumPackageID
+    ) -> PremiumPackageID {
+        if availablePackageIDs.contains(currentSelection) {
+            return currentSelection
+        }
+
+        if availablePackageIDs.contains(.yearly) {
+            return .yearly
+        }
+
+        return availablePackageIDs.first ?? .yearly
+    }
+
+    private init(
+        id: PremiumPackageID,
+        package: RevenueCat.Package,
+        monthlyPackage: RevenueCat.Package?
+    ) {
+        let product = package.storeProduct
+        let intro = product.introductoryDiscount
+
+        self.id = id
+        self.priceTitle = product.localizedPriceString
+        self.periodTitle = Self.periodTitle(for: id, product: product)
+        self.badgeText = Self.badgeText(for: id, package: package, monthlyPackage: monthlyPackage)
+        self.ctaTitle = Self.ctaTitle(for: id, intro: intro)
+        self.billingNote = Self.billingNote(for: id, product: product, intro: intro)
+    }
+
+    private static func periodTitle(for id: PremiumPackageID, product: StoreProduct) -> String {
+        switch id {
+        case .lifetime:
+            return "Lifetime deal"
+        case .monthly, .yearly:
+            if let period = product.subscriptionPeriod {
+                return "for \(localizedPeriod(period))"
+            }
+
+            return defaultPackages.first(where: { $0.id == id })?.periodTitle ?? ""
+        }
+    }
+
+    private static func ctaTitle(
+        for id: PremiumPackageID,
+        intro: StoreProductDiscount?
+    ) -> String {
+        switch id {
+        case .lifetime:
+            return "Unlock Lifetime"
+        case .monthly:
+            if hasFreeTrial(intro) {
+                return "Start free trial"
+            }
+            return "Continue with Monthly"
+        case .yearly:
+            if hasFreeTrial(intro) {
+                return "Start free trial"
+            }
+            return "Continue with Yearly"
+        }
+    }
+
+    private static func billingNote(
+        for id: PremiumPackageID,
+        product: StoreProduct,
+        intro: StoreProductDiscount?
+    ) -> String {
+        switch id {
+        case .lifetime:
+            return "One-time payment of \(product.localizedPriceString)."
+        case .monthly, .yearly:
+            let renewalPeriod = product.subscriptionPeriod.map(localizedPeriod) ?? renewalLabel(for: id)
+
+            if let intro,
+               intro.paymentMode == .freeTrial {
+                let trialPeriod = localizedDiscountPeriod(intro)
+                return "Try free for \(trialPeriod), then \(product.localizedPriceString)/\(renewalPeriod)"
+            }
+
+            return "\(product.localizedPriceString) billed every \(renewalPeriod)."
+        }
+    }
+
+    private static func badgeText(
+        for id: PremiumPackageID,
+        package: RevenueCat.Package,
+        monthlyPackage: RevenueCat.Package?
+    ) -> String? {
+        guard id == .yearly,
+              let monthlyPackage else { return nil }
+
+        let monthlyProduct = monthlyPackage.storeProduct
+        let yearlyProduct = package.storeProduct
+
+        guard let monthlyPrice = decimal(from: monthlyProduct.pricePerYear),
+              monthlyPrice.doubleValue > 0 else {
+            return "Best Value"
+        }
+
+        let yearlyPrice = yearlyProduct.price as NSDecimalNumber
+        let savings = 1 - (yearlyPrice.doubleValue / monthlyPrice.doubleValue)
+        let percentage = Int((savings * 100).rounded())
+
+        guard percentage >= 5 else { return "Best Value" }
+        return "-\(percentage)%"
+    }
+
+    private static func hasFreeTrial(_ intro: StoreProductDiscount?) -> Bool {
+        intro?.paymentMode == .freeTrial
+    }
+
+    private static func renewalLabel(for id: PremiumPackageID) -> String {
+        switch id {
+        case .monthly:
+            return "month"
+        case .yearly:
+            return "year"
+        case .lifetime:
+            return "lifetime"
+        }
+    }
+
+    private static func localizedPeriod(_ period: SubscriptionPeriod) -> String {
+        let value = period.value
+        let unit = switch period.unit {
+        case .day:
+            value == 1 ? "day" : "days"
+        case .week:
+            value == 1 ? "week" : "weeks"
+        case .month:
+            value == 1 ? "month" : "months"
+        case .year:
+            value == 1 ? "year" : "years"
+        @unknown default:
+            value == 1 ? "period" : "periods"
+        }
+
+        return "\(value) \(unit)"
+    }
+
+    private static func localizedDiscountPeriod(_ discount: StoreProductDiscount) -> String {
+        let totalUnits = max(discount.numberOfPeriods, 1) * discount.subscriptionPeriod.value
+        let totalPeriod = SubscriptionPeriod(value: totalUnits, unit: discount.subscriptionPeriod.unit)
+        return localizedPeriod(totalPeriod)
+    }
+
+    private static func decimal(from value: NSDecimalNumber?) -> NSDecimalNumber? {
+        guard let value, value != .notANumber else { return nil }
+        return value
     }
 }
 
@@ -519,7 +874,14 @@ private enum MonetizationConfig {
             return trimmed
         }
 
-        return "premium"
+        return "Moments Plus"
+    }
+
+    static var privacyPolicyURL: URL? {
+        normalizedURL(
+            ProcessInfo.processInfo.environment["PRIVACY_POLICY_URL"]
+                ?? Bundle.main.object(forInfoDictionaryKey: "PRIVACY_POLICY_URL") as? String
+        )
     }
 
     private static func normalizedSecret(_ value: String?) -> String? {
@@ -533,7 +895,23 @@ private enum MonetizationConfig {
         return trimmed
     }
 
+    private static func normalizedURL(_ value: String?) -> URL? {
+        guard let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !trimmed.isEmpty,
+              !trimmed.contains("$("),
+              !placeholderURLs.contains(trimmed),
+              let url = URL(string: trimmed) else {
+            return nil
+        }
+
+        return url
+    }
+
     private static let placeholderValues: Set<String> = [
         "apn_your_public_sdk_key"
+    ]
+
+    private static let placeholderURLs: Set<String> = [
+        "https://example.com/privacy"
     ]
 }

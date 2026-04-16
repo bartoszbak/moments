@@ -6,6 +6,7 @@ struct MomentPreviewScrollEdgeView: View {
     let countdownID: UUID
 
     @EnvironmentObject private var repository: CountdownRepository
+    @EnvironmentObject private var subscriptionService: SubscriptionService
     @EnvironmentObject private var timerManager: TimerManager
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
@@ -16,6 +17,7 @@ struct MomentPreviewScrollEdgeView: View {
 
     @StateObject private var viewModel: MomentPreviewViewModel
     @State private var showingEditSheet = false
+    @State private var paywallFeature: PremiumFeature?
     @State private var completedRevealStages: Set<Int> = []
     @State private var heroHeight: CGFloat = 0
     @State private var reflectionHeight: CGFloat = 0
@@ -91,6 +93,9 @@ struct MomentPreviewScrollEdgeView: View {
                 showingEditSheet = false
                 dismiss()
             }
+        }
+        .sheet(item: $paywallFeature) { feature in
+            PremiumPaywallView(highlightedFeature: feature)
         }
         .onAppear {
             viewModel.syncSavedReflection(from: countdown)
@@ -353,7 +358,16 @@ struct MomentPreviewScrollEdgeView: View {
 
     private func primaryActionButton(for countdown: Countdown) -> some View {
         Button {
-            viewModel.generateReflection(for: countdown, timerManager: timerManager, repository: repository)
+            if subscriptionService.shouldPresentUpgrade(for: .aiReflections) {
+                paywallFeature = .aiReflections
+            } else {
+                viewModel.generateReflection(
+                    for: countdown,
+                    timerManager: timerManager,
+                    repository: repository,
+                    subscriptionService: subscriptionService
+                )
+            }
         } label: {
             Group {
                 if viewModel.isLoadingReflection {
@@ -362,7 +376,7 @@ struct MomentPreviewScrollEdgeView: View {
                         backgroundColor: loadingActionButtonBackgroundColor
                     )
                 } else {
-                    Text(primaryActionTitle(for: countdown))
+                    Text(primaryActionButtonLabel(for: countdown))
                         .font(.headline.weight(.semibold))
                         .foregroundStyle(primaryButtonForegroundColor)
                         .frame(maxWidth: .infinity)
@@ -532,6 +546,18 @@ struct MomentPreviewScrollEdgeView: View {
         }
 
         return countdown.isExpired(at: timerManager.currentTime) ? "Look Back" : "Set Intention"
+    }
+
+    private func primaryActionButtonLabel(for countdown: Countdown) -> String {
+        let title = primaryActionTitle(for: countdown)
+
+        guard viewModel.errorText == nil,
+              !subscriptionService.isPremium,
+              subscriptionService.freeAIGenerationsRemaining > 0 else {
+            return title
+        }
+
+        return "\(title) (\(subscriptionService.freeAIGenerationsRemaining) available)"
     }
 
     private func reflectionContentSpacing(for countdown: Countdown) -> CGFloat {

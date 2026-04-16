@@ -5,6 +5,7 @@ struct SettingsView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @EnvironmentObject private var subscriptionService: SubscriptionService
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
@@ -20,6 +21,8 @@ struct SettingsView: View {
     @State private var isUpdatingAppIcon = false
     @State private var appIconErrorMessage: String?
     @State private var showingPremiumPaywall = false
+    @State private var highlightedPaywallFeature: PremiumFeature?
+    @State private var settingsBadgeRotation = 0.0
 
     private var isiPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
@@ -29,43 +32,46 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    HStack {
-                        Spacer()
-                        Image("Settings")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 88, height: 88)
-                        Spacer()
+                    VStack(spacing: 12) {
+                        HStack {
+                            Spacer()
+
+                            if subscriptionService.isPremium {
+                                premiumSettingsHeaderIcon
+                            } else {
+                                Image("Settings")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 88, height: 88)
+                            }
+
+                            Spacer()
+                        }
+
+                        if subscriptionService.isPremium {
+                            Text("Thank you for the support")
+                                .font(.system(size: 17, weight: .semibold, design: .rounded))
+                                .foregroundStyle(.primary)
+                                .multilineTextAlignment(.center)
+                        } else if showsUpgradeButton {
+                            Text("Turn intention into momentum. Count down to the life you're creating.")
+                                .font(.system(size: 17, weight: .semibold, design: .rounded))
+                                .foregroundStyle(.primary)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(.horizontal, 32)
+
+                            Button("Get Plus") {
+                                showingPremiumPaywall = true
+                            }
+                            .font(.system(size: 17, weight: .semibold, design: .rounded))
+                            .adaptiveGlassProminentButtonStyle()
+                            .tint(plusButtonTintColor)
+                            .foregroundStyle(plusButtonLabelColor)
+                        }
                     }
                     .listRowInsets(EdgeInsets(top: 12, leading: 0, bottom: 12, trailing: 0))
                     .listRowBackground(Color.clear)
-                }
-
-                Section {
-                    Button {
-                        showingPremiumPaywall = true
-                    } label: {
-                        HStack(spacing: 16) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Get Moments Plus")
-                                    .font(.headline)
-                                    .foregroundStyle(.primary)
-
-                                Text(subscriptionService.settingsDescriptionText)
-                                    .font(.footnote)
-                                    .foregroundStyle(.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-
-                            Spacer(minLength: 12)
-
-                            Image(subscriberBadgeAssetName)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 64, height: 64)
-                        }
-                    }
-                    .buttonStyle(.plain)
                 }
 
                 Section {
@@ -89,27 +95,33 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    HStack(spacing: 12) {
-                        ForEach(AppIconOption.allCases) { option in
-                            Button {
-                                updateAppIcon(to: option)
-                            } label: {
-                                appIconPreview(option, size: 64, cornerRadius: 16)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(6)
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 22, style: .continuous)
-                                            .strokeBorder(
-                                                selectedAppIcon == option ? controlTintColor : .clear,
-                                                lineWidth: 2
-                                            )
-                                    }
+                    if subscriptionService.isPremium {
+                        HStack(spacing: 12) {
+                            ForEach(AppIconOption.allCases) { option in
+                                Button {
+                                    updateAppIcon(to: option)
+                                } label: {
+                                    appIconPreview(option, size: 64, cornerRadius: 16)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(6)
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                                                .strokeBorder(
+                                                    selectedAppIcon == option ? controlTintColor : .clear,
+                                                    lineWidth: 2
+                                                )
+                                        }
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(isUpdatingAppIcon || !supportsAlternateIcons)
                             }
-                            .buttonStyle(.plain)
-                            .disabled(isUpdatingAppIcon || !supportsAlternateIcons)
+                        }
+                        .padding(.vertical, 4)
+                    } else {
+                        PremiumLockedRowButton("Alternate Icons") {
+                            highlightedPaywallFeature = .alternateIcons
                         }
                     }
-                    .padding(.vertical, 4)
                 } header: {
                     Text("App Icon")
                 } footer: {
@@ -119,19 +131,31 @@ struct SettingsView: View {
                 }
 
                 Section("Calendar") {
-                    NavigationLink {
-                        CalendarSyncSettingsView()
-                    } label: {
-                        LabeledContent("Calendar Sync") {
-                            Text(calendarSyncStatusText)
-                                .foregroundStyle(.secondary)
+                    if subscriptionService.isPremium {
+                        NavigationLink {
+                            CalendarSyncSettingsView()
+                        } label: {
+                            LabeledContent("Calendar Sync") {
+                                Text(calendarSyncStatusText)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    } else {
+                        PremiumLockedRowButton("Calendar Sync") {
+                            highlightedPaywallFeature = .calendarSync
                         }
                     }
                 }
 
                 Section {
-                    Toggle("Manifestation Reminder", isOn: $manifestNotificationsEnabled)
-                        .tint(controlTintColor)
+                    if subscriptionService.isPremium {
+                        Toggle("Manifestation Reminder", isOn: $manifestNotificationsEnabled)
+                            .tint(controlTintColor)
+                    } else {
+                        PremiumLockedRowButton("Manifestation Reminder") {
+                            highlightedPaywallFeature = .manifestationReminders
+                        }
+                    }
                 } header: {
                     Text("Notifications")
                 } footer: {
@@ -189,6 +213,10 @@ struct SettingsView: View {
             PremiumPaywallView()
                 .environmentObject(subscriptionService)
         }
+        .sheet(item: $highlightedPaywallFeature) { feature in
+            PremiumPaywallView(highlightedFeature: feature)
+                .environmentObject(subscriptionService)
+        }
     }
 
     private var plusButtonColorBinding: Binding<Color> {
@@ -218,8 +246,69 @@ struct SettingsView: View {
         effectiveColorScheme == .dark ? .white : .black
     }
 
-    private var subscriberBadgeAssetName: String {
+    private var premiumSettingsHeaderIcon: some View {
+        HStack(spacing: -32) {
+            Image("AppIconRainbowPreview")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 88, height: 88)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .strokeBorder(Color.white.opacity(0.3), lineWidth: 1)
+                }
+
+            Image(settingsSubscriberBadgeAssetName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 97, height: 97)
+                .rotationEffect(.degrees(settingsBadgeRotation))
+        }
+        .onAppear {
+            guard settingsBadgeRotation == 0 else { return }
+
+            withAnimation(.linear(duration: 12).repeatForever(autoreverses: false)) {
+                settingsBadgeRotation = 360
+            }
+        }
+    }
+
+    private var settingsSubscriberBadgeAssetName: String {
         effectiveColorScheme == .dark ? "SubscriberBadgeDark" : "SubscriberBadge"
+    }
+
+    private var showsUpgradeButton: Bool {
+        !subscriptionService.isPremium
+    }
+
+    private var showsManageSubscriptionsButton: Bool {
+        if case .premium(.subscription) = subscriptionService.accessState {
+            return true
+        }
+
+        return false
+    }
+
+    private var showsPrivacyPolicyButton: Bool {
+        subscriptionService.privacyPolicyURL != nil && !showsManageSubscriptionsButton
+    }
+
+    private var plusButtonTintColor: Color {
+        effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var plusButtonLabelColor: Color {
+        effectiveColorScheme == .dark ? .black : .white
+    }
+
+    private func openManageSubscriptions() {
+        guard let url = subscriptionService.manageSubscriptionsURL else { return }
+        openURL(url)
+    }
+
+    private func openPrivacyPolicy() {
+        guard let url = subscriptionService.privacyPolicyURL else { return }
+        openURL(url)
     }
 
     private var buildNumberText: String {
@@ -348,40 +437,60 @@ struct SettingsView: View {
 
 struct CalendarSyncSettingsView: View {
     @EnvironmentObject private var repository: CountdownRepository
+    @EnvironmentObject private var subscriptionService: SubscriptionService
 
     @AppStorage(AppSettingsKeys.calendarIntegrationEnabled) private var isCalendarIntegrationEnabled = AppSettingsDefaults.calendarIntegrationEnabled
     @AppStorage(AppSettingsKeys.calendarSyncCalendarIdentifier) private var selectedCalendarIdentifier = AppSettingsDefaults.calendarSyncCalendarIdentifier
 
     @StateObject private var calendarService = CalendarService.shared
     @State private var isReconcilingCalendarToggle = false
+    @State private var highlightedPaywallFeature: PremiumFeature?
 
     var body: some View {
         Form {
-            Section("Calendar Sync") {
-                Toggle("Sync future events", isOn: $isCalendarIntegrationEnabled)
-                    .tint(controlTintColor)
-            }
-
-            Section {
-                if calendarService.availableCalendars.isEmpty {
-                    LabeledContent("Calendar") {
-                        Text("No iCloud calendar")
-                            .foregroundStyle(.secondary)
-                    }
-                } else {
-                    Picker("Calendar", selection: calendarSelectionBinding) {
-                        ForEach(calendarService.availableCalendars) { option in
-                            Text(option.displayName).tag(option.id)
-                        }
-                    }
-                    .disabled(!isCalendarIntegrationEnabled)
+            if subscriptionService.isPremium {
+                Section("Calendar Sync") {
+                    Toggle("Sync future events", isOn: $isCalendarIntegrationEnabled)
+                        .tint(controlTintColor)
                 }
-            } header: {
-                Text("Sync To")
-            } footer: {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Choose which calendar receives synced future events.")
-                    calendarFooter
+
+                Section {
+                    if calendarService.availableCalendars.isEmpty {
+                        LabeledContent("Calendar") {
+                            Text("No iCloud calendar")
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        Picker("Calendar", selection: calendarSelectionBinding) {
+                            ForEach(calendarService.availableCalendars) { option in
+                                Text(option.displayName).tag(option.id)
+                            }
+                        }
+                        .disabled(!isCalendarIntegrationEnabled)
+                    }
+                } header: {
+                    Text("Sync To")
+                } footer: {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Choose which calendar receives synced future events.")
+                        calendarFooter
+                    }
+                }
+            } else {
+                Section("Calendar Sync") {
+                    PremiumLockedRowButton("Sync future events") {
+                        highlightedPaywallFeature = .calendarSync
+                    }
+                }
+
+                Section {
+                    PremiumLockedRowButton("Calendar") {
+                        highlightedPaywallFeature = .calendarSync
+                    }
+                } header: {
+                    Text("Sync To")
+                } footer: {
+                    Text("Unlock calendar sync with Moments Plus.")
                 }
             }
         }
@@ -402,6 +511,10 @@ struct CalendarSyncSettingsView: View {
                 await repository.reconcileCalendarEvents()
             }
         }
+        .sheet(item: $highlightedPaywallFeature) { feature in
+            PremiumPaywallView(highlightedFeature: feature)
+                .environmentObject(subscriptionService)
+        }
     }
 
     private var controlTintColor: Color {
@@ -413,9 +526,9 @@ struct CalendarSyncSettingsView: View {
             get: {
                 if calendarService.availableCalendars.contains(where: { $0.id == selectedCalendarIdentifier }) {
                     return selectedCalendarIdentifier
+                } else {
+                    return calendarService.availableCalendars.first?.id ?? selectedCalendarIdentifier
                 }
-
-                return calendarService.availableCalendars.first?.id ?? selectedCalendarIdentifier
             },
             set: { selectedCalendarIdentifier = $0 }
         )
@@ -488,6 +601,47 @@ struct CalendarSyncSettingsView: View {
     }
 }
 
+struct PremiumLockedRowButton: View {
+    let title: String
+    var action: () -> Void
+
+    init(_ title: String, action: @escaping () -> Void) {
+        self.title = title
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Text(title)
+                    .foregroundStyle(.primary)
+
+                Spacer()
+
+                PremiumPill()
+            }
+        }
+        .buttonStyle(.plain)
+        .contentShape(Rectangle())
+    }
+}
+
+struct PremiumPill: View {
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        Text("Plus")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(colorScheme == .dark ? .black : .white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(
+                Capsule()
+                    .fill(colorScheme == .dark ? Color.white : Color.black)
+            )
+    }
+}
+
 enum AppSettingsKeys {
     static let appearance = "settings.appearance"
     static let interfaceTintHex = "settings.interfaceTintHex"
@@ -500,6 +654,8 @@ enum AppSettingsKeys {
     static let manifestNotificationsMinute = "settings.manifestNotifications.minute"
     static let hapticsEnabled = "settings.haptics.enabled"
     static let hasSeenIntroSheet = "settings.hasSeenIntroSheet"
+    static let freeCreatedMomentCount = "settings.freeTier.createdMomentCount"
+    static let freeAIGenerationCount = "settings.freeTier.aiGenerationCount"
 }
 
 enum AppSettingsDefaults {

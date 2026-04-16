@@ -75,7 +75,8 @@ final class MomentPreviewViewModel: ObservableObject {
     func generateReflection(
         for countdown: Countdown,
         timerManager: TimerManager,
-        repository: CountdownRepository
+        repository: CountdownRepository,
+        subscriptionService: SubscriptionService
     ) {
         if surfaceText != nil {
             expandNextStage()
@@ -107,6 +108,7 @@ final class MomentPreviewViewModel: ObservableObject {
                     reflectionExpandedText: .some(nil),
                     reflectionGeneratedAt: .some(Date())
                 )
+                subscriptionService.recordAIGeneration()
             } catch {
                 guard !Task.isCancelled else { return }
                 withAnimation(.smooth(duration: 0.28)) {

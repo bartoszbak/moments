@@ -2,118 +2,200 @@
 
 # Moments
 
-Moments is a minimal iOS app for tracking upcoming events, past memories, and future manifestations. It includes Home Screen widgets, customizable visuals, and AI-generated reflection or manifestation copy inside each moment.
+Moments is an iOS app for keeping upcoming events, meaningful past dates, and date-free future manifestations in one place. It combines a visual timeline, per-moment customization, Home Screen widgets, and AI-generated reflection or manifestation copy.
 
-## What the app does
+## Product Snapshot
 
-- Create a moment with a title, optional description, date, colors, photo, widget options, and optional symbol.
-- Track upcoming and past moments in a grid.
-- Support **future manifestations** as a separate mode with no fixed date.
-- Open any moment into a dedicated preview screen.
-- Generate AI reflection content for normal moments.
-- Generate AI manifestation content for manifestation moments.
-- Show small, medium, and accessory widgets with per-widget selection.
-- Open a specific moment directly from a widget tap.
+Moments currently supports:
 
-## Current product behavior
+- Upcoming moments with days until the event
+- Past moments with days since the event
+- Future manifestations with no target date
+- iPhone and iPad layouts
+- Add, edit, preview, and delete flows
+- Small, medium, and accessory widgets
+- Deep links from widgets into a specific moment
+- Onboarding, settings, theming, and alternate app icons
+- Calendar sync for dated moments
+- Manifestation reminder notifications
+- A paywall and RevenueCat-based purchase/restore plumbing
 
-- **Upcoming moments** show days until the event.
-- **Past moments** show days since the event.
-- **Future manifestations** behave differently:
-  - no target date in the main preview hero
-  - no progress bar in widgets
-  - simplified manifestation-specific widget layout
-  - AI button label becomes `Get Manifestation`
-- **Description** is edited in a dedicated screen from the add/edit flow.
-- **Moment preview** reveals AI content progressively and ends with a centered sparkle icon when the full text is shown.
+## How The Product Works
 
-## Core features
+### Library
 
-- **Moments grid** with iPhone and iPad layouts
-- **Moment preview** with a dedicated detail screen
-- **Future manifestation mode**
-- **Custom widget background**
-  - preset colors
-  - custom color
-  - photo from library
-- **Widget options**
-  - optional date
-  - optional SF Symbol
-- **Home Screen widgets**
-  - small
-  - medium
-  - accessory circular
-  - accessory rectangular
-  - accessory inline
-- **Per-widget moment picker** via App Intents
-- **Widget deep links** into the specific moment preview
-- **Developer tools** in Settings for preview/testing flows
+- The main screen shows moments in a grid.
+- Users can filter by `All`, `Past`, `Upcoming`, or `Present` (manifestations).
+- The app supports both empty-state onboarding and seeded sample content on first launch.
 
-## AI behavior
+### Moment Creation
 
-The app uses OpenRouter for AI generation.
+Each moment can include:
 
-- Normal moments expect structured reflection output:
-  - `surface`
-  - `reflection`
-  - `guidance`
-- Future manifestations expect structured manifestation output:
-  - `instruction`
-  - `anchor`
+- Title
+- Optional description
+- Date, or `Future manifestation` mode
+- Preset color, custom color, or photo background
+- Optional SF Symbol
+- Widget options such as showing the date
+- Optional progress bar start state for future dated moments
 
-These responses are rendered in the preview screen and persisted with the moment.
+Manifestations can also enable reminder notifications with a daily or weekly rhythm.
 
-## Requirements
+### Moment Preview
 
-- iOS 17+
-- Xcode 26 recommended
+- Dated moments show a large day count and relative label such as `Days until`, `Days since`, or `Today`.
+- Manifestations use a different hero treatment and typography.
+- The primary CTA changes based on context:
+  - Upcoming: `Set Intention`
+  - Past: `Look Back`
+  - Manifestation: `Get Manifestation`
+- AI text is revealed progressively and then stored back onto the moment.
+- Editing a moment's title, date, mode, or description clears previously generated AI so it can be regenerated against the new context.
+
+### First-Run Behavior
+
+When the store is empty, the app seeds a small set of example moments:
+
+- one upcoming date
+- one future manifestation
+
+It also presents an intro sheet the first time the app is opened.
+
+## Widgets And System Integrations
+
+### Widgets
+
+The widget extension supports:
+
+- `systemSmall`
+- `systemMedium`
+- `accessoryCircular`
+- `accessoryRectangular`
+- `accessoryInline`
+
+Each widget can be configured with App Intents to show a specific moment. Tapping a widget deep-links into the app with the `moments://preview?countdownID=...` URL scheme.
+
+### Calendar Sync
+
+- Calendar sync is configured from Settings.
+- It requests full EventKit access.
+- Only dated moments are synced.
+- Synced items are created as all-day calendar events.
+- The app prefers iCloud/CalDAV calendars when available, otherwise it falls back to the default writable calendar.
+
+### Manifestation Reminders
+
+- Reminder authorization is handled separately from calendar access.
+- Reminders are opt-in globally and per manifestation.
+- The app schedules repeating local notifications using the stored default time.
+- Weekly reminders preserve a weekday for the manifestation.
+
+## AI Behavior
+
+Moments uses OpenRouter chat completions and expects strict JSON output.
+
+Normal moments produce:
+
+- `surface`
+- `reflection`
+- `guidance`
+
+Future manifestations produce:
+
+- `instruction`
+- `anchor`
+
+The generated content is persisted with the moment so it can be reopened later without regenerating it.
+
+## Premium / Monetization Status
+
+The codebase already includes:
+
+- a premium upsell card in Settings
+- a paywall UI
+- RevenueCat configuration, offering loading, purchase, and restore flows
+- developer overrides for simulating entitlement and offering states
+
+Current gated behavior:
+
+- free users can create up to `3` user-generated moments before add attempts are stopped by the paywall
+- free users can generate up to `3` new AI reflections / manifestations before preview routes them into the paywall
+- free users see Plus-pill locked rows instead of live controls for calendar sync, manifestation reminders, and alternate app icons
+- paywall prices, trial CTA text, and billing notes now resolve from RevenueCat package data when live offerings load
+- Apple subscription management remains available from the paywall for active subscribers
+- the app-specific privacy policy URL remains configurable through `PRIVACY_POLICY_URL`
+
+Implementation note: premium infrastructure is now live for a soft creation upsell, a hard AI-generation limit, and settings-level premium locks, but other planned premium gates are still not broadly rolled out yet.
+
+## UI And Platform Notes
+
+- Deployment target: iOS 17
+- Supports iPhone and iPad
+- Uses iOS 26 glass/material enhancements when available, with fallback UI on earlier supported versions
+- Supports system, light, and dark appearance modes
+- Supports custom accent color and optional background gradient
+- Supports alternate app icons: `Original`, `Fog`, `Dark`, `Rainbow`
+- Uses a custom bundled font treatment for manifestations
 
 ## Setup
 
+### Requirements
+
+- A recent Xcode version that can build an iOS 17 target and Swift Package dependencies
+- An Apple developer team for signing the app and widget extension
+
+### Local Configuration
+
 1. Clone the repo.
 2. Open `Moments.xcodeproj` in Xcode.
-3. Set your development team for both:
+3. Set your development team for both targets:
    - `Moments`
    - `MomentsWidgetExtension`
-4. Ensure the App Group `group.com.tillappcounter.Moments` is enabled on both targets.
-5. For AI generation, create a local config file:
-   - copy `Moments/Config.xcconfig.example` to `Moments/Config.xcconfig`
-   - set a real `OPENROUTER_API_KEY`
-6. Build and run.
+4. Enable the shared App Group on both targets:
+   - `group.com.tillappcounter.Moments`
+5. Copy `Moments/Config.xcconfig.example` to `Moments/Config.xcconfig`.
+6. Fill in the keys you need:
+   - `OPENROUTER_API_KEY_*` for live AI generation
+   - `REVENUECAT_API_KEY_*` for live paywall purchases
+   - `REVENUECAT_ENTITLEMENT_PREMIUM` if your entitlement name differs
+7. Build and run.
 
-## Project structure
+Notes:
 
-- `Moments/Features/List` — main grid and list presentation
-- `Moments/Features/Preview` — moment preview and AI reveal flow
-- `Moments/Features/Add` — add/edit forms, background picker, symbol picker
-- `Moments/Features/Settings` — settings surface
-- `Moments/Features/Developer` — internal developer tools
-- `Moments/Services` — AI, calendar, timers, image storage
-- `Moments/Persistence` — Core Data and repository layer
-- `MomentsWidgetExtension` — widget timelines and widget UI
-- `Shared` — shared code used by app and widget
+- The app can still launch without OpenRouter keys, but AI generation will fail with a configuration error.
+- The app can still launch without RevenueCat keys, but live purchase flows will remain unavailable.
+- `Moments/Config.xcconfig` is gitignored and intended for local secrets only.
+
+## Project Structure
+
+- `Moments/MomentsApp.swift` - app entry point and global environment wiring
+- `Moments/Features/List` - main library grid and filtering
+- `Moments/Features/Add` - add/edit flows, backgrounds, symbols, widget options
+- `Moments/Features/Preview` - moment preview and staged AI reveal flow
+- `Moments/Features/Onboarding` - intro sheet
+- `Moments/Features/Settings` - appearance, icons, calendar sync, notifications, paywall entry
+- `Moments/Features/Premium` - paywall UI
+- `Moments/Features/Developer` - seed data, preview toggles, paywall simulation
+- `Moments/Services` - AI, calendar, notifications, image storage, subscriptions, timers
+- `Moments/Persistence` - Core Data store and repository layer
+- `MomentsWidgetExtension` - widget provider, widget views, App Intent configuration
+- `Shared` - widget handoff models, shared defaults storage, deep links, shared helpers
+- `doc` - implementation and product planning notes
 
 ## Architecture
 
-- SwiftUI app with repository-driven state
-- Core Data persistence with `NSFetchedResultsController`
-- WidgetKit + App Intents for widget configuration
+- SwiftUI app
+- Core Data persistence
+- `NSFetchedResultsController`-driven repository updates
+- WidgetKit + App Intents
 - App Group shared storage for widget data handoff
-- Dedicated preview view model for AI reveal flow
-- OpenRouter chat completions with strict JSON schema responses
+- OpenRouter-based AI generation with schema-constrained JSON responses
+- RevenueCat-based subscription plumbing
 
-## Tech stack
+## Development Notes
 
-Swift · SwiftUI · WidgetKit · App Intents · Core Data · Combine · PhotosUI · OpenRouter
-
-## Possible admin features
-
-Ideas only. Not implemented.
-
-- Admin view for inspecting all stored moments and their AI state
-- Re-generate AI content in bulk for selected moments
-- Flag moments with missing widget assets or broken image paths
-- Prompt/version audit screen showing which AI prompt produced each stored response
-- Internal analytics for widget usage, manifestation usage, and reflection generation success rate
-- Content moderation / quality review queue for AI outputs
-- Import/export tools for backing up or restoring the local moment database
+- The repository currently has no XCTest or UI test targets.
+- The app reloads widget timelines whenever repository data changes.
+- First-launch sample data is inserted automatically if the local store is empty.
+- Some planning docs in `doc/` describe future work and do not necessarily match the exact shipped implementation.

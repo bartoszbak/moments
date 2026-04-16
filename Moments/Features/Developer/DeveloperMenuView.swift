@@ -8,6 +8,7 @@ struct DeveloperMenuView: View {
     @AppStorage(DeveloperSettingsKeys.forcePaywallOnLaunch) private var forcePaywallOnLaunch = false
     @AppStorage(DeveloperSettingsKeys.paywallAccessStateOverride) private var paywallAccessStateOverrideRawValue = DeveloperPaywallAccessOverride.live.rawValue
     @AppStorage(DeveloperSettingsKeys.paywallOfferingStateOverride) private var paywallOfferingStateOverrideRawValue = DeveloperPaywallOfferingOverride.live.rawValue
+    @AppStorage(DeveloperSettingsKeys.simulateSuccessfulPurchase) private var simulateSuccessfulPurchase = false
     @State private var statusMessage: String? = nil
 
     var body: some View {
@@ -53,6 +54,7 @@ struct DeveloperMenuView: View {
 
                 Section {
                     Toggle("Force Paywall on Launch", isOn: $forcePaywallOnLaunch)
+                    Toggle("Simulate Successful Purchase", isOn: $simulateSuccessfulPurchase)
 
                     Picker("Access State", selection: $paywallAccessStateOverrideRawValue) {
                         ForEach(DeveloperPaywallAccessOverride.allCases) { option in
@@ -316,7 +318,7 @@ struct DeveloperMenuView: View {
     private func seedFreshInstallData() {
         do {
             try repository.seedFreshInstallData()
-            flash("Added 3 fresh install items")
+            flash("Added 2 fresh install items")
         } catch {
             flash("Failed to seed fresh install data")
         }
@@ -324,12 +326,14 @@ struct DeveloperMenuView: View {
 
     private var paywallOverridesAreDefault: Bool {
         !forcePaywallOnLaunch
+        && !simulateSuccessfulPurchase
         && paywallAccessStateOverrideRawValue == DeveloperPaywallAccessOverride.live.rawValue
         && paywallOfferingStateOverrideRawValue == DeveloperPaywallOfferingOverride.live.rawValue
     }
 
     private func resetPaywallOverrides() {
         forcePaywallOnLaunch = false
+        simulateSuccessfulPurchase = false
         paywallAccessStateOverrideRawValue = DeveloperPaywallAccessOverride.live.rawValue
         paywallOfferingStateOverrideRawValue = DeveloperPaywallOfferingOverride.live.rawValue
         flash("Reset paywall overrides")
@@ -377,6 +381,7 @@ enum DeveloperSettingsKeys {
     static let forcePaywallOnLaunch = "developer.paywall.forceOnLaunch"
     static let paywallAccessStateOverride = "developer.paywall.accessStateOverride"
     static let paywallOfferingStateOverride = "developer.paywall.offeringStateOverride"
+    static let simulateSuccessfulPurchase = "developer.paywall.simulateSuccessfulPurchase"
 }
 
 enum DeveloperPaywallAccessOverride: String, CaseIterable, Identifiable {

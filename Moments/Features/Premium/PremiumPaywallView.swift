@@ -2,6 +2,8 @@ import SwiftUI
 import UIKit
 
 struct PremiumPaywallView: View {
+    let highlightedFeature: PremiumFeature?
+
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
@@ -14,12 +16,16 @@ struct PremiumPaywallView: View {
     @State private var subscriberBadgeRotation = 0.0
 
     private let features: [PremiumFeatureRow] = [
-        .init(iconName: "rectangle.stack.badge.plus", title: "Unlimited moments"),
-        .init(iconName: "sparkles", title: "AI manifestations, and reflections"),
-        .init(iconName: "paintpalette", title: "Full customization options"),
-        .init(iconName: "calendar.badge.clock", title: "Calendar sync and notifications"),
-        .init(iconName: "plus.circle", title: "Future premium features")
+        .init(iconName: "book.pages.fill", title: "Unlimited moments"),
+        .init(iconName: "sparkle", title: "AI manifestations, and reflections"),
+        .init(iconName: "paintpalette.fill", title: "Full customization options"),
+        .init(iconName: "calendar.badge", title: "Calendar sync and notifications"),
+        .init(iconName: "plus.capsule.fill", title: "Future premium features")
     ]
+
+    init(highlightedFeature: PremiumFeature? = nil) {
+        self.highlightedFeature = highlightedFeature
+    }
 
     var body: some View {
         NavigationStack {
@@ -87,7 +93,7 @@ struct PremiumPaywallView: View {
     private var heroSection: some View {
         VStack(spacing: 18) {
             HStack(spacing: -32) {
-                Image("AppIconOriginalPreview")
+                Image("AppIconRainbowPreview")
                     .resizable()
                     .scaledToFill()
                     .frame(width: 88, height: 88)
@@ -100,7 +106,7 @@ struct PremiumPaywallView: View {
                 Image(subscriberBadgeAssetName)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 92, height: 92)
+                    .frame(width: 97, height: 97)
                     .rotationEffect(.degrees(subscriberBadgeRotation))
             }
             .frame(maxWidth: .infinity)
@@ -110,6 +116,16 @@ struct PremiumPaywallView: View {
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let highlightedFeature,
+               !highlightedFeature.paywallMessage.isEmpty {
+                Text(highlightedFeature.paywallMessage)
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 12)
+            }
         }
         .frame(maxWidth: .infinity)
         .onAppear {
@@ -138,7 +154,7 @@ struct PremiumPaywallView: View {
                     .background(Capsule().fill(Color.black))
             }
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 ForEach(features) { feature in
                     HStack(spacing: 10) {
                         Image(systemName: feature.iconName)
@@ -165,13 +181,16 @@ struct PremiumPaywallView: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(Color(uiColor: .secondarySystemBackground))
+                .fill(Color(uiColor: .systemGroupedBackground))
         )
     }
 
     private var legalRow: some View {
         HStack(spacing: 24) {
             legalButton(title: "Restore Purchase", action: handleRestoreTapped)
+            if showsManageSubscriptionsAction {
+                legalButton(title: "Manage", action: handleManageSubscriptionsTapped)
+            }
             legalButton(title: "Terms", action: handleTermsTapped)
             legalButton(title: "Privacy Policy", action: handlePrivacyTapped)
         }
@@ -328,12 +347,37 @@ struct PremiumPaywallView: View {
         openURL(url)
     }
 
+    private var showsManageSubscriptionsAction: Bool {
+        if case .premium(.subscription) = subscriptionService.accessState {
+            return true
+        }
+
+        return false
+    }
+
+    private func handleManageSubscriptionsTapped() {
+        guard let url = subscriptionService.manageSubscriptionsURL else {
+            alertItem = .init(
+                title: "Subscription link unavailable",
+                message: "Apple subscription management is not available right now."
+            )
+            return
+        }
+
+        openURL(url)
+    }
+
     private func handlePrivacyTapped() {
-        AppHaptics.impact(.light)
-        alertItem = .init(
-            title: "Privacy policy link needed",
-            message: "The paywall includes the privacy action, but the app-specific privacy policy URL is not configured yet."
-        )
+        guard let url = subscriptionService.privacyPolicyURL else {
+            AppHaptics.impact(.light)
+            alertItem = .init(
+                title: "Privacy policy link needed",
+                message: "Configure PRIVACY_POLICY_URL to enable the app-specific privacy policy link."
+            )
+            return
+        }
+
+        openURL(url)
     }
 }
 
@@ -363,7 +407,7 @@ private struct PremiumOfferCard: View {
                             .padding(.vertical, 5)
                             .background(
                                 Capsule()
-                                    .fill(Color(uiColor: .secondarySystemBackground))
+                                    .fill(Color(uiColor: .systemGroupedBackground))
                             )
                     }
                 }
@@ -389,7 +433,7 @@ private struct PremiumOfferCard: View {
 
     private var cardBackground: some View {
         RoundedRectangle(cornerRadius: 18, style: .continuous)
-            .fill(isSelected ? Color(uiColor: .systemBackground) : Color(uiColor: .secondarySystemBackground))
+            .fill(isSelected ? Color(uiColor: .systemBackground) : Color(uiColor: .systemGroupedBackground))
     }
 
     private var cardBorder: some View {

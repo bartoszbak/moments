@@ -45,6 +45,8 @@
 	<string>$(REVENUECAT_API_KEY_IOS)</string>
 	<key>REVENUECAT_ENTITLEMENT_PREMIUM</key>
 	<string>$(REVENUECAT_ENTITLEMENT_PREMIUM)</string>
+	<key>PRIVACY_POLICY_URL</key>
+	<string>$(PRIVACY_POLICY_URL)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>BradfordLL-Book.otf</string>

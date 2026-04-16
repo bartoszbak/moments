@@ -109,6 +109,7 @@ struct ManifestNotificationSettingsRows: View {
 
 struct AddCountdownView: View {
     @EnvironmentObject private var repository: CountdownRepository
+    @EnvironmentObject private var subscriptionService: SubscriptionService
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
@@ -138,6 +139,7 @@ struct AddCountdownView: View {
     @State private var isCreating = false
     @State private var showTitleError = false
     @State private var hasInitializedManifestNotificationSettings = false
+    @State private var highlightedPaywallFeature: PremiumFeature?
 
     private var isValid: Bool {
         return !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -178,14 +180,20 @@ struct AddCountdownView: View {
                 Section {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
                     if isFutureManifestation {
-                        ManifestNotificationSettingsRows(
-                            isEnabled: $manifestNotificationsEnabled,
-                            rhythm: $manifestNotificationRhythm,
-                            reminderTime: $manifestReminderTime,
-                            authorizationStatus: manifestNotificationService.authorizationStatus,
-                            tintColor: controlTintColor,
-                            openSettings: openAppSettings
-                        )
+                        if subscriptionService.isPremium {
+                            ManifestNotificationSettingsRows(
+                                isEnabled: $manifestNotificationsEnabled,
+                                rhythm: $manifestNotificationRhythm,
+                                reminderTime: $manifestReminderTime,
+                                authorizationStatus: manifestNotificationService.authorizationStatus,
+                                tintColor: controlTintColor,
+                                openSettings: openAppSettings
+                            )
+                        } else {
+                            PremiumLockedRowButton("Manifestation Reminder") {
+                                highlightedPaywallFeature = .manifestationReminders
+                            }
+                        }
                     } else {
                         TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                     }
@@ -233,6 +241,10 @@ struct AddCountdownView: View {
         }
         .sheet(isPresented: $showSymbolPicker) {
             SFSymbolPickerView(selectedSymbol: $sfSymbolName, tintColor: controlTintColor)
+        }
+        .sheet(item: $highlightedPaywallFeature) { feature in
+            PremiumPaywallView(highlightedFeature: feature)
+                .environmentObject(subscriptionService)
         }
         .onChange(of: isFutureManifestation) { _, enabled in
             if enabled {
@@ -295,6 +307,7 @@ struct AddCountdownView: View {
                 manifestNotificationRhythm: isFutureManifestation ? manifestNotificationRhythm : nil,
                 manifestNotificationWeekday: manifestNotificationWeekday
             )
+            subscriptionService.recordCreatedMoment()
             reconcileManifestNotifications()
             AppHaptics.impact(.medium)
             NotificationCenter.default.post(name: .countdownCreated, object: nil)
