@@ -284,12 +284,8 @@ final class SubscriptionService: ObservableObject {
         customerInfoUpdatesTask = Task { [weak self] in
             guard let self else { return }
 
-            do {
-                for try await customerInfo in Purchases.shared.customerInfoStream {
-                    await self.apply(customerInfo: customerInfo)
-                }
-            } catch {
-                await self.handleCustomerInfoStreamFailure()
+            for await customerInfo in Purchases.shared.customerInfoStream {
+                self.apply(customerInfo: customerInfo)
             }
         }
     }

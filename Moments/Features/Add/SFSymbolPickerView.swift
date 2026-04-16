@@ -183,7 +183,7 @@ private let allCategories: [SymbolCategory] = uniqueCategories([
         air.car.side.fill
         airplane.circle.fill
         airplane.ticket.fill
-        airplane.up.forward.app.fill
+        airplane.up.forward
         airplane.up.right.app.fill
         bicycle.circle.fill
         bicycle.sensor.tag.radiowaves.left.and.right.fill

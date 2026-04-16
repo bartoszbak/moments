@@ -133,21 +133,21 @@ final class CountdownRepository: NSObject, ObservableObject {
                 detailsText: "A day that still reminds you how much love can deepen when two people keep choosing each other.",
                 targetDate: calendar.date(byAdding: .year, value: -1, to: now)!,
                 backgroundColorIndex: 3,
-                sfSymbolName: MomentSymbolPolicy.defaultSymbolName
+                sfSymbolName: "heart.fill"
             ),
             SeedCountdownItem(
                 title: "Euro Trip with Jordan",
                 detailsText: "Six months from now, you are stepping into a trip filled with train rides, long dinners, and stories you will keep retelling.",
                 targetDate: calendar.date(byAdding: .month, value: 6, to: now)!,
                 backgroundColorIndex: 2,
-                sfSymbolName: MomentSymbolPolicy.defaultSymbolName
+                sfSymbolName: "airplane.up.forward"
             ),
             SeedCountdownItem(
                 title: "Amazing People Around Me",
                 detailsText: "You naturally attract kind, inspiring, emotionally healthy people who make life feel lighter and more expansive.",
                 targetDate: now,
                 backgroundColorIndex: 1,
-                sfSymbolName: MomentSymbolPolicy.defaultSymbolName,
+                sfSymbolName: "sparkle",
                 isFutureManifestation: true
             ),
         ]
