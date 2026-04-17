@@ -78,6 +78,34 @@ struct TargetDatePickerRow: View {
     }
 }
 
+struct CalendarUpsellBanner: View {
+    let tintColor: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: "calendar")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(tintColor)
+                    .frame(width: 24, height: 24)
+
+                Text("Unlock calendar sync, notifications and more.")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 struct ManifestNotificationSettingsRows: View {
     @Binding var isEnabled: Bool
     @Binding var rhythm: ManifestNotificationRhythm
@@ -199,6 +227,13 @@ struct AddCountdownView: View {
                     }
                 } header: {
                     Text("Time")
+                }
+                if !subscriptionService.isPremium && !isFutureManifestation {
+                    Section {
+                        CalendarUpsellBanner(tintColor: controlTintColor) {
+                            highlightedPaywallFeature = .calendarSync
+                        }
+                    }
                 }
                 BackgroundPickerSection(
                     selection: $background

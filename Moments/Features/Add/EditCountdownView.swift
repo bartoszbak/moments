@@ -90,6 +90,13 @@ struct EditCountdownView: View {
                 } header: {
                     Text("Time")
                 }
+                if !subscriptionService.isPremium && !isFutureManifestation {
+                    Section {
+                        CalendarUpsellBanner(tintColor: controlTintColor) {
+                            highlightedPaywallFeature = .calendarSync
+                        }
+                    }
+                }
                 BackgroundPickerSection(
                     selection: $background,
                     onNewPhotoSelected: { photoChanged = true }
