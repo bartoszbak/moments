@@ -2,6 +2,12 @@ import SwiftUI
 
 @MainActor
 final class MomentPreviewViewModel: ObservableObject {
+    enum ManifestationRegenerationAvailability: Equatable {
+        case initialGeneration
+        case available
+        case lockedUntilTomorrow
+    }
+
     let countdownID: UUID
 
     @Published var surfaceText: String?
@@ -21,10 +27,6 @@ final class MomentPreviewViewModel: ObservableObject {
 
     var shouldShowReflectionCard: Bool {
         surfaceText != nil || errorText != nil
-    }
-
-    var showsBottomPrimaryAction: Bool {
-        surfaceText == nil
     }
 
     var surfaceDisplayText: String {
@@ -50,6 +52,53 @@ final class MomentPreviewViewModel: ObservableObject {
     var guidanceStage: Int {
         let hasReflection = !(reflectionText?.isEmpty ?? true)
         return hasReflection ? 2 : 1
+    }
+
+    func showsBottomPrimaryAction(for countdown: Countdown, now: Date) -> Bool {
+        if countdown.isFutureManifestation {
+            return true
+        }
+
+        return surfaceText == nil
+    }
+
+    func isPrimaryActionEnabled(for countdown: Countdown, now: Date) -> Bool {
+        guard !isLoadingReflection else { return false }
+
+        if viewModelIsShowingRetryState {
+            return true
+        }
+
+        if countdown.isFutureManifestation {
+            switch manifestationRegenerationAvailability(for: countdown, now: now) {
+            case .initialGeneration, .available:
+                return true
+            case .lockedUntilTomorrow:
+                return false
+            }
+        }
+
+        return true
+    }
+
+    func manifestationRegenerationAvailability(
+        for countdown: Countdown,
+        now: Date,
+        calendar: Calendar = .current
+    ) -> ManifestationRegenerationAvailability {
+        guard countdown.isFutureManifestation else {
+            return .initialGeneration
+        }
+
+        guard hasSavedSurfaceText else {
+            return .initialGeneration
+        }
+
+        guard let generatedAt = countdown.reflectionGeneratedAt else {
+            return .available
+        }
+
+        return calendar.isDate(generatedAt, inSameDayAs: now) ? .lockedUntilTomorrow : .available
     }
 
     // MARK: - Actions
@@ -78,7 +127,13 @@ final class MomentPreviewViewModel: ObservableObject {
         repository: CountdownRepository,
         subscriptionService: SubscriptionService
     ) {
-        if surfaceText != nil {
+        let now = timerManager.currentTime
+
+        if countdown.isFutureManifestation {
+            guard manifestationRegenerationAvailability(for: countdown, now: now) != .lockedUntilTomorrow else {
+                return
+            }
+        } else if surfaceText != nil {
             expandNextStage()
             return
         }
@@ -87,7 +142,6 @@ final class MomentPreviewViewModel: ObservableObject {
         errorText = nil
         reflectionTask?.cancel()
 
-        let now = timerManager.currentTime
         reflectionTask = Task { @MainActor in
             do {
                 let response = try await ReflectionService.shared.generateReflection(for: countdown, now: now)
@@ -121,5 +175,13 @@ final class MomentPreviewViewModel: ObservableObject {
 
     func cancelReflection() {
         reflectionTask?.cancel()
+    }
+
+    private var hasSavedSurfaceText: Bool {
+        !(surfaceText?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+    }
+
+    private var viewModelIsShowingRetryState: Bool {
+        errorText != nil
     }
 }

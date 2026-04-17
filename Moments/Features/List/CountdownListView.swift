@@ -10,6 +10,7 @@ struct CountdownListView: View {
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
+    @AppStorage(DeveloperSettingsKeys.forceAboutSheetOnLaunch) private var forceAboutSheetOnLaunch = false
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
     @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
     @AppStorage(AppSettingsKeys.backgroundGradientEnabled) private var backgroundGradientEnabled = AppSettingsDefaults.backgroundGradientEnabled
@@ -18,6 +19,7 @@ struct CountdownListView: View {
     @State private var previewingCountdown: Countdown?
     @State private var showingSettings = false
     @State private var showingIntroSheet = false
+    @State private var showingAboutSheet = false
     @State private var paywallFeature: PremiumFeature?
     @State private var selectedFilter: CountdownMenuFilter = .all
     @State private var momentCountDisplayText = ""
@@ -115,8 +117,13 @@ struct CountdownListView: View {
             syncMomentCountDisplayTextIfNeeded()
         }
         .onChange(of: forceIntroSheetOnLaunch) { _, isEnabled in
-            if isEnabled {
+            if isEnabled, !forceAboutSheetOnLaunch {
                 showingIntroSheet = true
+            }
+        }
+        .onChange(of: forceAboutSheetOnLaunch) { _, isEnabled in
+            if isEnabled {
+                showingAboutSheet = true
             }
         }
         .onChange(of: deepLinkedCountdownID) { _, _ in
@@ -130,7 +137,12 @@ struct CountdownListView: View {
             pendingMomentCountReveal = true
         }
         .task {
-            showingIntroSheet = !hasSeenIntroSheet || forceIntroSheetOnLaunch
+            if forceAboutSheetOnLaunch {
+                showingAboutSheet = true
+                showingIntroSheet = false
+            } else {
+                showingIntroSheet = !hasSeenIntroSheet || forceIntroSheetOnLaunch
+            }
             openDeepLinkedCountdownIfNeeded()
             syncMomentCountDisplayTextIfNeeded(force: true)
         }
@@ -147,6 +159,7 @@ struct CountdownListView: View {
                 showingIntroSheet = false
             }
         }
+        .aboutSheet(isPresented: $showingAboutSheet)
         .sheet(
             isPresented: $showingAddSheet,
             onDismiss: handleAddSheetDismissed

@@ -10,8 +10,69 @@ final class ReflectionService {
             throw ReflectionError.missingAPIKey
         }
 
-        let systemPrompt = ReflectionPrompt.systemPrompt(for: countdown, now: now)
-        let userPrompt = ReflectionPrompt.userPrompt(for: countdown, now: now)
+        if countdown.isFutureManifestation {
+            return try await generateManifestation(for: countdown, now: now, apiKey: apiKey)
+        }
+
+        return try await performRequest(
+            for: countdown,
+            now: now,
+            apiKey: apiKey
+        )
+    }
+
+    private func generateManifestation(
+        for countdown: Countdown,
+        now: Date,
+        apiKey: String
+    ) async throws -> ReflectionOutput {
+        let previousManifestation = PreviousManifestationSnapshot(from: countdown)
+        let variationStyles = ManifestationVariationStyle.allCases.shuffled()
+        let maximumAttempts = previousManifestation.hasContent ? 3 : 1
+
+        for attempt in 0..<maximumAttempts {
+            let context = ManifestationGenerationContext(
+                previousManifestation: previousManifestation,
+                attemptNumber: attempt + 1,
+                variationSeed: UUID().uuidString,
+                variationStyle: variationStyles[attempt % variationStyles.count]
+            )
+
+            let response = try await performRequest(
+                for: countdown,
+                now: now,
+                apiKey: apiKey,
+                manifestationContext: context
+            )
+
+            guard context.requiresVariationGuard else {
+                return response
+            }
+
+            if !ManifestationSimilarity.isTooSimilar(response, to: previousManifestation) {
+                return response
+            }
+        }
+
+        throw ReflectionError.repeatedManifestation
+    }
+
+    private func performRequest(
+        for countdown: Countdown,
+        now: Date,
+        apiKey: String,
+        manifestationContext: ManifestationGenerationContext? = nil
+    ) async throws -> ReflectionOutput {
+        let systemPrompt = ReflectionPrompt.systemPrompt(
+            for: countdown,
+            now: now,
+            manifestationContext: manifestationContext
+        )
+        let userPrompt = ReflectionPrompt.userPrompt(
+            for: countdown,
+            now: now,
+            manifestationContext: manifestationContext
+        )
 
         var request = URLRequest(url: URL(string: "https://openrouter.ai/api/v1/chat/completions")!)
         request.httpMethod = "POST"
@@ -25,7 +86,7 @@ final class ReflectionService {
                 .init(role: "system", content: systemPrompt),
                 .init(role: "user", content: userPrompt)
             ],
-            temperature: 0.7,
+            temperature: countdown.isFutureManifestation ? 0.95 : 0.7,
             responseFormat: ReflectionResponseSchema.responseFormat(for: countdown)
         )
         request.httpBody = try JSONEncoder().encode(payload)
@@ -199,7 +260,11 @@ private enum ReflectionPrompt {
         return nil
     }
 
-    static func userPrompt(for countdown: Countdown, now: Date) -> String {
+    static func userPrompt(
+        for countdown: Countdown,
+        now: Date,
+        manifestationContext: ManifestationGenerationContext? = nil
+    ) -> String {
         var lines = ["Moment title: \(countdown.title)"]
 
         if countdown.isFutureManifestation {
@@ -217,27 +282,158 @@ private enum ReflectionPrompt {
             lines.append("Context: \(detailsText)")
         }
 
+        if countdown.isFutureManifestation, let manifestationContext {
+            lines.append("Variation seed: \(manifestationContext.variationSeed)")
+            lines.append("Variation focus: \(manifestationContext.variationStyle.userPromptFocus)")
+
+            if manifestationContext.previousManifestation.hasContent {
+                lines.append("Previous instruction: \(manifestationContext.previousManifestation.instruction)")
+                lines.append("Previous anchor: \(manifestationContext.previousManifestation.anchor)")
+                lines.append("Regeneration requirement: keep the same core desire, but write it with clearly different phrasing, rhythm, imagery, and sentence structure.")
+                lines.append("Regeneration requirement: do not reuse distinctive phrases from the previous version.")
+            }
+        }
+
         return lines.joined(separator: "\n")
     }
 
-    static func systemPrompt(for countdown: Countdown, now: Date) -> String {
+    static func systemPrompt(
+        for countdown: Countdown,
+        now: Date,
+        manifestationContext: ManifestationGenerationContext? = nil
+    ) -> String {
         if countdown.isFutureManifestation {
             let sharedPrompt = loadPrompt(named: "system")
             let manifestPrompt = loadPrompt(named: "manifest")
+            let variationPrompt = manifestationVariationPrompt(for: manifestationContext)
 
             switch (sharedPrompt, manifestPrompt) {
             case let (.some(shared), .some(mode)):
-                return [shared, mode].joined(separator: "\n\n")
+                return [shared, mode, variationPrompt]
+                    .compactMap { $0 }
+                    .joined(separator: "\n\n")
             case let (.some(shared), nil):
-                return shared
+                return [shared, variationPrompt]
+                    .compactMap { $0 }
+                    .joined(separator: "\n\n")
             case let (nil, .some(mode)):
-                return mode
+                return [mode, variationPrompt]
+                    .compactMap { $0 }
+                    .joined(separator: "\n\n")
             case (nil, nil):
                 return systemPrompt(isPast: countdown.isExpired(at: now))
             }
         }
 
         return systemPrompt(isPast: countdown.isExpired(at: now))
+    }
+
+    private static func manifestationVariationPrompt(
+        for context: ManifestationGenerationContext?
+    ) -> String? {
+        guard let context else { return nil }
+
+        var lines = [
+            "For this manifestation, emphasize \(context.variationStyle.systemPromptFocus).",
+            "Let the voice feel fresh and materially different from other valid versions."
+        ]
+
+        if context.previousManifestation.hasContent {
+            lines.append("This is a regeneration attempt. Preserve the intention, but change the wording, cadence, imagery, and structure from the previous version.")
+            lines.append("Do not repeat distinctive phrases from the previous instruction or anchor.")
+            lines.append("Attempt number: \(context.attemptNumber).")
+        }
+
+        return lines.joined(separator: "\n")
+    }
+}
+
+private struct ManifestationGenerationContext {
+    let previousManifestation: PreviousManifestationSnapshot
+    let attemptNumber: Int
+    let variationSeed: String
+    let variationStyle: ManifestationVariationStyle
+
+    var requiresVariationGuard: Bool {
+        previousManifestation.hasContent
+    }
+}
+
+private struct PreviousManifestationSnapshot {
+    let instruction: String
+    let anchor: String
+
+    init(from countdown: Countdown) {
+        instruction = countdown.reflectionSurfaceText?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        anchor = countdown.reflectionGuidanceText?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    var hasContent: Bool {
+        !instruction.isEmpty || !anchor.isEmpty
+    }
+}
+
+private enum ManifestationVariationStyle: CaseIterable {
+    case identityShift
+    case everydayEvidence
+    case embodiedCalm
+
+    var userPromptFocus: String {
+        switch self {
+        case .identityShift:
+            return "the identity of the person who already lives this reality"
+        case .everydayEvidence:
+            return "small, believable signs that this reality is already normal"
+        case .embodiedCalm:
+            return "grounded certainty in the body rather than dramatic intensity"
+        }
+    }
+
+    var systemPromptFocus: String {
+        switch self {
+        case .identityShift:
+            return "identity shift and self-concept"
+        case .everydayEvidence:
+            return "everyday evidence and naturalness"
+        case .embodiedCalm:
+            return "embodied calm and grounded certainty"
+        }
+    }
+}
+
+private enum ManifestationSimilarity {
+    static func isTooSimilar(_ candidate: ReflectionOutput, to previous: PreviousManifestationSnapshot) -> Bool {
+        guard previous.hasContent else { return false }
+
+        let candidateCombined = normalize("\(candidate.surface) \(candidate.guidance)")
+        let previousCombined = normalize("\(previous.instruction) \(previous.anchor)")
+
+        guard !candidateCombined.isEmpty, !previousCombined.isEmpty else {
+            return false
+        }
+
+        if candidateCombined == previousCombined {
+            return true
+        }
+
+        return jaccardSimilarity(candidateCombined, previousCombined) >= 0.72
+    }
+
+    private static func normalize(_ text: String) -> Set<String> {
+        let lowercase = text.lowercased()
+        let separators = CharacterSet.alphanumerics.inverted
+        let tokens = lowercase
+            .components(separatedBy: separators)
+            .filter { $0.count > 2 }
+
+        return Set(tokens)
+    }
+
+    private static func jaccardSimilarity(_ lhs: Set<String>, _ rhs: Set<String>) -> Double {
+        let intersectionCount = lhs.intersection(rhs).count
+        let unionCount = lhs.union(rhs).count
+        guard unionCount > 0 else { return 0 }
+        return Double(intersectionCount) / Double(unionCount)
     }
 }
 
@@ -297,6 +493,7 @@ enum ReflectionError: Error {
     case missingAPIKey
     case emptyResponse
     case invalidResponse
+    case repeatedManifestation
     case requestFailed(statusCode: Int, message: String?)
     case transport(Error)
 }
@@ -310,6 +507,8 @@ extension ReflectionError: LocalizedError {
             return "The AI service returned an empty response."
         case .invalidResponse:
             return "The AI service returned an invalid response."
+        case .repeatedManifestation:
+            return "Could not produce a fresh manifestation right now. Try again."
         case let .requestFailed(statusCode, message):
             if statusCode == 401 || statusCode == 403 {
                 return "The OpenRouter key was rejected. Check OPENROUTER_API_KEY."

@@ -22,6 +22,7 @@ struct SettingsView: View {
     @State private var appIconErrorMessage: String?
     @State private var showingPremiumPaywall = false
     @State private var highlightedPaywallFeature: PremiumFeature?
+    @State private var showingAboutSheet = false
     @State private var settingsBadgeRotation = 0.0
 
     private var isiPad: Bool {
@@ -170,6 +171,13 @@ struct SettingsView: View {
                         .tint(controlTintColor)
                 }
 
+                Section {
+                    Button("About") {
+                        showingAboutSheet = true
+                    }
+                    .foregroundStyle(.primary)
+                }
+
                 Section("Developer") {
                     NavigationLink("Developer Tools") {
                         DeveloperMenuView()
@@ -217,6 +225,7 @@ struct SettingsView: View {
             PremiumPaywallView(highlightedFeature: feature)
                 .environmentObject(subscriptionService)
         }
+        .aboutSheet(isPresented: $showingAboutSheet)
     }
 
     private var plusButtonColorBinding: Binding<Color> {
@@ -747,5 +756,47 @@ private extension Color {
 
         uiColor.getRed(&red, green: &green, blue: &blue, alpha: nil)
         return 0.2126 * Double(red) + 0.7152 * Double(green) + 0.0722 * Double(blue)
+    }
+}
+
+struct AboutSheetView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 16) {
+                Spacer(minLength: 0)
+
+                Text("About Moments")
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .multilineTextAlignment(.center)
+
+                Text("Moments is a calm space for countdowns, milestones, memories, and manifestations. It keeps future plans and meaningful dates in one timeline, with optional AI reflections when you want a fresh perspective.")
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 24)
+            .padding(.vertical, 32)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+extension View {
+    func aboutSheet(isPresented: Binding<Bool>) -> some View {
+        sheet(isPresented: isPresented) {
+            AboutSheetView()
+        }
     }
 }

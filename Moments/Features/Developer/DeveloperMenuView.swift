@@ -5,6 +5,7 @@ struct DeveloperMenuView: View {
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
+    @AppStorage(DeveloperSettingsKeys.forceAboutSheetOnLaunch) private var forceAboutSheetOnLaunch = false
     @AppStorage(DeveloperSettingsKeys.forcePaywallOnLaunch) private var forcePaywallOnLaunch = false
     @AppStorage(DeveloperSettingsKeys.paywallAccessStateOverride) private var paywallAccessStateOverrideRawValue = DeveloperPaywallAccessOverride.live.rawValue
     @AppStorage(DeveloperSettingsKeys.paywallOfferingStateOverride) private var paywallOfferingStateOverrideRawValue = DeveloperPaywallOfferingOverride.live.rawValue
@@ -46,6 +47,7 @@ struct DeveloperMenuView: View {
                 Section {
                     Toggle("Show Empty State", isOn: $showEmptyStatePreview)
                     Toggle("Force Intro Sheet on Launch", isOn: $forceIntroSheetOnLaunch)
+                    Toggle("Force About Sheet on Launch", isOn: $forceAboutSheetOnLaunch)
                 } header: {
                     Text("Preview")
                 } footer: {
@@ -76,6 +78,16 @@ struct DeveloperMenuView: View {
                     Text("Paywall")
                 } footer: {
                     Text("Use these to exercise paywall launch, entitlement, and offering states while the RevenueCat flow is being wired up.")
+                }
+
+                Section {
+                    Button("Reset Manifestation Daily Limit") {
+                        resetManifestationDailyLimit()
+                    }
+                } header: {
+                    Text("Manifestation Testing")
+                } footer: {
+                    Text("Clears the saved daily regeneration gate so existing manifestations can regenerate again immediately.")
                 }
 
                 // MARK: - Info
@@ -339,6 +351,27 @@ struct DeveloperMenuView: View {
         flash("Reset paywall overrides")
     }
 
+    private func resetManifestationDailyLimit() {
+        let eligibleCountdowns = repository.countdowns.filter {
+            $0.isFutureManifestation && $0.reflectionGeneratedAt != nil
+        }
+
+        guard !eligibleCountdowns.isEmpty else {
+            flash("No manifestation limits to reset")
+            return
+        }
+
+        for countdown in eligibleCountdowns {
+            try? repository.update(
+                countdown,
+                reflectionGeneratedAt: .some(nil)
+            )
+        }
+
+        let count = eligibleCountdowns.count
+        flash(count == 1 ? "Reset 1 manifestation limit" : "Reset \(count) manifestation limits")
+    }
+
     private struct SeedDraft {
         let title: String
         let detailsText: String?
@@ -378,6 +411,7 @@ struct DeveloperMenuView: View {
 enum DeveloperSettingsKeys {
     static let showEmptyStatePreview = "developer.showEmptyStatePreview"
     static let forceIntroSheetOnLaunch = "developer.forceIntroSheetOnLaunch"
+    static let forceAboutSheetOnLaunch = "developer.forceAboutSheetOnLaunch"
     static let forcePaywallOnLaunch = "developer.paywall.forceOnLaunch"
     static let paywallAccessStateOverride = "developer.paywall.accessStateOverride"
     static let paywallOfferingStateOverride = "developer.paywall.offeringStateOverride"

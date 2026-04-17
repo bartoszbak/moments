@@ -13,12 +13,10 @@
 		0BECF6ADAB031B9AE4330C96 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F2FD4B2E62CCE92B56AE89 /* SettingsView.swift */; };
 		0ECF45AA10C8B7041F188D33 /* PremiumPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8D4B98527CCFBD32D6819A /* PremiumPaywallView.swift */; };
 		0F4DD98EDE53A53DF745848E /* CountdownRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22F1DB9AD5C5C99F9CD502E6 /* CountdownRepository.swift */; };
-		C1D2E3F4A5B60718293A4B5C /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A60718293A4B5C /* SubscriptionService.swift */; };
 		101945C06C7DAD4A4D717B31 /* EditCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C893FD9BAC0B25110AE1FA17 /* EditCountdownView.swift */; };
 		1505ADC2159BA9AE60DCF97A /* manifest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 01A179BD161DD902F6E4F906 /* manifest.txt */; };
 		1715BBD8EA7CA50A9BF9E0A8 /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81644C993BB4FF389537E4C4 /* SharedDataStore.swift */; };
 		2370BD3E84893A4D96D07D59 /* BradfordLL-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */; };
-		B7A1F1C2D3E4F50617283940 /* BradfordLL-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */; };
 		275C10D882BC0DC41D5027FC /* CountdownAppEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */; };
 		29AC6602E2B1E80B4811F659 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A454604EA8126CA30C88E46A /* Color+Hex.swift */; };
 		313CB18BEF32C29F6F1006B4 /* system.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3577909D5081385951BC6140 /* system.txt */; };
@@ -34,13 +32,13 @@
 		5CFD43AC5166E06B4C4B87CB /* CountdownListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A878F14CB50B697ADBFCEDD5 /* CountdownListView.swift */; };
 		5E406BAB2EE7A0FA7BC88CA2 /* ProgressStartPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FD789458F240ED033C1398 /* ProgressStartPickerSection.swift */; };
 		6322696B456EF6D6B18CB43D /* BlurSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 09C74FF0F9520A5B30889534 /* BlurSwiftUI */; };
-		6D736B177D4D3B1A12A41E5D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 7A6E5875F3C44A56A4B3D18F /* RevenueCat */; };
 		64C8DFD9822CB3E910C8F9A1 /* ManifestNotificationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568741B006D7CFBC97B42BF4 /* ManifestNotificationCard.swift */; };
 		666B2CDFDDECBB03B29C1C9C /* MomentsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3143AF35092DD5FA8CA97B19 /* MomentsApp.swift */; };
 		6768E6FC173F385292FDC5EB /* Moments.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9540726F389C28BEEAAF2446 /* Moments.xcdatamodeld */; };
 		68FD4858BC20A66321F6D2AA /* WidgetCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */; };
 		6A462D0AC9B180F1316ABDA9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27945F4762D1F80FF5B93926 /* SwiftUI.framework */; };
 		6A5D3DF9DAC961BE29DD0EA6 /* ReflectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4618C898BC88C486853851 /* ReflectionService.swift */; };
+		6D736B177D4D3B1A12A41E5D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 7A6E5875F3C44A56A4B3D18F /* RevenueCat */; };
 		70F7247B3F81F3A184CE20EC /* BradfordLL-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4278A770D60414C1A7FE93DE /* BradfordLL-Regular.otf */; };
 		72915A86997186404BD35329 /* Countdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565D10A492681A7C42E01C6 /* Countdown.swift */; };
 		747E493CAC4F6A0F3BD39B3C /* BackgroundPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFE51D898B86FE8EEE527CA /* BackgroundPickerSection.swift */; };
@@ -55,11 +53,18 @@
 		9CEA28060EB697D45D69F140 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDD7F362590382735CAFACE /* WidgetKit.framework */; };
 		A113A8D7FC7216CF0149F607 /* CountdownWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D212718BD9096D60168E8BC /* CountdownWidgetView.swift */; };
 		A13786BFC0E5C2118EA783D6 /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */; };
+		A1B2C3D4E5F60718293A4B5D /* MomentPreviewHeroSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B62 /* MomentPreviewHeroSection.swift */; };
+		A1B2C3D4E5F60718293A4B5E /* MomentPreviewReflectionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B63 /* MomentPreviewReflectionSection.swift */; };
+		A1B2C3D4E5F60718293A4B5F /* MomentPreviewActionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B64 /* MomentPreviewActionBar.swift */; };
+		A1B2C3D4E5F60718293A4B60 /* MomentPreviewRevealText.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B65 /* MomentPreviewRevealText.swift */; };
+		A1B2C3D4E5F60718293A4B61 /* MomentPreviewLayoutSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B66 /* MomentPreviewLayoutSupport.swift */; };
 		A3A27A0524CBAE39F298770A /* ManifestNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D589F23AC90A98A86AB675DC /* ManifestNotificationService.swift */; };
 		AE02A368854B537AD1723011 /* CountdownRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA841B2553A2BA3491EF4E3 /* CountdownRowView.swift */; };
 		AE7DD78D38B008A7FA9DF128 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */; };
 		B19B8BF1181B67AA9BBFB006 /* past.txt in Resources */ = {isa = PBXBuildFile; fileRef = D34E6C127CF17D82614620DB /* past.txt */; };
+		B7A1F1C2D3E4F50617283940 /* BradfordLL-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */; };
 		C1B4BA8394A75B001EFAE5C8 /* AddCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C70200D860A729B74D9CB5 /* AddCountdownView.swift */; };
+		C1D2E3F4A5B60718293A4B5C /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A60718293A4B5C /* SubscriptionService.swift */; };
 		C75E3E7D178119242DBA2F21 /* MomentPreviewScrollEdgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF8F75878D9196552AF66BB /* MomentPreviewScrollEdgeView.swift */; };
 		C7DAAECDC98D8B1685AC8311 /* MomentsWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 641EF3FC55AFA909DB257418 /* MomentsWidgetBundle.swift */; };
 		C7FB49BA86E4F761B36C1DAE /* SelectCountdownIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 000D4BFC4FACD369DD03E87D /* SelectCountdownIntent.swift */; };
@@ -97,6 +102,7 @@
 		0044636E666A16BCDED1CCED /* CountdownProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownProvider.swift; sourceTree = "<group>"; };
 		01A179BD161DD902F6E4F906 /* manifest.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = manifest.txt; sourceTree = "<group>"; };
 		0AC72310E38EBEF64CC174FF /* View+Glass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Glass.swift"; sourceTree = "<group>"; };
+		0C8D4B98527CCFBD32D6819A /* PremiumPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumPaywallView.swift; sourceTree = "<group>"; };
 		1661F8FD807EB75471F4EC72 /* Moments.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Moments.entitlements; sourceTree = "<group>"; };
 		16B8E850029658CE606FCFD8 /* CountdownEntity+Mapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CountdownEntity+Mapping.swift"; sourceTree = "<group>"; };
 		16DD7DFA0319BC50C9174291 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -115,7 +121,6 @@
 		355DA3487DC073A60B6857A7 /* ColorPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		3577909D5081385951BC6140 /* system.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = system.txt; sourceTree = "<group>"; };
 		4278A770D60414C1A7FE93DE /* BradfordLL-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Regular.otf"; sourceTree = "<group>"; };
-		C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-MediumItalic.otf"; sourceTree = "<group>"; };
 		45F0161881DF6012EE26C4F0 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		4682F02D937FCAC10D633671 /* TillApp 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 6.xcdatamodel"; sourceTree = "<group>"; };
 		46C295C3CAEC2A8A3E2E3BF0 /* TillApp 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 7.xcdatamodel"; sourceTree = "<group>"; };
@@ -136,11 +141,15 @@
 		8EF9B75756531C7F1777198C /* ManifestNotificationCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestNotificationCardModel.swift; sourceTree = "<group>"; };
 		90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Bold.otf"; sourceTree = "<group>"; };
 		914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownAppEntity.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B62 /* MomentPreviewHeroSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewHeroSection.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B63 /* MomentPreviewReflectionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewReflectionSection.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B64 /* MomentPreviewActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewActionBar.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B65 /* MomentPreviewRevealText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewRevealText.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B66 /* MomentPreviewLayoutSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewLayoutSupport.swift; sourceTree = "<group>"; };
 		A454604EA8126CA30C88E46A /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		A764D051685A514CA9E98235 /* BradfordLL-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Medium.otf"; sourceTree = "<group>"; };
 		A878F14CB50B697ADBFCEDD5 /* CountdownListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownListView.swift; sourceTree = "<group>"; };
 		A8F2FD4B2E62CCE92B56AE89 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		0C8D4B98527CCFBD32D6819A /* PremiumPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumPaywallView.swift; sourceTree = "<group>"; };
 		AAF1CE8F6043ED9BAB4F355B /* SharedConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = SharedConfig.xcconfig; sourceTree = "<group>"; };
 		B1C2D3E4F5A60718293A4B5C /* SubscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionService.swift; sourceTree = "<group>"; };
 		B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCountdown.swift; sourceTree = "<group>"; };
@@ -148,6 +157,7 @@
 		C4BF3C7A6776967BD8E726B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C565D10A492681A7C42E01C6 /* Countdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Countdown.swift; sourceTree = "<group>"; };
 		C893FD9BAC0B25110AE1FA17 /* EditCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCountdownView.swift; sourceTree = "<group>"; };
+		C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-MediumItalic.otf"; sourceTree = "<group>"; };
 		D032B9A9BACA5B224295B2E4 /* Moments.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Moments.entitlements; sourceTree = "<group>"; };
 		D27D809EF8B82CF274B52103 /* TillApp.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TillApp.xcdatamodel; sourceTree = "<group>"; };
 		D34E6C127CF17D82614620DB /* past.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = past.txt; sourceTree = "<group>"; };
@@ -184,6 +194,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A8F0877E0EF2D8AFD15DB5B /* Premium */ = {
+			isa = PBXGroup;
+			children = (
+				0C8D4B98527CCFBD32D6819A /* PremiumPaywallView.swift */,
+			);
+			path = Premium;
+			sourceTree = "<group>";
+		};
 		15B33884CBCC3BED21E5F72F /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -261,14 +279,6 @@
 			path = Features;
 			sourceTree = "<group>";
 		};
-		0A8F0877E0EF2D8AFD15DB5B /* Premium */ = {
-			isa = PBXGroup;
-			children = (
-				0C8D4B98527CCFBD32D6819A /* PremiumPaywallView.swift */,
-			);
-			path = Premium;
-			sourceTree = "<group>";
-		};
 		872F43BF6D76DC7348FC348D /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -316,6 +326,11 @@
 			children = (
 				568741B006D7CFBC97B42BF4 /* ManifestNotificationCard.swift */,
 				8EF9B75756531C7F1777198C /* ManifestNotificationCardModel.swift */,
+				A1B2C3D4E5F60718293A4B64 /* MomentPreviewActionBar.swift */,
+				A1B2C3D4E5F60718293A4B62 /* MomentPreviewHeroSection.swift */,
+				A1B2C3D4E5F60718293A4B66 /* MomentPreviewLayoutSupport.swift */,
+				A1B2C3D4E5F60718293A4B65 /* MomentPreviewRevealText.swift */,
+				A1B2C3D4E5F60718293A4B63 /* MomentPreviewReflectionSection.swift */,
 				2AF8F75878D9196552AF66BB /* MomentPreviewScrollEdgeView.swift */,
 				F12CEF1897B09F366E6E6283 /* MomentPreviewViewModel.swift */,
 			);
@@ -461,7 +476,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1600;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					96A51F6082F0A50C126C394A = {
 						ProvisioningStyle = Automatic;
@@ -556,6 +571,11 @@
 				45E8A79DC8E4CA1F991D9E69 /* ManifestNotificationCardModel.swift in Sources */,
 				A3A27A0524CBAE39F298770A /* ManifestNotificationService.swift in Sources */,
 				E935628191F64BA8705ED9F1 /* MomentDeepLink.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5F /* MomentPreviewActionBar.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5D /* MomentPreviewHeroSection.swift in Sources */,
+				A1B2C3D4E5F60718293A4B61 /* MomentPreviewLayoutSupport.swift in Sources */,
+				A1B2C3D4E5F60718293A4B60 /* MomentPreviewRevealText.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5E /* MomentPreviewReflectionSection.swift in Sources */,
 				C75E3E7D178119242DBA2F21 /* MomentPreviewScrollEdgeView.swift in Sources */,
 				4BA80C091AF0231BEEE61F2C /* MomentPreviewViewModel.swift in Sources */,
 				6768E6FC173F385292FDC5EB /* Moments.xcdatamodeld in Sources */,
@@ -589,6 +609,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -620,9 +641,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -636,6 +658,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -647,7 +670,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MomentsWidgetExtension/Moments.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = MomentsWidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -667,6 +689,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -698,9 +721,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -721,6 +745,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -730,17 +755,12 @@
 		82A763699C4D80B1A7125403 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AAF1CE8F6043ED9BAB4F355B /* SharedConfig.xcconfig */;
-				buildSettings = {
-					ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
-						AppIconFog,
-						AppIconDark,
-						AppIconRainbow,
-					);
-					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-					CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
-					CODE_SIGN_IDENTITY = "iPhone Developer";
+			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconFog AppIconDark AppIconRainbow";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = Moments/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -759,7 +779,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MomentsWidgetExtension/Moments.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = MomentsWidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -778,17 +797,12 @@
 		FBA3D172D26C40F1402D20DD /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = AAF1CE8F6043ED9BAB4F355B /* SharedConfig.xcconfig */;
-				buildSettings = {
-					ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = (
-						AppIconFog,
-						AppIconDark,
-						AppIconRainbow,
-					);
-					ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-					CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
-					CODE_SIGN_IDENTITY = "iPhone Developer";
+			buildSettings = {
+				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIconFog AppIconDark AppIconRainbow";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Moments/Moments.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TJ3ALYQV5G;
 				INFOPLIST_FILE = Moments/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
