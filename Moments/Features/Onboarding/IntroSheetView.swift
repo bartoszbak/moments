@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct IntroSheetView: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
     @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
 
@@ -32,11 +30,14 @@ struct IntroSheetView: View {
     ]
 
     var body: some View {
-        introScrollView
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                bottomInsetContent
-            }
-        .background(Color(.systemBackground))
+        GeometryReader { proxy in
+            introScrollView
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    bottomInsetContent(bottomSafeAreaInset: proxy.safeAreaInsets.bottom)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(.systemBackground))
+        }
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
         .preferredColorScheme(preferredColorScheme)
@@ -102,23 +103,23 @@ struct IntroSheetView: View {
         }
     }
 
-    private var bottomInsetContent: some View {
-        Button(action: onGetStarted) {
-            Text("Continue")
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(primaryButtonLabelColor)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(
-                    Capsule()
-                        .fill(primaryButtonColor)
-                )
+    private func bottomInsetContent(bottomSafeAreaInset: CGFloat) -> some View {
+        BottomGlassActionBar(
+            showsPrimaryAction: true,
+            maxContentWidth: readableContentWidth,
+            bottomSafeAreaInset: bottomSafeAreaInset,
+            bottomBlurGradientHeight: 52
+        ) {
+            Button(action: onGetStarted) {
+                Text("Continue")
+                    .font(.headline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+            }
+            .adaptiveGlassProminentButtonStyle()
+            .tint(primaryButtonColor)
+            .foregroundStyle(primaryButtonLabelColor)
         }
-        .buttonStyle(.plain)
-        .padding(.horizontal, 24)
-        .padding(.top, 12)
-        .padding(.bottom, 12)
-        .background(Color(.systemBackground))
     }
 
     private var preferredColorScheme: ColorScheme? {
@@ -131,6 +132,10 @@ struct IntroSheetView: View {
 
     private var primaryButtonLabelColor: Color {
         primaryButtonColor.prefersLightForeground ? .white : .black
+    }
+
+    private var readableContentWidth: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 700 : .infinity
     }
 }
 

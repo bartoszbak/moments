@@ -24,6 +24,9 @@
         <attribute name="targetDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" attributeType="String" defaultValueString=""/>
         <attribute name="showDate" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="isMinimalisticWidget" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="minimalWidgetProgressStyleRaw" optional="YES" attributeType="String"/>
+        <attribute name="widgetFontOptionRaw" optional="YES" attributeType="String"/>
         <attribute name="sfSymbolName" optional="YES" attributeType="String"/>
     </entity>
 </model>

@@ -640,10 +640,10 @@ struct PremiumPill: View {
 
     var body: some View {
         Text("Plus")
-            .font(.caption.weight(.semibold))
+            .font(.system(size: 15, weight: .medium, design: .rounded))
             .foregroundStyle(colorScheme == .dark ? .black : .white)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
             .background(
                 Capsule()
                     .fill(colorScheme == .dark ? Color.white : Color.black)

@@ -6,6 +6,7 @@ struct CountdownListView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @EnvironmentObject private var subscriptionService: SubscriptionService
     @EnvironmentObject private var timerManager: TimerManager
+    @EnvironmentObject private var navigationCoordinator: AppNavigationCoordinator
     @Environment(\.colorScheme) private var colorScheme
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
@@ -25,7 +26,7 @@ struct CountdownListView: View {
     @State private var momentCountDisplayText = ""
     @State private var pendingMomentCountReveal = false
     @State private var momentCountRevealTrigger = 0
-    @Binding var deepLinkedCountdownID: UUID?
+    @State private var lastHandledAddMomentRequestToken = 0
 
     private var isiPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
@@ -126,8 +127,11 @@ struct CountdownListView: View {
                 showingAboutSheet = true
             }
         }
-        .onChange(of: deepLinkedCountdownID) { _, _ in
+        .onChange(of: navigationCoordinator.pendingPreviewCountdownID) { _, _ in
             openDeepLinkedCountdownIfNeeded()
+        }
+        .onChange(of: navigationCoordinator.addMomentRequestToken) { _, _ in
+            handlePendingAddMomentRequestIfNeeded()
         }
         .onChange(of: repository.countdowns) { _, _ in
             openDeepLinkedCountdownIfNeeded()
@@ -144,6 +148,7 @@ struct CountdownListView: View {
                 showingIntroSheet = !hasSeenIntroSheet || forceIntroSheetOnLaunch
             }
             openDeepLinkedCountdownIfNeeded()
+            handlePendingAddMomentRequestIfNeeded()
             syncMomentCountDisplayTextIfNeeded(force: true)
         }
         .sheet(isPresented: $showingSettings) {
@@ -174,14 +179,15 @@ struct CountdownListView: View {
     }
 
     private func openDeepLinkedCountdownIfNeeded() {
-        guard let id = deepLinkedCountdownID,
+        guard let id = navigationCoordinator.pendingPreviewCountdownID,
               let countdown = repository.countdowns.first(where: { $0.id == id })
         else {
             return
         }
 
+        dismissTransientSheetsForExternalPresentation()
         previewingCountdown = countdown
-        deepLinkedCountdownID = nil
+        navigationCoordinator.clearPendingPreviewCountdownID()
     }
 
     @ViewBuilder
@@ -490,6 +496,24 @@ struct CountdownListView: View {
         showingAddSheet = true
     }
 
+    private func presentAddCountdownFromExternalTrigger() {
+        dismissTransientSheetsForExternalPresentation()
+        presentAddCountdown()
+    }
+
+    private func handlePendingAddMomentRequestIfNeeded() {
+        let requestToken = navigationCoordinator.addMomentRequestToken
+        guard requestToken > lastHandledAddMomentRequestToken else { return }
+        lastHandledAddMomentRequestToken = requestToken
+        presentAddCountdownFromExternalTrigger()
+    }
+
+    private func dismissTransientSheetsForExternalPresentation() {
+        showingSettings = false
+        showingIntroSheet = false
+        showingAboutSheet = false
+    }
+
     private func handleAddSheetDismissed() {
         guard pendingMomentCountReveal else { return }
         pendingMomentCountReveal = false
@@ -601,12 +625,13 @@ private enum CountdownMenuFilter: String, CaseIterable, Identifiable {
 }
 
 #Preview {
-    CountdownListView(deepLinkedCountdownID: .constant(nil))
+    CountdownListView()
         .environmentObject(CountdownRepository(
             viewContext: PersistenceController.preview.container.viewContext,
             backgroundContext: PersistenceController.preview.newBackgroundContext()
         ))
         .environmentObject(TimerManager())
+        .environmentObject(AppNavigationCoordinator.shared)
 }
 
 private struct EmptyStateArtworkView: View {

@@ -2,7 +2,7 @@ import AppIntents
 import Foundation
 
 struct CountdownAppEntity: AppEntity {
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Countdown"
+    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Moment"
     static var defaultQuery = CountdownEntityQuery()
 
     var id: UUID

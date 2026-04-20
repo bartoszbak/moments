@@ -55,6 +55,17 @@
 		<string>BradfordLL-Regular.otf</string>
 		<string>BradfordLL-Bold.otf</string>
 	</array>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeAdd</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>New Moment</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.tillappcounter.Moments.addMoment</string>
+		</dict>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

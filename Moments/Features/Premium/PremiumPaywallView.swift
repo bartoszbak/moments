@@ -146,12 +146,7 @@ struct PremiumPaywallView: View {
 
                 Spacer(minLength: 12)
 
-                Text("Plus")
-                    .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 11)
-                    .padding(.vertical, 5)
-                    .background(Capsule().fill(Color.black))
+                PremiumPill()
             }
 
             VStack(alignment: .leading, spacing: 8) {

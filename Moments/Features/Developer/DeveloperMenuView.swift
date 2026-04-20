@@ -84,10 +84,13 @@ struct DeveloperMenuView: View {
                     Button("Reset Manifestation Daily Limit") {
                         resetManifestationDailyLimit()
                     }
+                    NavigationLink("Trigger Manifestation Notification") {
+                        DeveloperManifestNotificationListView()
+                    }
                 } header: {
                     Text("Manifestation Testing")
                 } footer: {
-                    Text("Clears the saved daily regeneration gate so existing manifestations can regenerate again immediately.")
+                    Text("Clears the saved daily regeneration gate so existing manifestations can regenerate again immediately, or send a test notification for a selected manifestation.")
                 }
 
                 // MARK: - Info
@@ -133,7 +136,7 @@ struct DeveloperMenuView: View {
                 targetDate: item.targetDate,
                 backgroundColorIndex: item.backgroundColorIndex,
                 backgroundColorHex: hex,
-                startPercentage: 1.0,
+                startPercentage: WidgetProgressDefaults.startPercentage,
                 sfSymbolName: item.resolvedSymbolName,
                 isFutureManifestation: item.isFutureManifestation
             )
@@ -404,6 +407,99 @@ struct DeveloperMenuView: View {
             }
 
             return MomentSymbolPolicy.defaultSymbolName
+        }
+    }
+}
+
+private struct DeveloperManifestNotificationListView: View {
+    @EnvironmentObject private var repository: CountdownRepository
+    @Environment(\.dismiss) private var dismiss
+
+    @StateObject private var manifestNotificationService = ManifestNotificationService.shared
+    @State private var sendingCountdownID: UUID?
+    @State private var statusMessage: String?
+
+    private var manifestations: [Countdown] {
+        repository.countdowns
+            .filter(\.isFutureManifestation)
+            .sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
+    }
+
+    var body: some View {
+        List {
+            if manifestations.isEmpty {
+                ContentUnavailableView(
+                    "No manifestations available",
+                    systemImage: "sparkles",
+                    description: Text("Create or seed a manifestation first, then return here to send a test notification.")
+                )
+            } else {
+                Section("Choose Manifestation") {
+                    ForEach(manifestations) { countdown in
+                        Button {
+                            triggerNotification(for: countdown)
+                        } label: {
+                            HStack(spacing: 12) {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(countdown.title)
+                                        .foregroundStyle(.primary)
+
+                                    if let details = countdown.detailsText?.trimmingCharacters(in: .whitespacesAndNewlines),
+                                       !details.isEmpty {
+                                        Text(details)
+                                            .font(.footnote)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(2)
+                                    }
+                                }
+
+                                Spacer(minLength: 12)
+
+                                if sendingCountdownID == countdown.id {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                } else {
+                                    Image(systemName: "bell.badge")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(sendingCountdownID != nil)
+                    }
+                }
+            }
+
+            if let statusMessage {
+                Section {
+                    Label(statusMessage, systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                }
+            }
+        }
+        .navigationTitle("Trigger Notification")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func triggerNotification(for countdown: Countdown) {
+        sendingCountdownID = countdown.id
+        statusMessage = nil
+
+        Task {
+            let wasSent = await manifestNotificationService.sendDebugNotification(for: countdown)
+
+            await MainActor.run {
+                sendingCountdownID = nil
+
+                if wasSent {
+                    statusMessage = "Notification sent for \(countdown.title)"
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                        dismiss()
+                    }
+                } else {
+                    statusMessage = "Notifications are unavailable"
+                }
+            }
         }
     }
 }

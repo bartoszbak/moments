@@ -21,9 +21,12 @@ struct EditCountdownView: View {
     @State private var detailsText = ""
     @State private var targetDate = Date()
     @State private var background: BackgroundSelection = .none
-    @State private var startPercentage: Double = 1.0
+    @State private var startPercentage: Double = WidgetProgressDefaults.startPercentage
     @State private var showProgress: Bool = true
     @State private var showDate: Bool = true
+    @State private var isMinimalisticWidget = false
+    @State private var minimalWidgetProgressStyle: MinimalWidgetProgressStyle = .defaultStyle
+    @State private var widgetFontOption: WidgetFontOption = .defaultOption
     @State private var showSymbol: Bool = false
     @State private var isFutureManifestation = false
     @State private var sfSymbolName: String? = nil
@@ -51,7 +54,7 @@ struct EditCountdownView: View {
         NavigationStack {
             Form {
                 Section("Details") {
-                    TextField("Countdown name", text: $title)
+                    TextField("Moment name", text: $title)
                     NavigationLink {
                         MomentDescriptionEditorView(text: $detailsText)
                     } label: {
@@ -67,7 +70,7 @@ struct EditCountdownView: View {
                         showSymbolPicker: $showSymbolPicker
                     )
                 }
-                Section {
+                Section("Manifestation") {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
                     if isFutureManifestation {
                         if subscriptionService.isPremium {
@@ -80,20 +83,27 @@ struct EditCountdownView: View {
                                 openSettings: openAppSettings
                             )
                         } else {
-                            PremiumLockedRowButton("Manifestation Reminder") {
+                            UpsellBanner(
+                                iconName: "bell.badge",
+                                iconColor: .secondary,
+                                message: "Unlock manifestation reminders"
+                            ) {
                                 highlightedPaywallFeature = .manifestationReminders
                             }
                         }
-                    } else {
-                        TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                     }
-                } header: {
-                    Text("Time")
                 }
-                if !subscriptionService.isPremium && !isFutureManifestation {
-                    Section {
-                        CalendarUpsellBanner(tintColor: controlTintColor) {
-                            highlightedPaywallFeature = .calendarSync
+                if !isFutureManifestation {
+                    Section("Time") {
+                        TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
+                        if !subscriptionService.isPremium {
+                            UpsellBanner(
+                                iconName: "calendar",
+                                iconColor: .secondary,
+                                message: "Unlock calendar sync,\nnotifications"
+                            ) {
+                                highlightedPaywallFeature = .calendarSync
+                            }
                         }
                     }
                 }
@@ -103,7 +113,11 @@ struct EditCountdownView: View {
                 )
                 WidgetOptionsSection(
                     allowsDateOption: !isFutureManifestation,
-                    showDate: $showDate
+                    showsProgressBarStyleOption: showsProgressIndicatorSection,
+                    isMinimalisticWidget: $isMinimalisticWidget,
+                    minimalWidgetProgressStyle: $minimalWidgetProgressStyle,
+                    showDate: $showDate,
+                    widgetFontOption: $widgetFontOption
                 )
                 if showsProgressIndicatorSection {
                     ProgressStartPickerSection(
@@ -155,7 +169,7 @@ struct EditCountdownView: View {
                         .accessibilityLabel("Save")
                         .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                         .fontWeight(.semibold)
-                        .foregroundStyle(toolbarButtonColor)
+                        .foregroundStyle(confirmationButtonColor)
                 }
             }
             .onAppear {
@@ -177,6 +191,9 @@ struct EditCountdownView: View {
                 startPercentage = countdown.startPercentage
                 showProgress = countdown.showProgress
                 showDate = countdown.showDate
+                isMinimalisticWidget = countdown.isMinimalisticWidget
+                minimalWidgetProgressStyle = countdown.minimalWidgetProgressStyle
+                widgetFontOption = countdown.widgetFontOption
                 isFutureManifestation = countdown.isFutureManifestation
                 manifestNotificationsEnabled = countdown.manifestNotificationsEnabled
                 manifestNotificationRhythm = countdown.manifestNotificationRhythm ?? defaultManifestRhythm
@@ -188,6 +205,7 @@ struct EditCountdownView: View {
             .onChange(of: isFutureManifestation) { _, enabled in
                 if enabled {
                     showDate = false
+                    isMinimalisticWidget = false
                 }
             }
             .onChange(of: manifestNotificationsEnabled) { _, isEnabled in
@@ -273,6 +291,9 @@ struct EditCountdownView: View {
             startPercentage: startPercentage,
             showProgress: showProgress,
             showDate: showDate,
+            isMinimalisticWidget: isFutureManifestation ? false : isMinimalisticWidget,
+            minimalWidgetProgressStyle: minimalWidgetProgressStyle,
+            widgetFontOption: widgetFontOption,
             sfSymbolName: .some(normalizedSymbolName),
             reflectionSurfaceText: invalidatesReflection ? .some(nil) : nil,
             reflectionText: invalidatesReflection ? .some(nil) : nil,
@@ -315,6 +336,10 @@ struct EditCountdownView: View {
 
     private var toolbarButtonColor: Color {
         effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var confirmationButtonColor: Color {
+        title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? .secondary : controlTintColor
     }
 
     private var detailsActionTitle: String {

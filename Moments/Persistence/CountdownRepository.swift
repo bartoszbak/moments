@@ -66,6 +66,9 @@ final class CountdownRepository: NSObject, ObservableObject {
                 startPercentage: countdown.startPercentage,
                 showProgress: countdown.showProgress,
                 showDate: countdown.showDate,
+                isMinimalisticWidget: countdown.isMinimalisticWidget,
+                minimalWidgetProgressStyle: countdown.minimalWidgetProgressStyle,
+                widgetFontOption: countdown.widgetFontOption,
                 sfSymbolName: countdown.sfSymbolName,
                 isFutureManifestation: countdown.isFutureManifestation
             )
@@ -158,7 +161,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.targetDate = normalizedTargetDate(item.targetDate)
             entity.backgroundColorIndex = Int16(item.backgroundColorIndex)
             entity.backgroundColorHex = ColorPalette.presets[item.backgroundColorIndex].hexString
-            entity.startPercentage = 1.0
+            entity.startPercentage = WidgetProgressDefaults.startPercentage
             entity.createdDate = now
             entity.sfSymbolName = MomentSymbolPolicy.normalized(item.sfSymbolName)
             entity.isFutureManifestation = item.isFutureManifestation
@@ -205,9 +208,12 @@ final class CountdownRepository: NSObject, ObservableObject {
         thumbnailImagePath: String? = nil,
         backgroundColorIndex: Int? = nil,
         backgroundColorHex: String? = nil,
-        startPercentage: Double = 1.0,
+        startPercentage: Double = WidgetProgressDefaults.startPercentage,
         showProgress: Bool = true,
         showDate: Bool = true,
+        isMinimalisticWidget: Bool = false,
+        minimalWidgetProgressStyle: MinimalWidgetProgressStyle = .defaultStyle,
+        widgetFontOption: WidgetFontOption = .defaultOption,
         sfSymbolName: String? = nil,
         reflectionSurfaceText: String? = nil,
         reflectionText: String? = nil,
@@ -239,6 +245,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.startPercentage = startPercentage
             entity.showProgress = showProgress
             entity.showDate = showDate
+            entity.isMinimalisticWidget = isMinimalisticWidget
+            entity.minimalWidgetProgressStyleRaw = minimalWidgetProgressStyle.rawValue
+            entity.widgetFontOptionRaw = widgetFontOption.rawValue
             entity.sfSymbolName = normalizedSymbolName
             entity.createdDate = createdDate
             entity.reflectionSurfaceText = reflectionSurfaceText
@@ -269,6 +278,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             startPercentage: startPercentage,
             showProgress: showProgress,
             showDate: showDate,
+            isMinimalisticWidget: isMinimalisticWidget,
+            minimalWidgetProgressStyle: minimalWidgetProgressStyle,
+            widgetFontOption: widgetFontOption,
             sfSymbolName: normalizedSymbolName,
             calendarEventIdentifier: nil,
             reflectionSurfaceText: reflectionSurfaceText,
@@ -308,6 +320,9 @@ final class CountdownRepository: NSObject, ObservableObject {
         startPercentage: Double? = nil,
         showProgress: Bool? = nil,
         showDate: Bool? = nil,
+        isMinimalisticWidget: Bool? = nil,
+        minimalWidgetProgressStyle: MinimalWidgetProgressStyle? = nil,
+        widgetFontOption: WidgetFontOption? = nil,
         sfSymbolName: String?? = nil,
         reflectionSurfaceText: String?? = nil,
         reflectionText: String?? = nil,
@@ -335,7 +350,9 @@ final class CountdownRepository: NSObject, ObservableObject {
         let newReflectionGeneratedAt = reflectionGeneratedAt
         let newDetailsText = detailsText
         let normalizedSymbolName = sfSymbolName.map(MomentSymbolPolicy.normalized)
-        let updatedCreatedDate = normalizedDate == nil ? countdown.createdDate : Date()
+        let updatedCreatedDate = normalizedDate.map {
+            createdDatePreservingProgress(for: countdown, newTargetDate: $0)
+        } ?? countdown.createdDate
         try context.performAndWait {
             let request = CountdownEntity.fetchRequest()
             request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -354,6 +371,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             if let startPercentage { entity.startPercentage = startPercentage }
             if let showProgress { entity.showProgress = showProgress }
             if let showDate { entity.showDate = showDate }
+            if let isMinimalisticWidget { entity.isMinimalisticWidget = isMinimalisticWidget }
+            if let minimalWidgetProgressStyle { entity.minimalWidgetProgressStyleRaw = minimalWidgetProgressStyle.rawValue }
+            if let widgetFontOption { entity.widgetFontOptionRaw = widgetFontOption.rawValue }
             if let normalizedSymbolName { entity.sfSymbolName = normalizedSymbolName }
             if let newReflectionSurfaceText { entity.reflectionSurfaceText = newReflectionSurfaceText }
             if let newReflectionText { entity.reflectionText = newReflectionText }
@@ -402,6 +422,9 @@ final class CountdownRepository: NSObject, ObservableObject {
             startPercentage: startPercentage ?? countdown.startPercentage,
             showProgress: showProgress ?? countdown.showProgress,
             showDate: showDate ?? countdown.showDate,
+            isMinimalisticWidget: isMinimalisticWidget ?? countdown.isMinimalisticWidget,
+            minimalWidgetProgressStyle: minimalWidgetProgressStyle ?? countdown.minimalWidgetProgressStyle,
+            widgetFontOption: widgetFontOption ?? countdown.widgetFontOption,
             sfSymbolName: normalizedSymbolName != nil ? normalizedSymbolName! : countdown.sfSymbolName,
             calendarEventIdentifier: countdown.calendarEventIdentifier,
             reflectionSurfaceText: resolvedValue(
@@ -578,6 +601,32 @@ final class CountdownRepository: NSObject, ObservableObject {
     private func resolvedFileURL(existing: URL?, update: String??) -> URL? {
         guard let update else { return existing }
         return update.map { URL(fileURLWithPath: $0) }
+    }
+
+    private func createdDatePreservingProgress(
+        for countdown: Countdown,
+        newTargetDate: Date,
+        now: Date = Date()
+    ) -> Date {
+        guard !countdown.isFutureManifestation else { return countdown.createdDate }
+
+        let originalTotalDuration = countdown.targetDate.timeIntervalSince(countdown.createdDate)
+        guard originalTotalDuration > 0 else { return countdown.createdDate }
+
+        let originalElapsedDuration = now.timeIntervalSince(countdown.createdDate)
+        let progress = min(1, max(0, originalElapsedDuration / originalTotalDuration))
+        let denominator = 1 - progress
+
+        // Preserve the current progress ratio when the target date moves.
+        guard denominator > .ulpOfOne else { return countdown.createdDate }
+
+        let nowReference = now.timeIntervalSinceReferenceDate
+        let targetReference = newTargetDate.timeIntervalSinceReferenceDate
+        let createdReference = (nowReference - (progress * targetReference)) / denominator
+        let adjustedCreatedDate = Date(timeIntervalSinceReferenceDate: createdReference)
+
+        guard adjustedCreatedDate <= newTargetDate else { return countdown.createdDate }
+        return adjustedCreatedDate
     }
 
     private func normalizedTargetDate(_ date: Date) -> Date {

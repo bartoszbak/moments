@@ -16,12 +16,16 @@
 		101945C06C7DAD4A4D717B31 /* EditCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C893FD9BAC0B25110AE1FA17 /* EditCountdownView.swift */; };
 		1505ADC2159BA9AE60DCF97A /* manifest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 01A179BD161DD902F6E4F906 /* manifest.txt */; };
 		1715BBD8EA7CA50A9BF9E0A8 /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81644C993BB4FF389537E4C4 /* SharedDataStore.swift */; };
+		1AA1BB22CC33DD44EE55FF66 /* WidgetAppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA1BB22CC33DD44EE55FF67 /* WidgetAppearanceSettings.swift */; };
+		1AA1BB22CC33DD44EE55FF68 /* ManifestationTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA1BB22CC33DD44EE55FF69 /* ManifestationTypography.swift */; };
 		2370BD3E84893A4D96D07D59 /* BradfordLL-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */; };
+		2370BD3E84893A4D96D07D5A /* BradfordLL-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */; };
 		275C10D882BC0DC41D5027FC /* CountdownAppEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */; };
 		29AC6602E2B1E80B4811F659 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A454604EA8126CA30C88E46A /* Color+Hex.swift */; };
 		313CB18BEF32C29F6F1006B4 /* system.txt in Resources */ = {isa = PBXBuildFile; fileRef = 3577909D5081385951BC6140 /* system.txt */; };
 		3D1243FD6B03D09E0BDA62C7 /* SharedDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81644C993BB4FF389537E4C4 /* SharedDataStore.swift */; };
 		3EDCD316B1019D39B2F75ADC /* BradfordLL-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = BB20FB59689E15C57BD62E58 /* BradfordLL-Book.otf */; };
+		3EDCD316B1019D39B2F75ADD /* BradfordLL-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = BB20FB59689E15C57BD62E58 /* BradfordLL-Book.otf */; };
 		4004756376065617A6CF47C9 /* MomentDeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83732CCE2F337909DE208A8F /* MomentDeepLink.swift */; };
 		45E8A79DC8E4CA1F991D9E69 /* ManifestNotificationCardModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EF9B75756531C7F1777198C /* ManifestNotificationCardModel.swift */; };
 		47FA59083373337CB08AC3BD /* CountdownProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0044636E666A16BCDED1CCED /* CountdownProvider.swift */; };
@@ -29,6 +33,7 @@
 		4C2BA38CE636B3E4A6F5A197 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F0161881DF6012EE26C4F0 /* PersistenceController.swift */; };
 		551B5A74EC8931D0244BDCFA /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295B4F955515A909874DCDF6 /* CalendarService.swift */; };
 		5B764D5CC06F34F2F6115802 /* BradfordLL-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = A764D051685A514CA9E98235 /* BradfordLL-Medium.otf */; };
+		5B764D5CC06F34F2F6115803 /* BradfordLL-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = A764D051685A514CA9E98235 /* BradfordLL-Medium.otf */; };
 		5CFD43AC5166E06B4C4B87CB /* CountdownListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A878F14CB50B697ADBFCEDD5 /* CountdownListView.swift */; };
 		5E406BAB2EE7A0FA7BC88CA2 /* ProgressStartPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2FD789458F240ED033C1398 /* ProgressStartPickerSection.swift */; };
 		6322696B456EF6D6B18CB43D /* BlurSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 09C74FF0F9520A5B30889534 /* BlurSwiftUI */; };
@@ -40,6 +45,7 @@
 		6A5D3DF9DAC961BE29DD0EA6 /* ReflectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4618C898BC88C486853851 /* ReflectionService.swift */; };
 		6D736B177D4D3B1A12A41E5D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 7A6E5875F3C44A56A4B3D18F /* RevenueCat */; };
 		70F7247B3F81F3A184CE20EC /* BradfordLL-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4278A770D60414C1A7FE93DE /* BradfordLL-Regular.otf */; };
+		70F7247B3F81F3A184CE20ED /* BradfordLL-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4278A770D60414C1A7FE93DE /* BradfordLL-Regular.otf */; };
 		72915A86997186404BD35329 /* Countdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = C565D10A492681A7C42E01C6 /* Countdown.swift */; };
 		747E493CAC4F6A0F3BD39B3C /* BackgroundPickerSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFE51D898B86FE8EEE527CA /* BackgroundPickerSection.swift */; };
 		75BCBA4F15CCDA388777BC3A /* DeveloperMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6795018E13A078626EFE240C /* DeveloperMenuView.swift */; };
@@ -52,6 +58,9 @@
 		9CBC4B47A452C6C302B4132E /* IntroSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652C12E5F5D18E4C5BA08E0D /* IntroSheetView.swift */; };
 		9CEA28060EB697D45D69F140 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBDD7F362590382735CAFACE /* WidgetKit.framework */; };
 		A113A8D7FC7216CF0149F607 /* CountdownWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D212718BD9096D60168E8BC /* CountdownWidgetView.swift */; };
+		D1A1B2C3D4E5F60718293B41 /* WidgetCircularProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A1B2C3D4E5F60718293A41 /* WidgetCircularProgressBar.swift */; };
+		D1A1B2C3D4E5F60718293B42 /* WidgetLinearProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A1B2C3D4E5F60718293A42 /* WidgetLinearProgressBar.swift */; };
+		D1A1B2C3D4E5F60718293B43 /* WidgetVerticalBarsProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A1B2C3D4E5F60718293A43 /* WidgetVerticalBarsProgressBar.swift */; };
 		A13786BFC0E5C2118EA783D6 /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */; };
 		A1B2C3D4E5F60718293A4B5D /* MomentPreviewHeroSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B62 /* MomentPreviewHeroSection.swift */; };
 		A1B2C3D4E5F60718293A4B5E /* MomentPreviewReflectionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B63 /* MomentPreviewReflectionSection.swift */; };
@@ -63,6 +72,7 @@
 		AE7DD78D38B008A7FA9DF128 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */; };
 		B19B8BF1181B67AA9BBFB006 /* past.txt in Resources */ = {isa = PBXBuildFile; fileRef = D34E6C127CF17D82614620DB /* past.txt */; };
 		B7A1F1C2D3E4F50617283940 /* BradfordLL-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */; };
+		B7A1F1C2D3E4F50617283941 /* BradfordLL-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */; };
 		C1B4BA8394A75B001EFAE5C8 /* AddCountdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6C70200D860A729B74D9CB5 /* AddCountdownView.swift */; };
 		C1D2E3F4A5B60718293A4B5C /* SubscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A60718293A4B5C /* SubscriptionService.swift */; };
 		C75E3E7D178119242DBA2F21 /* MomentPreviewScrollEdgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF8F75878D9196552AF66BB /* MomentPreviewScrollEdgeView.swift */; };
@@ -71,6 +81,9 @@
 		E012AD4BC4192EA5F83B9E8D /* Date+SmartFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */; };
 		E935628191F64BA8705ED9F1 /* MomentDeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83732CCE2F337909DE208A8F /* MomentDeepLink.swift */; };
 		F7E34519A1805AF5A7141E52 /* WidgetCountdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */; };
+		F7E34519A1805AF5A7141E53 /* WidgetAppearanceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA1BB22CC33DD44EE55FF67 /* WidgetAppearanceSettings.swift */; };
+		F7E34519A1805AF5A7141E54 /* ManifestationTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AA1BB22CC33DD44EE55FF69 /* ManifestationTypography.swift */; };
+		F7E34519A1805AF5A7141E55 /* WidgetTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E34519A1805AF5A7141E56 /* WidgetTypography.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,6 +154,8 @@
 		8EF9B75756531C7F1777198C /* ManifestNotificationCardModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestNotificationCardModel.swift; sourceTree = "<group>"; };
 		90EF29415E7E22C19A0D83D9 /* BradfordLL-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Bold.otf"; sourceTree = "<group>"; };
 		914D5E52B336A806AE1A93A8 /* CountdownAppEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownAppEntity.swift; sourceTree = "<group>"; };
+		1AA1BB22CC33DD44EE55FF67 /* WidgetAppearanceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAppearanceSettings.swift; sourceTree = "<group>"; };
+		1AA1BB22CC33DD44EE55FF69 /* ManifestationTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestationTypography.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B62 /* MomentPreviewHeroSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewHeroSection.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B63 /* MomentPreviewReflectionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewReflectionSection.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B64 /* MomentPreviewActionBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewActionBar.swift; sourceTree = "<group>"; };
@@ -156,6 +171,9 @@
 		BB20FB59689E15C57BD62E58 /* BradfordLL-Book.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-Book.otf"; sourceTree = "<group>"; };
 		C4BF3C7A6776967BD8E726B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C565D10A492681A7C42E01C6 /* Countdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Countdown.swift; sourceTree = "<group>"; };
+		D1A1B2C3D4E5F60718293A41 /* WidgetCircularProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCircularProgressBar.swift; sourceTree = "<group>"; };
+		D1A1B2C3D4E5F60718293A42 /* WidgetLinearProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetLinearProgressBar.swift; sourceTree = "<group>"; };
+		D1A1B2C3D4E5F60718293A43 /* WidgetVerticalBarsProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetVerticalBarsProgressBar.swift; sourceTree = "<group>"; };
 		C893FD9BAC0B25110AE1FA17 /* EditCountdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCountdownView.swift; sourceTree = "<group>"; };
 		C8B2E2D3F4A5061728394051 /* BradfordLL-MediumItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BradfordLL-MediumItalic.otf"; sourceTree = "<group>"; };
 		D032B9A9BACA5B224295B2E4 /* Moments.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Moments.entitlements; sourceTree = "<group>"; };
@@ -168,6 +186,7 @@
 		EBDD7F362590382735CAFACE /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		EC6495D3A08C241F976E4B59 /* TillApp 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TillApp 5.xcdatamodel"; sourceTree = "<group>"; };
 		F12CEF1897B09F366E6E6283 /* MomentPreviewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MomentPreviewViewModel.swift; sourceTree = "<group>"; };
+		F7E34519A1805AF5A7141E56 /* WidgetTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetTypography.swift; sourceTree = "<group>"; };
 		F907F7C2CBB6F2437B8142E9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FF69A41376D167C2EE412AA6 /* MomentsWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MomentsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -221,6 +240,10 @@
 				1661F8FD807EB75471F4EC72 /* Moments.entitlements */,
 				641EF3FC55AFA909DB257418 /* MomentsWidgetBundle.swift */,
 				000D4BFC4FACD369DD03E87D /* SelectCountdownIntent.swift */,
+				D1A1B2C3D4E5F60718293A41 /* WidgetCircularProgressBar.swift */,
+				D1A1B2C3D4E5F60718293A42 /* WidgetLinearProgressBar.swift */,
+				F7E34519A1805AF5A7141E56 /* WidgetTypography.swift */,
+				D1A1B2C3D4E5F60718293A43 /* WidgetVerticalBarsProgressBar.swift */,
 			);
 			path = MomentsWidgetExtension;
 			sourceTree = "<group>";
@@ -418,8 +441,10 @@
 			children = (
 				A454604EA8126CA30C88E46A /* Color+Hex.swift */,
 				503C8D4A8610DB4A2E05768E /* Date+SmartFormat.swift */,
+				1AA1BB22CC33DD44EE55FF69 /* ManifestationTypography.swift */,
 				83732CCE2F337909DE208A8F /* MomentDeepLink.swift */,
 				81644C993BB4FF389537E4C4 /* SharedDataStore.swift */,
+				1AA1BB22CC33DD44EE55FF67 /* WidgetAppearanceSettings.swift */,
 				B218A223B09FF0342DAB4003 /* WidgetCountdown.swift */,
 			);
 			path = Shared;
@@ -457,6 +482,7 @@
 			buildPhases = (
 				4FE505356633A620D50DB771 /* Sources */,
 				479712B312522A5B63B69E32 /* Frameworks */,
+				F7E34519A1805AF5A7141E57 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -511,6 +537,18 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F7E34519A1805AF5A7141E57 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2370BD3E84893A4D96D07D5A /* BradfordLL-Bold.otf in Resources */,
+				3EDCD316B1019D39B2F75ADD /* BradfordLL-Book.otf in Resources */,
+				5B764D5CC06F34F2F6115803 /* BradfordLL-Medium.otf in Resources */,
+				B7A1F1C2D3E4F50617283941 /* BradfordLL-MediumItalic.otf in Resources */,
+				70F7247B3F81F3A184CE20ED /* BradfordLL-Regular.otf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		76C804615BBB58FD8BBE3A10 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -539,12 +577,18 @@
 				275C10D882BC0DC41D5027FC /* CountdownAppEntity.swift in Sources */,
 				47FA59083373337CB08AC3BD /* CountdownProvider.swift in Sources */,
 				A113A8D7FC7216CF0149F607 /* CountdownWidgetView.swift in Sources */,
+				D1A1B2C3D4E5F60718293B41 /* WidgetCircularProgressBar.swift in Sources */,
 				E012AD4BC4192EA5F83B9E8D /* Date+SmartFormat.swift in Sources */,
+				F7E34519A1805AF5A7141E54 /* ManifestationTypography.swift in Sources */,
 				4004756376065617A6CF47C9 /* MomentDeepLink.swift in Sources */,
 				C7DAAECDC98D8B1685AC8311 /* MomentsWidgetBundle.swift in Sources */,
 				C7FB49BA86E4F761B36C1DAE /* SelectCountdownIntent.swift in Sources */,
 				1715BBD8EA7CA50A9BF9E0A8 /* SharedDataStore.swift in Sources */,
+				F7E34519A1805AF5A7141E53 /* WidgetAppearanceSettings.swift in Sources */,
 				F7E34519A1805AF5A7141E52 /* WidgetCountdown.swift in Sources */,
+				D1A1B2C3D4E5F60718293B42 /* WidgetLinearProgressBar.swift in Sources */,
+				F7E34519A1805AF5A7141E55 /* WidgetTypography.swift in Sources */,
+				D1A1B2C3D4E5F60718293B43 /* WidgetVerticalBarsProgressBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -567,6 +611,7 @@
 				101945C06C7DAD4A4D717B31 /* EditCountdownView.swift in Sources */,
 				8FD3EE9907EE0F6EA1A98943 /* ImageStorageService.swift in Sources */,
 				9CBC4B47A452C6C302B4132E /* IntroSheetView.swift in Sources */,
+				1AA1BB22CC33DD44EE55FF68 /* ManifestationTypography.swift in Sources */,
 				64C8DFD9822CB3E910C8F9A1 /* ManifestNotificationCard.swift in Sources */,
 				45E8A79DC8E4CA1F991D9E69 /* ManifestNotificationCardModel.swift in Sources */,
 				A3A27A0524CBAE39F298770A /* ManifestNotificationService.swift in Sources */,
@@ -588,6 +633,7 @@
 				0BECF6ADAB031B9AE4330C96 /* SettingsView.swift in Sources */,
 				3D1243FD6B03D09E0BDA62C7 /* SharedDataStore.swift in Sources */,
 				C1D2E3F4A5B60718293A4B5C /* SubscriptionService.swift in Sources */,
+				1AA1BB22CC33DD44EE55FF66 /* WidgetAppearanceSettings.swift in Sources */,
 				7768A37BE3A128F8BDEFC0B9 /* TimerManager.swift in Sources */,
 				079F0B8954153ED7FFA38977 /* View+Glass.swift in Sources */,
 				68FD4858BC20A66321F6D2AA /* WidgetCountdown.swift in Sources */,

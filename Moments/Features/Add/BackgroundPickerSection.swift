@@ -182,12 +182,32 @@ struct BackgroundPickerSection: View {
 
 struct WidgetOptionsSection: View {
     var allowsDateOption: Bool = true
+    var showsProgressBarStyleOption: Bool = true
+    @Binding var isMinimalisticWidget: Bool
+    @Binding var minimalWidgetProgressStyle: MinimalWidgetProgressStyle
     @Binding var showDate: Bool
+    @Binding var widgetFontOption: WidgetFontOption
 
     var body: some View {
         Section {
             if allowsDateOption {
+                Toggle("Minimalistic Widget", isOn: $isMinimalisticWidget)
+
+                if isMinimalisticWidget && showsProgressBarStyleOption {
+                    Picker("Progress Bar", selection: $minimalWidgetProgressStyle) {
+                        ForEach(MinimalWidgetProgressStyle.allCases) { style in
+                            Text(style.displayName).tag(style)
+                        }
+                    }
+                }
+
                 Toggle("Show Date on Widget", isOn: $showDate)
+            }
+
+            Picker("Font", selection: $widgetFontOption) {
+                ForEach(WidgetFontOption.allCases) { option in
+                    Text(option.displayName).tag(option)
+                }
             }
         }
     }

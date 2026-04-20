@@ -13,6 +13,9 @@ final class CountdownEntity: NSManagedObject {
     @NSManaged var startPercentage: Double
     @NSManaged var showProgress: Bool
     @NSManaged var showDate: Bool
+    @NSManaged var isMinimalisticWidget: Bool
+    @NSManaged var minimalWidgetProgressStyleRaw: String?
+    @NSManaged var widgetFontOptionRaw: String?
     @NSManaged var sfSymbolName: String?
     @NSManaged var calendarEventIdentifier: String?
     @NSManaged var createdDate: Date?
@@ -44,9 +47,12 @@ final class CountdownEntity: NSManagedObject {
             backgroundColorIndex: backgroundColorIndex >= 0 ? Int(backgroundColorIndex) : nil,
             backgroundColorHex: backgroundColorHex,
             createdDate: createdDate,
-            startPercentage: startPercentage > 0 ? startPercentage : 1.0,
+            startPercentage: startPercentage > 0 ? startPercentage : WidgetProgressDefaults.startPercentage,
             showProgress: showProgress,
             showDate: showDate,
+            isMinimalisticWidget: isMinimalisticWidget,
+            minimalWidgetProgressStyle: MinimalWidgetProgressStyle(rawValue: minimalWidgetProgressStyleRaw ?? "") ?? .defaultStyle,
+            widgetFontOption: WidgetFontOption(rawValue: widgetFontOptionRaw ?? "") ?? .defaultOption,
             sfSymbolName: MomentSymbolPolicy.normalized(sfSymbolName),
             calendarEventIdentifier: calendarEventIdentifier,
             reflectionSurfaceText: reflectionSurfaceText,

@@ -1,13 +1,15 @@
 import SwiftUI
 import UIKit
-import CoreText
+import UserNotifications
 
 @main
 struct MomentsApp: App {
     @StateObject private var repository: CountdownRepository
     @StateObject private var timerManager = TimerManager()
     @StateObject private var subscriptionService = SubscriptionService.shared
+    @StateObject private var navigationCoordinator = AppNavigationCoordinator.shared
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @UIApplicationDelegateAdaptor(MomentsAppDelegate.self) private var appDelegate
 
     @Environment(\.scenePhase) private var scenePhase
 
@@ -27,6 +29,7 @@ struct MomentsApp: App {
                 .environmentObject(repository)
                 .environmentObject(timerManager)
                 .environmentObject(subscriptionService)
+                .environmentObject(navigationCoordinator)
                 .preferredColorScheme(AppTheme.preferredColorScheme(for: appearanceSetting))
                 .task {
                     await subscriptionService.configure()
@@ -50,12 +53,112 @@ struct MomentsApp: App {
     }
 }
 
+@MainActor
+final class AppNavigationCoordinator: ObservableObject {
+    static let shared = AppNavigationCoordinator()
+
+    @Published private(set) var pendingPreviewCountdownID: UUID?
+    @Published private(set) var addMomentRequestToken = 0
+
+    private init() {}
+
+    func handle(url: URL) {
+        guard let countdownID = MomentDeepLink.countdownID(from: url) else { return }
+        pendingPreviewCountdownID = countdownID
+    }
+
+    @discardableResult
+    func handle(shortcutItem: UIApplicationShortcutItem) -> Bool {
+        guard shortcutItem.type == AppShortcut.addMomentType else { return false }
+        addMomentRequestToken += 1
+        return true
+    }
+
+    func handle(notificationUserInfo: [AnyHashable: Any]) {
+        guard let countdownID = MomentDeepLink.countdownID(from: notificationUserInfo) else { return }
+        pendingPreviewCountdownID = countdownID
+    }
+
+    func clearPendingPreviewCountdownID() {
+        pendingPreviewCountdownID = nil
+    }
+}
+
+enum AppShortcut {
+    static let addMomentType = "com.tillappcounter.Moments.addMoment"
+}
+
+final class MomentsAppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        let configuration = UISceneConfiguration(
+            name: nil,
+            sessionRole: connectingSceneSession.role
+        )
+        configuration.delegateClass = MomentsSceneDelegate.self
+        return configuration
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse
+    ) async {
+        await MainActor.run {
+            AppNavigationCoordinator.shared.handle(
+                notificationUserInfo: response.notification.request.content.userInfo
+            )
+        }
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        [.banner, .list, .sound]
+    }
+}
+
+final class MomentsSceneDelegate: NSObject, UIWindowSceneDelegate {
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        guard let shortcutItem = connectionOptions.shortcutItem else { return }
+
+        Task { @MainActor in
+            _ = AppNavigationCoordinator.shared.handle(shortcutItem: shortcutItem)
+        }
+    }
+
+    func windowScene(
+        _ windowScene: UIWindowScene,
+        performActionFor shortcutItem: UIApplicationShortcutItem,
+        completionHandler: @escaping (Bool) -> Void
+    ) {
+        Task { @MainActor in
+            let handled = AppNavigationCoordinator.shared.handle(shortcutItem: shortcutItem)
+            completionHandler(handled)
+        }
+    }
+}
+
 enum AppTypography {
-    private static var manifestationPostScriptNames: [ManifestationVariant: String] = [:]
-    private static var manifestationGraphicsFonts: [ManifestationVariant: CGFont] = [:]
+    typealias ManifestationVariant = ManifestationTypography.Variant
 
     static func configure() {
-        registerBundledFonts()
+        ManifestationTypography.configure()
 
         let largeTitleFont = UIFont.preferredRoundedFont(forTextStyle: .largeTitle, weight: .bold)
         let titleFont = UIFont.preferredRoundedFont(forTextStyle: .headline, weight: .semibold)
@@ -75,20 +178,11 @@ enum AppTypography {
         variant: ManifestationVariant = .regular,
         sizeAdjustment: CGFloat = 0
     ) -> Font {
-        if let resolvedFont = manifestationCTFont(
-            relativeTo: textStyle,
-            variant: variant,
-            sizeAdjustment: sizeAdjustment
-        ) {
-            return Font(resolvedFont)
-        }
-
-        let fallbackUIFont = manifestationFallbackUIFont(
+        ManifestationTypography.font(
             relativeTo: textStyle,
             variant: variant,
             sizeAdjustment: sizeAdjustment
         )
-        return Font(fallbackUIFont)
     }
 
     static func manifestationFont(
@@ -96,224 +190,11 @@ enum AppTypography {
         relativeTo textStyle: Font.TextStyle,
         variant: ManifestationVariant = .regular
     ) -> Font {
-        if let resolvedFont = manifestationCTFont(
-            size: size,
-            relativeTo: textStyle,
-            variant: variant
-        ) {
-            return Font(resolvedFont)
-        }
-
-        let fallbackUIFont = manifestationFallbackUIFont(
+        ManifestationTypography.font(
             size: size,
             relativeTo: textStyle,
             variant: variant
         )
-        return Font(fallbackUIFont)
-    }
-
-    private static func manifestationCTFont(
-        relativeTo textStyle: Font.TextStyle,
-        variant: ManifestationVariant,
-        sizeAdjustment: CGFloat
-    ) -> CTFont? {
-        let uiTextStyle = uiTextStyle(for: textStyle)
-        let basePointSize = UIFont.preferredFont(forTextStyle: uiTextStyle).pointSize + sizeAdjustment
-        let scaledPointSize = UIFontMetrics(forTextStyle: uiTextStyle).scaledValue(for: basePointSize)
-
-        if let graphicsFont = manifestationGraphicsFonts[variant] {
-            return CTFontCreateWithGraphicsFont(graphicsFont, scaledPointSize, nil, nil)
-        }
-
-        for fontName in manifestationResolvedNames(for: variant) {
-            if let customFont = UIFont(name: fontName, size: scaledPointSize) {
-                return customFont as CTFont
-            }
-        }
-
-        return nil
-    }
-
-    private static func manifestationCTFont(
-        size: CGFloat,
-        relativeTo textStyle: Font.TextStyle,
-        variant: ManifestationVariant
-    ) -> CTFont? {
-        let uiTextStyle = uiTextStyle(for: textStyle)
-        let scaledPointSize = UIFontMetrics(forTextStyle: uiTextStyle).scaledValue(for: size)
-
-        if let graphicsFont = manifestationGraphicsFonts[variant] {
-            return CTFontCreateWithGraphicsFont(graphicsFont, scaledPointSize, nil, nil)
-        }
-
-        for fontName in manifestationResolvedNames(for: variant) {
-            if let customFont = UIFont(name: fontName, size: scaledPointSize) {
-                return customFont as CTFont
-            }
-        }
-
-        return nil
-    }
-
-    private static func manifestationFallbackUIFont(
-        relativeTo textStyle: Font.TextStyle,
-        variant: ManifestationVariant,
-        sizeAdjustment: CGFloat
-    ) -> UIFont {
-        let uiTextStyle = uiTextStyle(for: textStyle)
-        let basePointSize = UIFont.preferredFont(forTextStyle: uiTextStyle).pointSize + sizeAdjustment
-        let metrics = UIFontMetrics(forTextStyle: uiTextStyle)
-        let fallbackFont = manifestationFallbackBaseFont(
-            size: basePointSize,
-            variant: variant
-        )
-        return metrics.scaledFont(for: fallbackFont)
-    }
-
-    private static func manifestationFallbackUIFont(
-        size: CGFloat,
-        relativeTo textStyle: Font.TextStyle,
-        variant: ManifestationVariant
-    ) -> UIFont {
-        let uiTextStyle = uiTextStyle(for: textStyle)
-        let metrics = UIFontMetrics(forTextStyle: uiTextStyle)
-        let fallbackFont = manifestationFallbackBaseFont(
-            size: size,
-            variant: variant
-        )
-        return metrics.scaledFont(for: fallbackFont)
-    }
-
-    private static func manifestationFallbackBaseFont(
-        size: CGFloat,
-        variant: ManifestationVariant
-    ) -> UIFont {
-        let baseFont = UIFont.systemFont(ofSize: size, weight: variant.fallbackWeight)
-
-        guard variant.isItalic,
-              let italicDescriptor = baseFont.fontDescriptor.withSymbolicTraits(.traitItalic)
-        else {
-            return baseFont
-        }
-
-        return UIFont(descriptor: italicDescriptor, size: size)
-    }
-
-    private static func manifestationResolvedNames(for variant: ManifestationVariant) -> [String] {
-        var names: [String] = []
-
-        if let resolvedName = manifestationPostScriptNames[variant] {
-            names.append(resolvedName)
-        }
-
-        names.append(contentsOf: variant.candidateFontNames)
-        return Array(NSOrderedSet(array: names)) as? [String] ?? names
-    }
-
-    private static func registerBundledFonts() {
-        for variant in ManifestationVariant.allCases {
-            registerBundledFont(for: variant)
-        }
-    }
-
-    private static func registerBundledFont(for variant: ManifestationVariant) {
-        guard let url = Bundle.main.url(forResource: variant.bundleFileName, withExtension: nil) else { return }
-
-        if let provider = CGDataProvider(url: url as CFURL),
-           let cgFont = CGFont(provider),
-           let postScriptName = cgFont.postScriptName as String? {
-            manifestationGraphicsFonts[variant] = cgFont
-            manifestationPostScriptNames[variant] = postScriptName
-        }
-    }
-
-    private static func uiTextStyle(for textStyle: Font.TextStyle) -> UIFont.TextStyle {
-        switch textStyle {
-        case .largeTitle:
-            return .largeTitle
-        case .title:
-            return .title1
-        case .title2:
-            return .title2
-        case .title3:
-            return .title3
-        case .headline:
-            return .headline
-        case .subheadline:
-            return .subheadline
-        case .callout:
-            return .callout
-        case .footnote:
-            return .footnote
-        case .caption:
-            return .caption1
-        case .caption2:
-            return .caption2
-        default:
-            return .body
-        }
-    }
-
-    enum ManifestationVariant: CaseIterable {
-        case book
-        case regular
-        case medium
-        case mediumItalic
-        case bold
-
-        fileprivate var bundleFileName: String {
-            switch self {
-            case .book:
-                return "BradfordLL-Book.otf"
-            case .regular:
-                return "BradfordLL-Regular.otf"
-            case .medium:
-                return "BradfordLL-Medium.otf"
-            case .mediumItalic:
-                return "BradfordLL-MediumItalic.otf"
-            case .bold:
-                return "BradfordLL-Bold.otf"
-            }
-        }
-
-        fileprivate var candidateFontNames: [String] {
-            switch self {
-            case .book:
-                return ["BradfordLL-Book", "Bradford LL Book", "Bradford LL"]
-            case .regular:
-                return ["BradfordLL-Regular", "Bradford LL Regular", "Bradford LL"]
-            case .medium:
-                return ["BradfordLL-Medium", "Bradford LL Medium", "Bradford LL"]
-            case .mediumItalic:
-                return ["BradfordLL-MediumItalic", "Bradford LL Medium Italic", "Bradford LL Italic"]
-            case .bold:
-                return ["BradfordLL-Bold", "Bradford LL Bold", "Bradford LL"]
-            }
-        }
-
-        fileprivate var fallbackWeight: UIFont.Weight {
-            switch self {
-            case .book:
-                return .light
-            case .regular:
-                return .regular
-            case .medium:
-                return .medium
-            case .mediumItalic:
-                return .medium
-            case .bold:
-                return .bold
-            }
-        }
-
-        fileprivate var isItalic: Bool {
-            switch self {
-            case .mediumItalic:
-                return true
-            case .book, .regular, .medium, .bold:
-                return false
-            }
-        }
     }
 }
 
@@ -332,15 +213,15 @@ private extension UIFont {
 
 private struct AppThemeRootView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @State private var deepLinkedCountdownID: UUID?
+    @EnvironmentObject private var navigationCoordinator: AppNavigationCoordinator
 
     var body: some View {
-        CountdownListView(deepLinkedCountdownID: $deepLinkedCountdownID)
+        CountdownListView()
             .tint(.blue)
             .toggleStyle(AppSwitchToggleStyle(tint: .blue, colorScheme: colorScheme))
             .fontDesign(.rounded)
             .onOpenURL { url in
-                deepLinkedCountdownID = MomentDeepLink.countdownID(from: url)
+                navigationCoordinator.handle(url: url)
             }
     }
 }

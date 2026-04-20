@@ -10,12 +10,15 @@ struct WidgetCountdown: Codable, Identifiable {
     let startPercentage: Double
     let showProgress: Bool
     let showDate: Bool
+    let isMinimalisticWidget: Bool
+    let minimalWidgetProgressStyleRaw: String?
+    let widgetFontOptionRaw: String?
     let sfSymbolName: String?
     let isFutureManifestation: Bool
 
     enum CodingKeys: String, CodingKey {
         case id, title, targetDate, createdDate, backgroundColorHex, backgroundImagePath
-        case startPercentage, showProgress, showDate, sfSymbolName, isFutureManifestation
+        case startPercentage, showProgress, showDate, isMinimalisticWidget, minimalWidgetProgressStyleRaw, widgetFontOptionRaw, sfSymbolName, isFutureManifestation
     }
 
     init(
@@ -28,6 +31,9 @@ struct WidgetCountdown: Codable, Identifiable {
         startPercentage: Double,
         showProgress: Bool,
         showDate: Bool,
+        isMinimalisticWidget: Bool,
+        minimalWidgetProgressStyle: MinimalWidgetProgressStyle,
+        widgetFontOption: WidgetFontOption,
         sfSymbolName: String?,
         isFutureManifestation: Bool
     ) {
@@ -40,6 +46,9 @@ struct WidgetCountdown: Codable, Identifiable {
         self.startPercentage = startPercentage
         self.showProgress = showProgress
         self.showDate = showDate
+        self.isMinimalisticWidget = isMinimalisticWidget
+        self.minimalWidgetProgressStyleRaw = minimalWidgetProgressStyle.rawValue
+        self.widgetFontOptionRaw = widgetFontOption.rawValue
         self.sfSymbolName = MomentSymbolPolicy.normalized(sfSymbolName)
         self.isFutureManifestation = isFutureManifestation
     }
@@ -55,10 +64,21 @@ struct WidgetCountdown: Codable, Identifiable {
         startPercentage = try container.decode(Double.self, forKey: .startPercentage)
         showProgress = try container.decodeIfPresent(Bool.self, forKey: .showProgress) ?? true
         showDate = try container.decode(Bool.self, forKey: .showDate)
+        isMinimalisticWidget = try container.decodeIfPresent(Bool.self, forKey: .isMinimalisticWidget) ?? false
+        minimalWidgetProgressStyleRaw = try container.decodeIfPresent(String.self, forKey: .minimalWidgetProgressStyleRaw)
+        widgetFontOptionRaw = try container.decodeIfPresent(String.self, forKey: .widgetFontOptionRaw)
         sfSymbolName = MomentSymbolPolicy.normalized(
             try container.decodeIfPresent(String.self, forKey: .sfSymbolName)
         )
         isFutureManifestation = try container.decodeIfPresent(Bool.self, forKey: .isFutureManifestation) ?? false
+    }
+
+    var widgetFontOption: WidgetFontOption {
+        WidgetFontOption(rawValue: widgetFontOptionRaw ?? "") ?? .defaultOption
+    }
+
+    var minimalWidgetProgressStyle: MinimalWidgetProgressStyle {
+        MinimalWidgetProgressStyle(rawValue: minimalWidgetProgressStyleRaw ?? "") ?? .defaultStyle
     }
 
     var isExpired: Bool {
@@ -112,9 +132,12 @@ extension WidgetCountdown {
         createdDate: Date().addingTimeInterval(-14 * 86400),
         backgroundColorHex: nil,
         backgroundImagePath: nil,
-        startPercentage: 1.0,
+        startPercentage: WidgetProgressDefaults.startPercentage,
         showProgress: true,
         showDate: true,
+        isMinimalisticWidget: false,
+        minimalWidgetProgressStyle: .defaultStyle,
+        widgetFontOption: .defaultOption,
         sfSymbolName: nil,
         isFutureManifestation: false
     )

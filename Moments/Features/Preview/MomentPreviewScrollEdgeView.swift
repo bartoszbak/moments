@@ -170,6 +170,7 @@ struct MomentPreviewScrollEdgeView: View {
             label: primaryActionButtonLabel(for: countdown),
             foregroundColor: primaryButtonForegroundColor,
             backgroundColor: primaryButtonColor,
+            disabledBackgroundColor: disabledPrimaryActionBackgroundColor(for: countdown),
             loadingForegroundColor: loadingActionButtonForegroundColor,
             loadingBackgroundColor: loadingActionButtonBackgroundColor,
             action: {
@@ -184,7 +185,7 @@ struct MomentPreviewScrollEdgeView: View {
         viewportWidth: CGFloat,
         bottomSafeAreaInset: CGFloat
     ) -> some View {
-        MomentPreviewBottomActionBar(
+        BottomGlassActionBar(
             showsPrimaryAction: viewModel.showsBottomPrimaryAction(
                 for: countdown,
                 now: timerManager.currentTime
@@ -289,6 +290,20 @@ struct MomentPreviewScrollEdgeView: View {
 
     private var loadingActionButtonForegroundColor: Color {
         .primary
+    }
+
+    private func disabledPrimaryActionBackgroundColor(for countdown: Countdown) -> Color? {
+        guard countdown.isFutureManifestation else { return nil }
+
+        switch viewModel.manifestationRegenerationAvailability(
+            for: countdown,
+            now: timerManager.currentTime
+        ) {
+        case .lockedUntilTomorrow:
+            return Color(uiColor: .systemGray3)
+        case .initialGeneration, .available:
+            return nil
+        }
     }
 
     private var preferredColorScheme: ColorScheme? {

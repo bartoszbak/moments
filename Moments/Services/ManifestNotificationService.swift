@@ -60,6 +60,27 @@ final class ManifestNotificationService: ObservableObject {
         try? await notificationCenter.add(request)
     }
 
+    func sendDebugNotification(for countdown: Countdown) async -> Bool {
+        let authorized = await requestAuthorization()
+        guard authorized else { return false }
+
+        let request = UNNotificationRequest(
+            identifier: debugIdentifier(for: countdown.id),
+            content: notificationContent(for: countdown),
+            trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        )
+
+        notificationCenter.removePendingNotificationRequests(withIdentifiers: [request.identifier])
+        notificationCenter.removeDeliveredNotifications(withIdentifiers: [request.identifier])
+
+        do {
+            try await notificationCenter.add(request)
+            return true
+        } catch {
+            return false
+        }
+    }
+
     func cancel(for countdownID: UUID) async {
         let notificationID = identifier(for: countdownID)
         notificationCenter.removePendingNotificationRequests(withIdentifiers: [notificationID])
@@ -145,6 +166,7 @@ final class ManifestNotificationService: ObservableObject {
         content.title = countdown.title
         content.body = notificationBody(for: countdown)
         content.sound = .default
+        content.userInfo = MomentDeepLink.notificationUserInfo(for: countdown.id)
         return content
     }
 
@@ -161,6 +183,10 @@ final class ManifestNotificationService: ObservableObject {
 
     private func identifier(for countdownID: UUID) -> String {
         "manifest.\(countdownID.uuidString)"
+    }
+
+    private func debugIdentifier(for countdownID: UUID) -> String {
+        "debug.manifest.\(countdownID.uuidString)"
     }
 
     private func currentAuthorizationStatus() async -> UNAuthorizationStatus {

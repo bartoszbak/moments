@@ -64,7 +64,7 @@ struct TargetDatePickerRow: View {
     let tintColor: Color
 
     var body: some View {
-        LabeledContent("Date") {
+        LabeledContent("Targeted date") {
             DatePicker(
                 "",
                 selection: $targetDate,
@@ -78,27 +78,33 @@ struct TargetDatePickerRow: View {
     }
 }
 
-struct CalendarUpsellBanner: View {
-    let tintColor: Color
+struct UpsellBanner: View {
+    let iconName: String
+    let iconColor: Color
+    let message: LocalizedStringKey
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 10) {
-                Image(systemName: "calendar")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(tintColor)
-                    .frame(width: 24, height: 24)
+            HStack(spacing: 12) {
+                Image(systemName: iconName)
+                    .font(.system(size: 27, weight: .medium))
+                    .foregroundStyle(iconColor)
+                    .frame(width: 44, height: 44)
 
-                Text("Unlock calendar sync, notifications and more.")
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(message)
+                    .font(.system(size: 17, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .layoutPriority(1)
+
+                Spacer(minLength: 8)
+
+                PremiumPill()
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
             .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
                     .fill(Color(uiColor: .secondarySystemGroupedBackground))
             )
         }
@@ -154,9 +160,12 @@ struct AddCountdownView: View {
         for: Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
     )
     @State private var background: BackgroundSelection = .none
-    @State private var startPercentage: Double = 1.0
+    @State private var startPercentage: Double = WidgetProgressDefaults.startPercentage
     @State private var showProgress: Bool = true
     @State private var showDate: Bool = true
+    @State private var isMinimalisticWidget = false
+    @State private var minimalWidgetProgressStyle: MinimalWidgetProgressStyle = .defaultStyle
+    @State private var widgetFontOption: WidgetFontOption = .defaultOption
     @State private var showSymbol: Bool = true
     @State private var sfSymbolName: String? = MomentSymbolPolicy.defaultSymbolName
     @State private var showSymbolPicker = false
@@ -182,7 +191,7 @@ struct AddCountdownView: View {
         NavigationStack {
             Form {
                 Section("Details") {
-                    TextField("e.g. New Year, Vacation…", text: $title)
+                    TextField("Moment name", text: $title)
                         .onChange(of: title) { _, _ in
                             if showTitleError, !title.isEmpty { showTitleError = false }
                         }
@@ -205,7 +214,7 @@ struct AddCountdownView: View {
                             .foregroundStyle(.red).font(.caption)
                     }
                 }
-                Section {
+                Section("Manifestation") {
                     Toggle("Future manifestation", isOn: $isFutureManifestation)
                     if isFutureManifestation {
                         if subscriptionService.isPremium {
@@ -218,20 +227,27 @@ struct AddCountdownView: View {
                                 openSettings: openAppSettings
                             )
                         } else {
-                            PremiumLockedRowButton("Manifestation Reminder") {
+                            UpsellBanner(
+                                iconName: "bell.badge",
+                                iconColor: .secondary,
+                                message: "Unlock manifestation reminders"
+                            ) {
                                 highlightedPaywallFeature = .manifestationReminders
                             }
                         }
-                    } else {
-                        TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
                     }
-                } header: {
-                    Text("Time")
                 }
-                if !subscriptionService.isPremium && !isFutureManifestation {
-                    Section {
-                        CalendarUpsellBanner(tintColor: controlTintColor) {
-                            highlightedPaywallFeature = .calendarSync
+                if !isFutureManifestation {
+                    Section("Time") {
+                        TargetDatePickerRow(targetDate: $targetDate, tintColor: controlTintColor)
+                        if !subscriptionService.isPremium {
+                            UpsellBanner(
+                                iconName: "calendar",
+                                iconColor: .secondary,
+                                message: "Unlock calendar sync,\nnotifications"
+                            ) {
+                                highlightedPaywallFeature = .calendarSync
+                            }
                         }
                     }
                 }
@@ -240,7 +256,11 @@ struct AddCountdownView: View {
                 )
                 WidgetOptionsSection(
                     allowsDateOption: !isFutureManifestation,
-                    showDate: $showDate
+                    showsProgressBarStyleOption: showsProgressIndicatorSection,
+                    isMinimalisticWidget: $isMinimalisticWidget,
+                    minimalWidgetProgressStyle: $minimalWidgetProgressStyle,
+                    showDate: $showDate,
+                    widgetFontOption: $widgetFontOption
                 )
                 if showsProgressIndicatorSection {
                     ProgressStartPickerSection(
@@ -270,7 +290,7 @@ struct AddCountdownView: View {
                         .accessibilityLabel("Create")
                         .disabled(!isValid || isCreating)
                         .fontWeight(.semibold)
-                        .foregroundStyle(toolbarButtonColor)
+                        .foregroundStyle(confirmationButtonColor)
                 }
             }
         }
@@ -284,6 +304,7 @@ struct AddCountdownView: View {
         .onChange(of: isFutureManifestation) { _, enabled in
             if enabled {
                 showDate = false
+                isMinimalisticWidget = false
             }
         }
         .onChange(of: manifestNotificationsEnabled) { _, isEnabled in
@@ -336,6 +357,9 @@ struct AddCountdownView: View {
                 startPercentage: startPercentage,
                 showProgress: showProgress,
                 showDate: showDate,
+                isMinimalisticWidget: isFutureManifestation ? false : isMinimalisticWidget,
+                minimalWidgetProgressStyle: minimalWidgetProgressStyle,
+                widgetFontOption: widgetFontOption,
                 sfSymbolName: normalizedSymbolName,
                 isFutureManifestation: isFutureManifestation,
                 manifestNotificationsEnabled: isFutureManifestation && manifestNotificationsEnabled,
@@ -364,6 +388,10 @@ struct AddCountdownView: View {
 
     private var toolbarButtonColor: Color {
         effectiveColorScheme == .dark ? .white : .black
+    }
+
+    private var confirmationButtonColor: Color {
+        isValid && !isCreating ? controlTintColor : .secondary
     }
 
     private var detailsActionTitle: String {

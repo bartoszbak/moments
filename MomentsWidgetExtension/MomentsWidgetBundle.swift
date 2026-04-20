@@ -3,6 +3,10 @@ import SwiftUI
 
 @main
 struct MomentsWidgetBundle: WidgetBundle {
+    init() {
+        ManifestationTypography.configure()
+    }
+
     var body: some Widget {
         CountdownWidget()
     }
@@ -19,8 +23,8 @@ struct CountdownWidget: Widget {
         ) { entry in
             CountdownWidgetView(entry: entry)
         }
-        .configurationDisplayName("Countdown")
-        .description("See how many days until or since your event.")
+        .configurationDisplayName("Widget")
+        .description("See how many days until or since your moment.")
         .supportedFamilies([
             .systemSmall,
             .systemMedium,
