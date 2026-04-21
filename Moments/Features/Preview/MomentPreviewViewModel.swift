@@ -104,6 +104,8 @@ final class MomentPreviewViewModel: ObservableObject {
     // MARK: - Actions
 
     func syncSavedReflection(from countdown: Countdown) {
+        guard !isLoadingReflection else { return }
+
         surfaceText = countdown.reflectionSurfaceText ?? countdown.reflectionPrimaryText
         reflectionText = countdown.reflectionText ?? countdown.reflectionExpandedText
         guidanceText = countdown.reflectionGuidanceText
@@ -141,6 +143,7 @@ final class MomentPreviewViewModel: ObservableObject {
         isLoadingReflection = true
         errorText = nil
         reflectionTask?.cancel()
+        clearDisplayedReflectionIfNeeded(for: countdown)
 
         reflectionTask = Task { @MainActor in
             do {
@@ -183,5 +186,17 @@ final class MomentPreviewViewModel: ObservableObject {
 
     private var viewModelIsShowingRetryState: Bool {
         errorText != nil
+    }
+
+    private func clearDisplayedReflectionIfNeeded(for countdown: Countdown) {
+        guard countdown.isFutureManifestation else { return }
+        guard hasSavedSurfaceText else { return }
+
+        withAnimation(.smooth(duration: 0.24)) {
+            surfaceText = nil
+            reflectionText = nil
+            guidanceText = nil
+            expansionStage = 0
+        }
     }
 }

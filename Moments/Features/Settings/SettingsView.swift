@@ -640,15 +640,39 @@ struct PremiumPill: View {
 
     var body: some View {
         Text("Plus")
-            .font(.system(size: 15, weight: .medium, design: .rounded))
+            .font(.system(size: metrics.fontSize, weight: .medium, design: .rounded))
             .foregroundStyle(colorScheme == .dark ? .black : .white)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .lineLimit(1)
+            .fixedSize(horizontal: true, vertical: false)
+            .padding(.horizontal, metrics.horizontalPadding)
+            .padding(.vertical, metrics.verticalPadding)
             .background(
                 Capsule()
                     .fill(colorScheme == .dark ? Color.white : Color.black)
             )
     }
+
+    private var metrics: PremiumPillMetrics {
+        UIScreen.main.bounds.width <= 375 ? .compact : .regular
+    }
+}
+
+private struct PremiumPillMetrics {
+    let fontSize: CGFloat
+    let horizontalPadding: CGFloat
+    let verticalPadding: CGFloat
+
+    static let regular = PremiumPillMetrics(
+        fontSize: 15,
+        horizontalPadding: 12,
+        verticalPadding: 8
+    )
+
+    static let compact = PremiumPillMetrics(
+        fontSize: 13,
+        horizontalPadding: 10,
+        verticalPadding: 6
+    )
 }
 
 enum AppSettingsKeys {
@@ -662,6 +686,7 @@ enum AppSettingsKeys {
     static let manifestNotificationsHour = "settings.manifestNotifications.hour"
     static let manifestNotificationsMinute = "settings.manifestNotifications.minute"
     static let hapticsEnabled = "settings.haptics.enabled"
+    static let hasSeenAboutSheet = "settings.hasSeenAboutSheet"
     static let hasSeenIntroSheet = "settings.hasSeenIntroSheet"
     static let freeCreatedMomentCount = "settings.freeTier.createdMomentCount"
     static let freeAIGenerationCount = "settings.freeTier.aiGenerationCount"
@@ -678,6 +703,7 @@ enum AppSettingsDefaults {
     static let manifestNotificationsHour = 9
     static let manifestNotificationsMinute = 0
     static let hapticsEnabled = true
+    static let hasSeenAboutSheet = false
     static let hasSeenIntroSheet = false
 }
 
@@ -761,35 +787,143 @@ private extension Color {
 
 struct AboutSheetView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
+    @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
+    @AppStorage(AppSettingsKeys.hasSeenAboutSheet) private var hasSeenAboutSheet = AppSettingsDefaults.hasSeenAboutSheet
+
+    @State private var showingIntroSheet = false
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 16) {
-                Spacer(minLength: 0)
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(spacing: 0) {
+                    heroArtwork
 
-                Text("About Moments")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .multilineTextAlignment(.center)
+                    VStack(spacing: 18) {
+                        Text("Make every moment\nmove you forward")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundStyle(.primary)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
 
-                Text("Moments is a calm space for countdowns, milestones, memories, and manifestations. It keeps future plans and meaningful dates in one timeline, with optional AI reflections when you want a fresh perspective.")
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Spacer(minLength: 0)
-            }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 32)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        dismiss()
+                        Text("Count down to events, reflect on the past, and manifest what's next while staying focused on what you're creating.")
+                            .font(.system(size: 17, weight: .medium, design: .rounded))
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
+                    .frame(maxWidth: readableContentWidth)
+                    .padding(.horizontal, 32)
+                    .padding(.top, 28)
+                    .padding(.bottom, 64)
                 }
+                .frame(maxWidth: .infinity, alignment: .top)
+            }
+            .scrollIndicators(.hidden)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                bottomInsetContent(bottomSafeAreaInset: proxy.safeAreaInsets.bottom)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.hidden)
+        .preferredColorScheme(preferredColorScheme)
+        .sheet(isPresented: $showingIntroSheet) {
+            IntroSheetView {
+                showingIntroSheet = false
             }
         }
+        .onAppear {
+            hasSeenAboutSheet = true
+        }
+    }
+
+    private var heroArtwork: some View {
+        GeometryReader { proxy in
+            let containerWidth = proxy.size.width
+            let imageWidth = min(max(containerWidth * 2.05, 700), 1040)
+            let imageHeight = imageWidth / aboutBackgroundAspectRatio
+
+            ZStack(alignment: .bottom) {
+                Image("AboutBackground")
+                    .resizable()
+                    .interpolation(.high)
+                    .scaledToFit()
+                    .frame(width: imageWidth, height: imageHeight)
+            }
+            .frame(width: containerWidth, height: heroHeight, alignment: .bottom)
+        }
+        .frame(height: heroHeight)
+        .clipped()
+    }
+
+    private func bottomInsetContent(bottomSafeAreaInset: CGFloat) -> some View {
+        BottomGlassActionBar(
+            showsPrimaryAction: true,
+            maxContentWidth: readableContentWidth,
+            bottomSafeAreaInset: bottomSafeAreaInset,
+            bottomBlurGradientHeight: 96
+        ) {
+            VStack(spacing: 12) {
+                Button {
+                    dismiss()
+                } label: {
+                    Text("Get started")
+                        .font(.headline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                }
+                .controlSize(.small)
+                .buttonBorderShape(.capsule)
+                .adaptiveGlassProminentButtonStyle()
+                .tint(primaryButtonColor)
+                .foregroundStyle(primaryButtonLabelColor)
+
+                Button {
+                    showingIntroSheet = true
+                } label: {
+                    Text("See what's possible")
+                        .font(.headline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                }
+                .controlSize(.small)
+                .buttonBorderShape(.capsule)
+                .adaptiveGlassButtonStyle()
+                .tint(primaryButtonColor)
+                .foregroundStyle(secondaryButtonLabelColor)
+            }
+        }
+    }
+
+    private var preferredColorScheme: ColorScheme? {
+        AppTheme.preferredColorScheme(for: appearanceSetting)
+    }
+
+    private var primaryButtonColor: Color {
+        AppTheme.baseInterfaceTintColor(from: interfaceTintHex)
+    }
+
+    private var primaryButtonLabelColor: Color {
+        primaryButtonColor.prefersLightForeground ? .white : .black
+    }
+
+    private var secondaryButtonLabelColor: Color {
+        colorScheme == .dark ? .white : .black
+    }
+
+    private var readableContentWidth: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 700 : .infinity
+    }
+
+    private var heroHeight: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 420 : 390
+    }
+
+    private var aboutBackgroundAspectRatio: CGFloat {
+        1663.0 / 960.0
     }
 }
 

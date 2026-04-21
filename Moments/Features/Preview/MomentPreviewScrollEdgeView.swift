@@ -7,6 +7,7 @@ struct MomentPreviewScrollEdgeView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @EnvironmentObject private var subscriptionService: SubscriptionService
     @EnvironmentObject private var timerManager: TimerManager
+    @EnvironmentObject private var navigationCoordinator: AppNavigationCoordinator
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
 
@@ -41,6 +42,7 @@ struct MomentPreviewScrollEdgeView: View {
         .preferredColorScheme(preferredColorScheme)
         .onDisappear {
             viewModel.cancelReflection()
+            navigationCoordinator.setPreviewEditSheetPresented(false)
         }
         .onChange(of: viewModel.surfaceDisplayText) { _, newValue in
             if newValue.isEmpty {
@@ -48,6 +50,9 @@ struct MomentPreviewScrollEdgeView: View {
             } else {
                 completedRevealStages.removeAll()
             }
+        }
+        .onChange(of: showingEditSheet) { _, isPresented in
+            navigationCoordinator.setPreviewEditSheetPresented(isPresented)
         }
     }
 
@@ -167,6 +172,7 @@ struct MomentPreviewScrollEdgeView: View {
         MomentPreviewPrimaryActionButton(
             isLoading: viewModel.isLoadingReflection,
             isEnabled: viewModel.isPrimaryActionEnabled(for: countdown, now: timerManager.currentTime),
+            prefersResponsiveGlassStyle: prefersResponsiveGlassStyle(for: countdown),
             label: primaryActionButtonLabel(for: countdown),
             foregroundColor: primaryButtonForegroundColor,
             backgroundColor: primaryButtonColor,
@@ -304,6 +310,19 @@ struct MomentPreviewScrollEdgeView: View {
         case .initialGeneration, .available:
             return nil
         }
+    }
+
+    private func prefersResponsiveGlassStyle(for countdown: Countdown) -> Bool {
+        guard countdown.isFutureManifestation else { return false }
+
+        if case .lockedUntilTomorrow = viewModel.manifestationRegenerationAvailability(
+            for: countdown,
+            now: timerManager.currentTime
+        ) {
+            return true
+        }
+
+        return false
     }
 
     private var preferredColorScheme: ColorScheme? {

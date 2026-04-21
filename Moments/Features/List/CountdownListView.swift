@@ -15,6 +15,7 @@ struct CountdownListView: View {
     @AppStorage(AppSettingsKeys.appearance) private var appearanceSetting = AppSettingsDefaults.appearance
     @AppStorage(AppSettingsKeys.interfaceTintHex) private var interfaceTintHex = AppSettingsDefaults.interfaceTintHex
     @AppStorage(AppSettingsKeys.backgroundGradientEnabled) private var backgroundGradientEnabled = AppSettingsDefaults.backgroundGradientEnabled
+    @AppStorage(AppSettingsKeys.hasSeenAboutSheet) private var hasSeenAboutSheet = AppSettingsDefaults.hasSeenAboutSheet
     @AppStorage(AppSettingsKeys.hasSeenIntroSheet) private var hasSeenIntroSheet = AppSettingsDefaults.hasSeenIntroSheet
     @State private var showingAddSheet = false
     @State private var previewingCountdown: Countdown?
@@ -102,9 +103,17 @@ struct CountdownListView: View {
                         emptyLibraryView
                     } else if filteredCountdowns.isEmpty {
                         ContentUnavailableView {
-                            Label(emptyStateTitle, systemImage: "app.badge")
+                            VStack(spacing: 12) {
+                                Image(systemName: "app.badge")
+                                    .font(.system(size: 36, weight: .medium))
+
+                                Text(filteredEmptyStateMessage)
+                                    .font(.title3.weight(.semibold))
+                                    .multilineTextAlignment(.center)
+                            }
+                            .foregroundStyle(.primary)
                         } description: {
-                            Text(emptyStateDescription)
+                            EmptyView()
                         }
                     }
                 }
@@ -117,17 +126,16 @@ struct CountdownListView: View {
             AppHaptics.impact(.light)
             syncMomentCountDisplayTextIfNeeded()
         }
-        .onChange(of: forceIntroSheetOnLaunch) { _, isEnabled in
-            if isEnabled, !forceAboutSheetOnLaunch {
-                showingIntroSheet = true
-            }
+        .onChange(of: forceIntroSheetOnLaunch) { _, _ in
+            updateLaunchSheetPresentation()
         }
-        .onChange(of: forceAboutSheetOnLaunch) { _, isEnabled in
-            if isEnabled {
-                showingAboutSheet = true
-            }
+        .onChange(of: forceAboutSheetOnLaunch) { _, _ in
+            updateLaunchSheetPresentation()
         }
         .onChange(of: navigationCoordinator.pendingPreviewCountdownID) { _, _ in
+            openDeepLinkedCountdownIfNeeded()
+        }
+        .onChange(of: navigationCoordinator.isPreviewEditSheetPresented) { _, _ in
             openDeepLinkedCountdownIfNeeded()
         }
         .onChange(of: navigationCoordinator.addMomentRequestToken) { _, _ in
@@ -141,12 +149,7 @@ struct CountdownListView: View {
             pendingMomentCountReveal = true
         }
         .task {
-            if forceAboutSheetOnLaunch {
-                showingAboutSheet = true
-                showingIntroSheet = false
-            } else {
-                showingIntroSheet = !hasSeenIntroSheet || forceIntroSheetOnLaunch
-            }
+            updateLaunchSheetPresentation()
             openDeepLinkedCountdownIfNeeded()
             handlePendingAddMomentRequestIfNeeded()
             syncMomentCountDisplayTextIfNeeded(force: true)
@@ -179,6 +182,10 @@ struct CountdownListView: View {
     }
 
     private func openDeepLinkedCountdownIfNeeded() {
+        guard !navigationCoordinator.isPreviewEditSheetPresented else {
+            return
+        }
+
         guard let id = navigationCoordinator.pendingPreviewCountdownID,
               let countdown = repository.countdowns.first(where: { $0.id == id })
         else {
@@ -225,33 +232,16 @@ struct CountdownListView: View {
         }
     }
 
-    private var emptyStateTitle: String {
+    private var filteredEmptyStateMessage: String {
         switch selectedFilter {
         case .all:
-            "No Countdowns"
+            return "Moments will show here when added."
         case .past:
-            "No Past Events"
+            return "Past events will show here when added."
         case .upcoming:
-            "No Upcoming Events"
+            return "Future events will show here when added."
         case .present:
-            "No Present Moments"
-        }
-    }
-
-    private var emptyStateDescription: String {
-        if repository.countdowns.isEmpty {
-            return ""
-        }
-
-        switch selectedFilter {
-        case .all:
-            return ""
-        case .past:
-            return "Change the filter to see upcoming countdowns."
-        case .upcoming:
-            return "Change the filter to see past countdowns."
-        case .present:
-            return "Change the filter to see events."
+            return "Manifestations will show here when added."
         }
     }
 
@@ -512,6 +502,23 @@ struct CountdownListView: View {
         showingSettings = false
         showingIntroSheet = false
         showingAboutSheet = false
+    }
+
+    private func updateLaunchSheetPresentation() {
+        if forceAboutSheetOnLaunch {
+            showingAboutSheet = true
+            showingIntroSheet = false
+            return
+        }
+
+        if forceIntroSheetOnLaunch {
+            showingIntroSheet = true
+            showingAboutSheet = false
+            return
+        }
+
+        showingAboutSheet = !hasSeenAboutSheet
+        showingIntroSheet = false
     }
 
     private func handleAddSheetDismissed() {

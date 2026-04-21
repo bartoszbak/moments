@@ -14,111 +14,109 @@ struct DeveloperMenuView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-
-                // MARK: - Seed Data
-
-                Section {
-                    Button("Seed Fresh Install Data") { seedFreshInstallData() }
-                    Button("Seed All States") { seed(.allStates) }
-                    Button("Seed Expired Events") { seed(.expired) }
-                    Button("Seed Upcoming Events") { seed(.upcoming) }
-                    Button("Seed Manifestation") { seed(.manifestation) }
-                    Button("Stress Test (30 items)") { seed(.stress) }
-                } header: {
-                    Text("Generate Data")
-                } footer: {
-                    Text("Adds items without clearing existing ones.")
-                }
-
-                // MARK: - Danger
-
-                Section {
-                    Button("Delete All Countdowns", role: .destructive) {
-                        try? repository.deleteAll()
-                        flash("Deleted all countdowns")
-                    }
-                } header: {
-                    Text("Danger Zone")
-                }
-
-                // MARK: - Preview
-
-                Section {
-                    Toggle("Show Empty State", isOn: $showEmptyStatePreview)
-                    Toggle("Force Intro Sheet on Launch", isOn: $forceIntroSheetOnLaunch)
-                    Toggle("Force About Sheet on Launch", isOn: $forceAboutSheetOnLaunch)
-                } header: {
-                    Text("Preview")
-                } footer: {
-                    Text("Use these to force preview flows without changing stored countdowns.")
-                }
-
-                Section {
-                    Toggle("Force Paywall on Launch", isOn: $forcePaywallOnLaunch)
-                    Toggle("Simulate Successful Purchase", isOn: $simulateSuccessfulPurchase)
-
-                    Picker("Access State", selection: $paywallAccessStateOverrideRawValue) {
-                        ForEach(DeveloperPaywallAccessOverride.allCases) { option in
-                            Text(option.displayName).tag(option.rawValue)
+            ZStack(alignment: .bottom) {
+                Form {
+                    Section {
+                        NavigationLink("List Events with IDs") {
+                            DeveloperCountdownIDListView()
                         }
+
+                        let now = Date()
+                        let expired = repository.countdowns.filter { $0.isExpired(at: now) }
+                        let today = repository.countdowns.filter { !$0.isExpired(at: now) && $0.components(from: now).days == 0 }
+                        let upcoming = repository.countdowns.filter { !$0.isExpired(at: now) && $0.components(from: now).days > 0 }
+                        LabeledContent("Total countdowns", value: "\(repository.countdowns.count)")
+                        LabeledContent("Expired", value: "\(expired.count)")
+                        LabeledContent("Today", value: "\(today.count)")
+                        LabeledContent("Upcoming", value: "\(upcoming.count)")
+                    } header: {
+                        Text("Inspect")
+                    } footer: {
+                        Text("Quick access to stored event metadata and counts.")
                     }
 
-                    Picker("Offering State", selection: $paywallOfferingStateOverrideRawValue) {
-                        ForEach(DeveloperPaywallOfferingOverride.allCases) { option in
-                            Text(option.displayName).tag(option.rawValue)
+                    Section {
+                        Button("Seed Fresh Install Data") { seedFreshInstallData() }
+                        Button("Seed All States") { seed(.allStates) }
+                        Button("Seed Expired Events") { seed(.expired) }
+                        Button("Seed Upcoming Events") { seed(.upcoming) }
+                        Button("Seed Manifestation") { seed(.manifestation) }
+                        Button("Stress Test (30 items)") { seed(.stress) }
+                    } header: {
+                        Text("Seed Data")
+                    } footer: {
+                        Text("Adds items without clearing existing ones.")
+                    }
+
+                    Section {
+                        Toggle("Show Empty State", isOn: $showEmptyStatePreview)
+                        Toggle("Force Intro Sheet on Launch", isOn: $forceIntroSheetOnLaunch)
+                        Toggle("Force About Sheet on Launch", isOn: $forceAboutSheetOnLaunch)
+                    } header: {
+                        Text("Forced Screens")
+                    } footer: {
+                        Text("Use these to force preview flows without changing stored countdowns.")
+                    }
+
+                    Section {
+                        Toggle("Force Paywall on Launch", isOn: $forcePaywallOnLaunch)
+                        Toggle("Simulate Successful Purchase", isOn: $simulateSuccessfulPurchase)
+
+                        Picker("Access State", selection: $paywallAccessStateOverrideRawValue) {
+                            ForEach(DeveloperPaywallAccessOverride.allCases) { option in
+                                Text(option.displayName).tag(option.rawValue)
+                            }
                         }
+
+                        Picker("Offering State", selection: $paywallOfferingStateOverrideRawValue) {
+                            ForEach(DeveloperPaywallOfferingOverride.allCases) { option in
+                                Text(option.displayName).tag(option.rawValue)
+                            }
+                        }
+
+                        Button("Reset Paywall Overrides") {
+                            resetPaywallOverrides()
+                        }
+                        .disabled(paywallOverridesAreDefault)
+                    } header: {
+                        Text("Paywall Overrides")
+                    } footer: {
+                        Text("Exercise paywall launch, entitlement, and offering states while the RevenueCat flow is being wired up.")
                     }
 
-                    Button("Reset Paywall Overrides") {
-                        resetPaywallOverrides()
+                    Section {
+                        Button("Reset Manifestation Daily Limit") {
+                            resetManifestationDailyLimit()
+                        }
+                        NavigationLink("Trigger Manifestation Notification") {
+                            DeveloperManifestNotificationListView()
+                        }
+                    } header: {
+                        Text("Manifestation Tools")
+                    } footer: {
+                        Text("Clears the saved daily regeneration gate so existing manifestations can regenerate again immediately, or send a test notification for a selected manifestation.")
                     }
-                    .disabled(paywallOverridesAreDefault)
-                } header: {
-                    Text("Paywall")
-                } footer: {
-                    Text("Use these to exercise paywall launch, entitlement, and offering states while the RevenueCat flow is being wired up.")
+
+                    Section {
+                        Button("Delete All Countdowns", role: .destructive) {
+                            try? repository.deleteAll()
+                            flash("Deleted all countdowns")
+                        }
+                    } header: {
+                        Text("Danger Zone")
+                    }
                 }
-
-                Section {
-                    Button("Reset Manifestation Daily Limit") {
-                        resetManifestationDailyLimit()
-                    }
-                    NavigationLink("Trigger Manifestation Notification") {
-                        DeveloperManifestNotificationListView()
-                    }
-                } header: {
-                    Text("Manifestation Testing")
-                } footer: {
-                    Text("Clears the saved daily regeneration gate so existing manifestations can regenerate again immediately, or send a test notification for a selected manifestation.")
-                }
-
-                // MARK: - Info
-
-                Section {
-                    let now = Date()
-                    let expired = repository.countdowns.filter { $0.isExpired(at: now) }
-                    let today = repository.countdowns.filter { !$0.isExpired(at: now) && $0.components(from: now).days == 0 }
-                    let upcoming = repository.countdowns.filter { !$0.isExpired(at: now) && $0.components(from: now).days > 0 }
-                    LabeledContent("Total countdowns", value: "\(repository.countdowns.count)")
-                    LabeledContent("Expired", value: "\(expired.count)")
-                    LabeledContent("Today", value: "\(today.count)")
-                    LabeledContent("Upcoming", value: "\(upcoming.count)")
-                } header: {
-                    Text("Store Info")
-                }
-
-                // MARK: - Status
 
                 if let msg = statusMessage {
-                    Section {
-                        Label(msg, systemImage: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                    }
+                    DeveloperStatusToast(message: msg)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 16)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
             .navigationTitle("Developer Menu")
             .navigationBarTitleDisplayMode(.inline)
+            .animation(.smooth(duration: 0.24), value: statusMessage)
         }
     }
 
@@ -411,6 +409,32 @@ struct DeveloperMenuView: View {
     }
 }
 
+private struct DeveloperStatusToast: View {
+    let message: String
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(.green)
+
+            Text(message)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.leading)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+        }
+        .shadow(color: .black.opacity(0.12), radius: 12, y: 4)
+        .allowsHitTesting(false)
+    }
+}
+
 private struct DeveloperManifestNotificationListView: View {
     @EnvironmentObject private var repository: CountdownRepository
     @Environment(\.dismiss) private var dismiss
@@ -501,6 +525,62 @@ private struct DeveloperManifestNotificationListView: View {
                 }
             }
         }
+    }
+}
+
+private struct DeveloperCountdownIDListView: View {
+    @EnvironmentObject private var repository: CountdownRepository
+
+    private var countdowns: [Countdown] {
+        repository.countdowns.sorted { lhs, rhs in
+            if lhs.targetDate == rhs.targetDate {
+                return lhs.title.localizedCaseInsensitiveCompare(rhs.title) == .orderedAscending
+            }
+
+            return lhs.targetDate < rhs.targetDate
+        }
+    }
+
+    var body: some View {
+        List {
+            if countdowns.isEmpty {
+                ContentUnavailableView(
+                    "No events available",
+                    systemImage: "calendar",
+                    description: Text("Create or seed an event first, then return here to inspect its ID.")
+                )
+            } else {
+                Section("All Events") {
+                    ForEach(countdowns) { countdown in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(countdown.title)
+                                .font(.body.weight(.medium))
+                                .foregroundStyle(.primary)
+
+                            Text(countdown.id.uuidString)
+                                .font(.footnote.monospaced())
+                                .foregroundStyle(.secondary)
+                                .textSelection(.enabled)
+
+                            Text(metadataLine(for: countdown))
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+            }
+        }
+        .navigationTitle("Event IDs")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func metadataLine(for countdown: Countdown) -> String {
+        if countdown.isFutureManifestation {
+            return "Manifestation"
+        }
+
+        return countdown.targetDate.smartFormatted
     }
 }
 

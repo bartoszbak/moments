@@ -59,6 +59,7 @@ final class AppNavigationCoordinator: ObservableObject {
 
     @Published private(set) var pendingPreviewCountdownID: UUID?
     @Published private(set) var addMomentRequestToken = 0
+    @Published private(set) var isPreviewEditSheetPresented = false
 
     private init() {}
 
@@ -81,6 +82,10 @@ final class AppNavigationCoordinator: ObservableObject {
 
     func clearPendingPreviewCountdownID() {
         pendingPreviewCountdownID = nil
+    }
+
+    func setPreviewEditSheetPresented(_ isPresented: Bool) {
+        isPreviewEditSheetPresented = isPresented
     }
 }
 

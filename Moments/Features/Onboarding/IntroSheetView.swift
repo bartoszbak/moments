@@ -114,8 +114,9 @@ struct IntroSheetView: View {
                 Text("Continue")
                     .font(.headline.weight(.semibold))
                     .frame(maxWidth: .infinity)
-                    .frame(height: 56)
+                    .frame(height: 44)
             }
+            .controlSize(.small)
             .adaptiveGlassProminentButtonStyle()
             .tint(primaryButtonColor)
             .foregroundStyle(primaryButtonLabelColor)
