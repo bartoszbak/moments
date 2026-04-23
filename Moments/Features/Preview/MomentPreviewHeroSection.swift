@@ -64,6 +64,7 @@ struct MomentPreviewHeroSection: View {
             .fontDesign(fontDesign)
             .foregroundStyle(.primary)
             .multilineTextAlignment(.center)
+            .lineSpacing(countdown.isFutureManifestation ? 8 : 0)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, horizontalPadding)
     }

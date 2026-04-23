@@ -54,6 +54,23 @@ final class MomentPreviewViewModel: ObservableObject {
         return hasReflection ? 2 : 1
     }
 
+    func requiresManifestationUpgrade(
+        for countdown: Countdown,
+        now: Date,
+        subscriptionService: SubscriptionService,
+        calendar: Calendar = .current
+    ) -> Bool {
+        guard countdown.isFutureManifestation else { return false }
+        guard !subscriptionService.isPremium else { return false }
+
+        switch manifestationRegenerationAvailability(for: countdown, now: now, calendar: calendar) {
+        case .initialGeneration:
+            return false
+        case .available, .lockedUntilTomorrow:
+            return subscriptionService.freeManifestationRegenerationsRemaining(for: countdown.id) == 0
+        }
+    }
+
     func showsBottomPrimaryAction(for countdown: Countdown, now: Date) -> Bool {
         if countdown.isFutureManifestation {
             return true
@@ -130,9 +147,12 @@ final class MomentPreviewViewModel: ObservableObject {
         subscriptionService: SubscriptionService
     ) {
         let now = timerManager.currentTime
+        let regenerationAvailability = manifestationRegenerationAvailability(for: countdown, now: now)
+        let shouldRecordManifestationRegeneration =
+            countdown.isFutureManifestation && regenerationAvailability == .available
 
         if countdown.isFutureManifestation {
-            guard manifestationRegenerationAvailability(for: countdown, now: now) != .lockedUntilTomorrow else {
+            guard regenerationAvailability != .lockedUntilTomorrow else {
                 return
             }
         } else if surfaceText != nil {
@@ -165,7 +185,11 @@ final class MomentPreviewViewModel: ObservableObject {
                     reflectionExpandedText: .some(nil),
                     reflectionGeneratedAt: .some(Date())
                 )
-                subscriptionService.recordAIGeneration()
+                if shouldRecordManifestationRegeneration {
+                    subscriptionService.recordManifestationRegeneration(for: countdown.id)
+                } else {
+                    subscriptionService.recordAIGeneration()
+                }
             } catch {
                 guard !Task.isCancelled else { return }
                 withAnimation(.smooth(duration: 0.28)) {

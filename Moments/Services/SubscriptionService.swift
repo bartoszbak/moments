@@ -198,6 +198,10 @@ final class SubscriptionService: ObservableObject {
         3
     }
 
+    var freeManifestationRegenerationAllowance: Int {
+        3
+    }
+
     var freeCreatedMomentCount: Int {
         UserDefaults.standard.integer(forKey: AppSettingsKeys.freeCreatedMomentCount)
     }
@@ -208,6 +212,17 @@ final class SubscriptionService: ObservableObject {
 
     var freeAIGenerationsRemaining: Int {
         max(freeAIGenerationAllowance - freeAIGenerationCount, 0)
+    }
+
+    func freeManifestationRegenerationCount(for countdownID: UUID) -> Int {
+        UserDefaults.standard.integer(forKey: manifestationRegenerationCountKey(for: countdownID))
+    }
+
+    func freeManifestationRegenerationsRemaining(for countdownID: UUID) -> Int {
+        max(
+            freeManifestationRegenerationAllowance - freeManifestationRegenerationCount(for: countdownID),
+            0
+        )
     }
 
     var shouldShowCreationUpsell: Bool {
@@ -228,6 +243,39 @@ final class SubscriptionService: ObservableObject {
             freeAIGenerationCount + 1,
             forKey: AppSettingsKeys.freeAIGenerationCount
         )
+    }
+
+    func recordManifestationRegeneration(for countdownID: UUID) {
+        guard !isPremium else { return }
+        let count = freeManifestationRegenerationCount(for: countdownID)
+        UserDefaults.standard.set(
+            count + 1,
+            forKey: manifestationRegenerationCountKey(for: countdownID)
+        )
+    }
+
+    func simulateFreeRegenerationLimitsReached(for countdownIDs: [UUID]) {
+        let defaults = UserDefaults.standard
+        defaults.set(
+            freeAIGenerationAllowance,
+            forKey: AppSettingsKeys.freeAIGenerationCount
+        )
+
+        for countdownID in countdownIDs {
+            defaults.set(
+                freeManifestationRegenerationAllowance,
+                forKey: manifestationRegenerationCountKey(for: countdownID)
+            )
+        }
+    }
+
+    func resetFreeRegenerationLimits(for countdownIDs: [UUID]) {
+        let defaults = UserDefaults.standard
+        defaults.set(0, forKey: AppSettingsKeys.freeAIGenerationCount)
+
+        for countdownID in countdownIDs {
+            defaults.removeObject(forKey: manifestationRegenerationCountKey(for: countdownID))
+        }
     }
 
     func isUnlocked(_ feature: PremiumFeature, currentMomentCount: Int? = nil) -> Bool {
@@ -482,6 +530,10 @@ final class SubscriptionService: ObservableObject {
         case .unavailable:
             return .unavailable(reason: "Developer paywall offering override is simulating missing packages.")
         }
+    }
+
+    private func manifestationRegenerationCountKey(for countdownID: UUID) -> String {
+        "settings.freeTier.manifestationRegenerationCount.\(countdownID.uuidString)"
     }
 }
 

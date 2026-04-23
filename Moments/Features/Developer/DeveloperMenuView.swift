@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DeveloperMenuView: View {
     @EnvironmentObject private var repository: CountdownRepository
+    @EnvironmentObject private var subscriptionService: SubscriptionService
 
     @AppStorage(DeveloperSettingsKeys.showEmptyStatePreview) private var showEmptyStatePreview = false
     @AppStorage(DeveloperSettingsKeys.forceIntroSheetOnLaunch) private var forceIntroSheetOnLaunch = false
@@ -85,8 +86,14 @@ struct DeveloperMenuView: View {
                     }
 
                     Section {
+                        Button("Simulate Free Regeneration Limits") {
+                            simulateFreeRegenerationLimits()
+                        }
                         Button("Reset Manifestation Daily Limit") {
                             resetManifestationDailyLimit()
+                        }
+                        Button("Reset Free Regeneration Limits") {
+                            resetFreeRegenerationLimits()
                         }
                         NavigationLink("Trigger Manifestation Notification") {
                             DeveloperManifestNotificationListView()
@@ -371,6 +378,31 @@ struct DeveloperMenuView: View {
 
         let count = eligibleCountdowns.count
         flash(count == 1 ? "Reset 1 manifestation limit" : "Reset \(count) manifestation limits")
+    }
+
+    private func simulateFreeRegenerationLimits() {
+        let manifestationIDs = repository.countdowns
+            .filter(\.isFutureManifestation)
+            .map(\.id)
+
+        subscriptionService.simulateFreeRegenerationLimitsReached(for: manifestationIDs)
+
+        if manifestationIDs.isEmpty {
+            flash("Simulated exhausted free AI regenerations. No manifestations found")
+        } else {
+            flash(
+                "Simulated exhausted free regenerations for \(manifestationIDs.count) manifestation\(manifestationIDs.count == 1 ? "" : "s")"
+            )
+        }
+    }
+
+    private func resetFreeRegenerationLimits() {
+        let manifestationIDs = repository.countdowns
+            .filter(\.isFutureManifestation)
+            .map(\.id)
+
+        subscriptionService.resetFreeRegenerationLimits(for: manifestationIDs)
+        flash("Reset free regeneration limits")
     }
 
     private struct SeedDraft {

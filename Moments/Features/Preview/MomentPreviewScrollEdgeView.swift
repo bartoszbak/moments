@@ -169,9 +169,16 @@ struct MomentPreviewScrollEdgeView: View {
     }
 
     private func primaryActionButton(for countdown: Countdown) -> some View {
-        MomentPreviewPrimaryActionButton(
+        let requiresManifestationUpgrade = viewModel.requiresManifestationUpgrade(
+            for: countdown,
+            now: timerManager.currentTime,
+            subscriptionService: subscriptionService
+        )
+
+        return MomentPreviewPrimaryActionButton(
             isLoading: viewModel.isLoadingReflection,
-            isEnabled: viewModel.isPrimaryActionEnabled(for: countdown, now: timerManager.currentTime),
+            isEnabled: requiresManifestationUpgrade
+                || viewModel.isPrimaryActionEnabled(for: countdown, now: timerManager.currentTime),
             prefersResponsiveGlassStyle: prefersResponsiveGlassStyle(for: countdown),
             label: primaryActionButtonLabel(for: countdown),
             foregroundColor: primaryButtonForegroundColor,
@@ -191,6 +198,8 @@ struct MomentPreviewScrollEdgeView: View {
         viewportWidth: CGFloat,
         bottomSafeAreaInset: CGFloat
     ) -> some View {
+        let showsRegenerationHelper = shouldShowManifestationRegenerationHelper(for: countdown)
+
         BottomGlassActionBar(
             showsPrimaryAction: viewModel.showsBottomPrimaryAction(
                 for: countdown,
@@ -203,8 +212,39 @@ struct MomentPreviewScrollEdgeView: View {
             bottomSafeAreaInset: bottomSafeAreaInset,
             bottomBlurGradientHeight: bottomBlurGradientHeight(for: countdown)
         ) {
-            primaryActionButton(for: countdown)
+            VStack(spacing: 10) {
+                if showsLockedManifestationAction(for: countdown) {
+                    lockedManifestationActionButton(for: countdown)
+                } else {
+                    primaryActionButton(for: countdown)
+                }
+
+                if showsRegenerationHelper {
+                    Text("Free includes 3 regenerations, one each day.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity)
+                }
+            }
         }
+    }
+
+    private func lockedManifestationActionButton(for countdown: Countdown) -> some View {
+        Button(action: {}) {
+            Text(primaryActionButtonLabel(for: countdown))
+                .font(.headline.weight(.semibold))
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+        }
+        .controlSize(.small)
+        .buttonBorderShape(.capsule)
+        .adaptiveGlassButtonStyle()
+        .tint(primaryButtonColor)
+        .foregroundStyle(.secondary)
+        .disabled(true)
+        .accessibilityHint("Available again tomorrow.")
     }
 
     @ViewBuilder
@@ -231,6 +271,14 @@ struct MomentPreviewScrollEdgeView: View {
         }
 
         if countdown.isFutureManifestation {
+            if viewModel.requiresManifestationUpgrade(
+                for: countdown,
+                now: timerManager.currentTime,
+                subscriptionService: subscriptionService
+            ) {
+                return "Get Plus to Regenerate"
+            }
+
             switch viewModel.manifestationRegenerationAvailability(
                 for: countdown,
                 now: timerManager.currentTime
@@ -249,6 +297,18 @@ struct MomentPreviewScrollEdgeView: View {
 
     private func primaryActionButtonLabel(for countdown: Countdown) -> String {
         let title = primaryActionTitle(for: countdown)
+
+        if countdown.isFutureManifestation {
+            switch viewModel.manifestationRegenerationAvailability(
+                for: countdown,
+                now: timerManager.currentTime
+            ) {
+            case .available, .lockedUntilTomorrow:
+                return title
+            case .initialGeneration:
+                break
+            }
+        }
 
         guard viewModel.errorText == nil,
               viewModel.isPrimaryActionEnabled(for: countdown, now: timerManager.currentTime),
@@ -325,6 +385,41 @@ struct MomentPreviewScrollEdgeView: View {
         return false
     }
 
+    private func shouldShowManifestationRegenerationHelper(for countdown: Countdown) -> Bool {
+        guard countdown.isFutureManifestation else { return false }
+        guard !subscriptionService.isPremium else { return false }
+
+        switch viewModel.manifestationRegenerationAvailability(
+            for: countdown,
+            now: timerManager.currentTime
+        ) {
+        case .initialGeneration:
+            return false
+        case .available, .lockedUntilTomorrow:
+            return true
+        }
+    }
+
+    private func showsLockedManifestationAction(for countdown: Countdown) -> Bool {
+        guard countdown.isFutureManifestation else { return false }
+        guard !viewModel.requiresManifestationUpgrade(
+            for: countdown,
+            now: timerManager.currentTime,
+            subscriptionService: subscriptionService
+        ) else {
+            return false
+        }
+
+        if case .lockedUntilTomorrow = viewModel.manifestationRegenerationAvailability(
+            for: countdown,
+            now: timerManager.currentTime
+        ) {
+            return true
+        }
+
+        return false
+    }
+
     private var preferredColorScheme: ColorScheme? {
         AppTheme.preferredColorScheme(for: appearanceSetting)
     }
@@ -356,11 +451,20 @@ struct MomentPreviewScrollEdgeView: View {
     }
 
     private func handlePrimaryAction(for countdown: Countdown) {
-        guard viewModel.isPrimaryActionEnabled(for: countdown, now: timerManager.currentTime) else {
+        let requiresManifestationUpgrade = viewModel.requiresManifestationUpgrade(
+            for: countdown,
+            now: timerManager.currentTime,
+            subscriptionService: subscriptionService
+        )
+
+        guard requiresManifestationUpgrade
+            || viewModel.isPrimaryActionEnabled(for: countdown, now: timerManager.currentTime) else {
             return
         }
 
-        if subscriptionService.shouldPresentUpgrade(for: .aiReflections) {
+        if requiresManifestationUpgrade {
+            paywallFeature = .aiReflections
+        } else if subscriptionService.shouldPresentUpgrade(for: .aiReflections) {
             paywallFeature = .aiReflections
         } else {
             viewModel.generateReflection(

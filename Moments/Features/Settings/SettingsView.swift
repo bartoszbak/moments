@@ -795,37 +795,42 @@ struct AboutSheetView: View {
     @State private var showingIntroSheet = false
 
     var body: some View {
-        GeometryReader { proxy in
-            ScrollView {
-                VStack(spacing: 0) {
-                    heroArtwork
+        NavigationStack {
+            GeometryReader { proxy in
+                ScrollView {
+                    VStack(spacing: 0) {
+                        heroArtwork(containerWidth: proxy.size.width)
+                            .padding(.top, 0)
 
-                    VStack(spacing: 18) {
-                        Text("Make every moment\nmove you forward")
-                            .font(.system(size: 32, weight: .bold, design: .rounded))
-                            .foregroundStyle(.primary)
-                            .multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true)
+                        VStack(spacing: 18) {
+                            Text("Make Every Moment\nMove You Forward")
+                                .font(.system(size: 34, weight: .bold, design: .rounded))
+                                .foregroundStyle(.primary)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
 
-                        Text("Count down to events, reflect on the past, and manifest what's next while staying focused on what you're creating.")
-                            .font(.system(size: 17, weight: .medium, design: .rounded))
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true)
+                            Text("Count down to events, reflect on the past,\nand manifest what’s next.")
+                                .font(.system(size: 17, weight: .medium, design: .rounded))
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .frame(maxWidth: readableContentWidth)
+                        .padding(.horizontal, 24)
+                        .padding(.top, -64)
+                        .padding(.bottom, 44)
                     }
-                    .frame(maxWidth: readableContentWidth)
-                    .padding(.horizontal, 32)
-                    .padding(.top, 28)
-                    .padding(.bottom, 64)
+                    .frame(maxWidth: .infinity, alignment: .top)
                 }
-                .frame(maxWidth: .infinity, alignment: .top)
+                .scrollIndicators(.hidden)
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    bottomInsetContent(bottomSafeAreaInset: proxy.safeAreaInsets.bottom)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(.systemBackground))
             }
-            .scrollIndicators(.hidden)
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                bottomInsetContent(bottomSafeAreaInset: proxy.safeAreaInsets.bottom)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.systemBackground))
+            .navigationTitle("Welcome to Moments")
+            .navigationBarTitleDisplayMode(.inline)
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.hidden)
@@ -833,6 +838,7 @@ struct AboutSheetView: View {
         .sheet(isPresented: $showingIntroSheet) {
             IntroSheetView {
                 showingIntroSheet = false
+                dismiss()
             }
         }
         .onAppear {
@@ -840,23 +846,15 @@ struct AboutSheetView: View {
         }
     }
 
-    private var heroArtwork: some View {
-        GeometryReader { proxy in
-            let containerWidth = proxy.size.width
-            let imageWidth = min(max(containerWidth * 2.05, 700), 1040)
-            let imageHeight = imageWidth / aboutBackgroundAspectRatio
-
-            ZStack(alignment: .bottom) {
-                Image("AboutBackground")
-                    .resizable()
-                    .interpolation(.high)
-                    .scaledToFit()
-                    .frame(width: imageWidth, height: imageHeight)
-            }
-            .frame(width: containerWidth, height: heroHeight, alignment: .bottom)
-        }
-        .frame(height: heroHeight)
-        .clipped()
+    private func heroArtwork(containerWidth: CGFloat) -> some View {
+        Image("AboutBackground")
+            .resizable()
+            .interpolation(.high)
+            .scaledToFill()
+            .scaleEffect(0.7)
+            .frame(width: containerWidth, height: heroHeight, alignment: .center)
+            .frame(height: heroHeight)
+            .clipped()
     }
 
     private func bottomInsetContent(bottomSafeAreaInset: CGFloat) -> some View {
@@ -919,11 +917,7 @@ struct AboutSheetView: View {
     }
 
     private var heroHeight: CGFloat {
-        UIDevice.current.userInterfaceIdiom == .pad ? 420 : 390
-    }
-
-    private var aboutBackgroundAspectRatio: CGFloat {
-        1663.0 / 960.0
+        UIDevice.current.userInterfaceIdiom == .pad ? 500 : 460
     }
 }
 

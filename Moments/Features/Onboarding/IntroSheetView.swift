@@ -18,14 +18,14 @@ struct IntroSheetView: View {
             description: "Track anniversaries, milestones, and memories that already happened in the same timeline."
         ),
         .init(
+            icon: "sparkles",
+            title: "Manifestation Intelligence",
+            description: "Add context and get a fresh manifestation message every single day, plus reflections that keep you aligned."
+        ),
+        .init(
             icon: "paintpalette",
             title: "Make it feel like yours",
             description: "Customize colors, add notes, and adjust the app later from Settings whenever you want."
-        ),
-        .init(
-            icon: "sparkles",
-            title: "Moments Intelligence",
-            description: "Add context and get three calm layers: a surface reframe, a deeper reflection, and gentle guidance."
         )
     ]
 
@@ -111,7 +111,7 @@ struct IntroSheetView: View {
             bottomBlurGradientHeight: 52
         ) {
             Button(action: onGetStarted) {
-                Text("Continue")
+                Text("Get started")
                     .font(.headline.weight(.semibold))
                     .frame(maxWidth: .infinity)
                     .frame(height: 44)
