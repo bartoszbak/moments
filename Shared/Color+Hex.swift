@@ -46,11 +46,22 @@ extension Color {
     var hexString: String {
         let resolved = UIColor(self).resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
         var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0
-        resolved.getRed(&r, green: &g, blue: &b, alpha: nil)
+        if !resolved.getRed(&r, green: &g, blue: &b, alpha: nil),
+           let converted = resolved.cgColor.converted(
+            to: CGColorSpace(name: CGColorSpace.sRGB)!,
+            intent: .defaultIntent,
+            options: nil
+           ),
+           let components = converted.components {
+            r = components[safe: 0] ?? 0
+            g = components[safe: 1] ?? r
+            b = components[safe: 2] ?? r
+        }
+
         return String(format: "#%02X%02X%02X",
-                      Int((r * 255).rounded()),
-                      Int((g * 255).rounded()),
-                      Int((b * 255).rounded()))
+                      Int((r.clamped(to: 0...1) * 255).rounded()),
+                      Int((g.clamped(to: 0...1) * 255).rounded()),
+                      Int((b.clamped(to: 0...1) * 255).rounded()))
     }
 
     var relativeLuminance: Double {
@@ -76,6 +87,18 @@ extension Color {
 
     var requiresDarkModeTintOverride: Bool {
         relativeLuminance < 0.18
+    }
+}
+
+private extension Collection {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
+    }
+}
+
+private extension Comparable {
+    func clamped(to range: ClosedRange<Self>) -> Self {
+        min(max(self, range.lowerBound), range.upperBound)
     }
 }
 

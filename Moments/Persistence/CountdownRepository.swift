@@ -45,15 +45,17 @@ final class CountdownRepository: NSObject, ObservableObject {
             var sharedImagePath: String? = nil
             if let groupURL {
                 let dest = groupURL.appendingPathComponent("widget_\(countdown.id.uuidString).jpg")
-                if let thumbURL = countdown.thumbnailImageURL,
-                   FileManager.default.fileExists(atPath: thumbURL.path)
-                {
+                if let thumbURL = countdown.thumbnailImageURL {
+                    if FileManager.default.fileExists(atPath: thumbURL.path) {
+                        try? FileManager.default.removeItem(at: dest)
+                        try? FileManager.default.copyItem(at: thumbURL, to: dest)
+                        sharedImagePath = dest.path
+                    } else if FileManager.default.fileExists(atPath: dest.path) {
+                        // Keep the existing shared thumbnail if the original path is temporarily unavailable.
+                        sharedImagePath = dest.path
+                    }
+                } else {
                     try? FileManager.default.removeItem(at: dest)
-                    try? FileManager.default.copyItem(at: thumbURL, to: dest)
-                    sharedImagePath = dest.path
-                } else if FileManager.default.fileExists(atPath: dest.path) {
-                    // Keep the existing shared thumbnail if the original path is temporarily unavailable.
-                    sharedImagePath = dest.path
                 }
             }
             return WidgetCountdown(

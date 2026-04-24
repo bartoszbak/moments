@@ -429,7 +429,7 @@ struct CountdownWidgetView: View {
         } else {
             if countdown.showDate {
                 minimalWidgetDateText(for: countdown)
-                    .padding(.bottom, showsProgress ? 14 : 0)
+                    .padding(.bottom, minimalWidgetDateBottomPadding(for: countdown, showsProgress: showsProgress))
             }
 
             if showsProgress {
@@ -442,6 +442,19 @@ struct CountdownWidgetView: View {
         Text(countdown.targetDate.smartFormatted)
             .font(typography.font(size: 15, relativeTo: .subheadline, weight: .semibold))
             .foregroundStyle(fgSecondary)
+    }
+
+    private func minimalWidgetDateBottomPadding(for countdown: WidgetCountdown, showsProgress: Bool) -> CGFloat {
+        guard showsProgress else { return 0 }
+
+        switch countdown.minimalWidgetProgressStyle {
+        case .linear:
+            return 8
+        case .verticalBars:
+            return 10
+        case .circular:
+            return 0
+        }
     }
 
     @ViewBuilder

@@ -76,18 +76,26 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Picker("Mode", selection: $appearanceSetting) {
+                    Picker(selection: $appearanceSetting) {
                         Text("System").tag("system")
                         Text("Light").tag("light")
                         Text("Dark").tag("dark")
+                    } label: {
+                        SettingsRowLabel("Mode", systemImage: "circle.lefthalf.filled")
                     }
-                    ColorPicker("Accent Color", selection: plusButtonColorBinding, supportsOpacity: false)
-                    Toggle("Background Gradient", isOn: $backgroundGradientEnabled)
+                    ColorPicker(selection: plusButtonColorBinding, supportsOpacity: false) {
+                        SettingsRowLabel("Accent Color", systemImage: "paintpalette.fill")
+                    }
+                    Toggle(isOn: $backgroundGradientEnabled) {
+                        SettingsRowLabel("Background Gradient", systemImage: "app.translucent")
+                    }
                         .tint(controlTintColor)
 
                     if isUsingCustomPlusButtonColor {
-                        Button("Reset to Default") {
+                        Button {
                             interfaceTintHex = AppSettingsDefaults.interfaceTintHex
+                        } label: {
+                            SettingsRowLabel("Reset to Default", systemImage: "arrow.counterclockwise")
                         }
                         .foregroundStyle(controlTintColor)
                     }
@@ -122,6 +130,7 @@ struct SettingsView: View {
                         PremiumLockedRowButton("Alternate Icons") {
                             highlightedPaywallFeature = .alternateIcons
                         }
+                        .settingsRowIcon("app.badge")
                     }
                 } header: {
                     Text("App Icon")
@@ -136,7 +145,7 @@ struct SettingsView: View {
                         NavigationLink {
                             CalendarSyncSettingsView()
                         } label: {
-                            LabeledContent("Calendar Sync") {
+                            SettingsRowLabeledContent("Calendar Sync", systemImage: "calendar") {
                                 Text(calendarSyncStatusText)
                                     .foregroundStyle(.secondary)
                             }
@@ -145,17 +154,21 @@ struct SettingsView: View {
                         PremiumLockedRowButton("Calendar Sync") {
                             highlightedPaywallFeature = .calendarSync
                         }
+                        .settingsRowIcon("calendar")
                     }
                 }
 
                 Section {
                     if subscriptionService.isPremium {
-                        Toggle("Manifestation Reminder", isOn: $manifestNotificationsEnabled)
+                        Toggle(isOn: $manifestNotificationsEnabled) {
+                            SettingsRowLabel("Manifestation Reminder", systemImage: "bell.badge.fill")
+                        }
                             .tint(controlTintColor)
                     } else {
                         PremiumLockedRowButton("Manifestation Reminder") {
                             highlightedPaywallFeature = .manifestationReminders
                         }
+                        .settingsRowIcon("bell.badge.fill")
                     }
                 } header: {
                     Text("Notifications")
@@ -167,20 +180,26 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Toggle("Haptic Feedback", isOn: $hapticsEnabled)
+                    Toggle(isOn: $hapticsEnabled) {
+                        SettingsRowLabel("Haptic Feedback", systemImage: "wave.3.up")
+                    }
                         .tint(controlTintColor)
                 }
 
                 Section {
-                    Button("About") {
+                    Button {
                         showingAboutSheet = true
+                    } label: {
+                        SettingsRowLabel("About", systemImage: "info.circle.fill")
                     }
                     .foregroundStyle(.primary)
                 }
 
                 Section("Developer") {
-                    NavigationLink("Developer Tools") {
+                    NavigationLink {
                         DeveloperMenuView()
+                    } label: {
+                        SettingsRowLabel("Developer Tools", systemImage: "greaterthanorequalto.circle.fill")
                     }
                 }
                 Section {
@@ -459,21 +478,25 @@ struct CalendarSyncSettingsView: View {
         Form {
             if subscriptionService.isPremium {
                 Section("Calendar Sync") {
-                    Toggle("Sync future events", isOn: $isCalendarIntegrationEnabled)
+                    Toggle(isOn: $isCalendarIntegrationEnabled) {
+                        SettingsRowLabel("Sync future events", systemImage: "arrow.triangle.2.circlepath")
+                    }
                         .tint(controlTintColor)
                 }
 
                 Section {
                     if calendarService.availableCalendars.isEmpty {
-                        LabeledContent("Calendar") {
+                        SettingsRowLabeledContent("Calendar", systemImage: "calendar.badge.exclamationmark") {
                             Text("No iCloud calendar")
                                 .foregroundStyle(.secondary)
                         }
                     } else {
-                        Picker("Calendar", selection: calendarSelectionBinding) {
+                        Picker(selection: calendarSelectionBinding) {
                             ForEach(calendarService.availableCalendars) { option in
                                 Text(option.displayName).tag(option.id)
                             }
+                        } label: {
+                            SettingsRowLabel("Calendar", systemImage: "calendar")
                         }
                         .disabled(!isCalendarIntegrationEnabled)
                     }
@@ -490,12 +513,14 @@ struct CalendarSyncSettingsView: View {
                     PremiumLockedRowButton("Sync future events") {
                         highlightedPaywallFeature = .calendarSync
                     }
+                    .settingsRowIcon("arrow.triangle.2.circlepath")
                 }
 
                 Section {
                     PremiumLockedRowButton("Calendar") {
                         highlightedPaywallFeature = .calendarSync
                     }
+                    .settingsRowIcon("calendar")
                 } header: {
                     Text("Sync To")
                 } footer: {
@@ -612,6 +637,7 @@ struct CalendarSyncSettingsView: View {
 
 struct PremiumLockedRowButton: View {
     let title: String
+    var systemImage: String?
     var action: () -> Void
 
     init(_ title: String, action: @escaping () -> Void) {
@@ -622,8 +648,7 @@ struct PremiumLockedRowButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
-                Text(title)
-                    .foregroundStyle(.primary)
+                SettingsRowLabel(title, systemImage: systemImage)
 
                 Spacer()
 
@@ -632,6 +657,69 @@ struct PremiumLockedRowButton: View {
         }
         .buttonStyle(.plain)
         .contentShape(Rectangle())
+    }
+
+    func settingsRowIcon(_ systemImage: String) -> PremiumLockedRowButton {
+        var copy = self
+        copy.systemImage = systemImage
+        return copy
+    }
+}
+
+private struct SettingsRowLabel: View {
+    let title: String
+    let systemImage: String?
+
+    init(_ title: String, systemImage: String? = nil) {
+        self.title = title
+        self.systemImage = systemImage
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            if let systemImage {
+                SettingsRowIcon(systemImage: systemImage)
+            }
+
+            Text(title)
+                .foregroundStyle(.primary)
+        }
+    }
+}
+
+private struct SettingsRowLabeledContent<Trailing: View>: View {
+    let title: String
+    let systemImage: String
+    @ViewBuilder var trailing: () -> Trailing
+
+    init(
+        _ title: String,
+        systemImage: String,
+        @ViewBuilder trailing: @escaping () -> Trailing
+    ) {
+        self.title = title
+        self.systemImage = systemImage
+        self.trailing = trailing
+    }
+
+    var body: some View {
+        LabeledContent {
+            trailing()
+        } label: {
+            SettingsRowLabel(title, systemImage: systemImage)
+        }
+    }
+}
+
+private struct SettingsRowIcon: View {
+    let systemImage: String
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 19, weight: .semibold))
+            .foregroundStyle(.secondary)
+            .frame(width: 28, height: 28)
+            .accessibilityHidden(true)
     }
 }
 
@@ -799,7 +887,10 @@ struct AboutSheetView: View {
             GeometryReader { proxy in
                 ScrollView {
                     VStack(spacing: 0) {
-                        heroArtwork(containerWidth: proxy.size.width)
+                        heroArtwork(
+                            containerWidth: proxy.size.width,
+                            containerHeight: proxy.size.height
+                        )
                             .padding(.top, 0)
 
                         VStack(spacing: 18) {
@@ -846,14 +937,14 @@ struct AboutSheetView: View {
         }
     }
 
-    private func heroArtwork(containerWidth: CGFloat) -> some View {
+    private func heroArtwork(containerWidth: CGFloat, containerHeight: CGFloat) -> some View {
         Image("AboutBackground")
             .resizable()
             .interpolation(.high)
             .scaledToFill()
             .scaleEffect(0.7)
-            .frame(width: containerWidth, height: heroHeight, alignment: .center)
-            .frame(height: heroHeight)
+            .frame(width: containerWidth, height: heroHeight(for: containerWidth, containerHeight: containerHeight), alignment: .center)
+            .frame(height: heroHeight(for: containerWidth, containerHeight: containerHeight))
             .clipped()
     }
 
@@ -916,8 +1007,13 @@ struct AboutSheetView: View {
         UIDevice.current.userInterfaceIdiom == .pad ? 700 : .infinity
     }
 
-    private var heroHeight: CGFloat {
-        UIDevice.current.userInterfaceIdiom == .pad ? 500 : 460
+    private func heroHeight(for containerWidth: CGFloat, containerHeight: CGFloat) -> CGFloat {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return 500
+        }
+
+        let isMiniSizedPhone = containerWidth <= 375 && containerHeight <= 760
+        return isMiniSizedPhone ? 400 : 460
     }
 }
 

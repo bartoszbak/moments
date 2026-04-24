@@ -177,16 +177,20 @@ struct EditCountdownView: View {
                 title = countdown.title
                 detailsText = countdown.detailsText ?? ""
                 targetDate = Calendar.current.startOfDay(for: countdown.targetDate)
-                if let idx = countdown.backgroundColorIndex {
+                existingImagePath = countdown.backgroundImageURL?.path
+                existingThumbPath = countdown.thumbnailImageURL?.path
+
+                if let thumbURL = countdown.thumbnailImageURL,
+                   let image = UIImage(contentsOfFile: thumbURL.path) {
+                    background = .photo(image)
+                } else if let idx = countdown.backgroundColorIndex,
+                          countdown.backgroundColorHex == ColorPalette.presets[idx].hexString {
                     background = .preset(idx)
                 } else if let hex = countdown.backgroundColorHex,
                           let color = Color(hex: hex) {
                     background = .custom(color)
-                } else if let thumbURL = countdown.thumbnailImageURL,
-                          let image = UIImage(contentsOfFile: thumbURL.path) {
-                    background = .photo(image)
-                    existingImagePath = countdown.backgroundImageURL?.path
-                    existingThumbPath = thumbURL.path
+                } else if let idx = countdown.backgroundColorIndex {
+                    background = .preset(idx)
                 }
                 startPercentage = countdown.startPercentage
                 showProgress = countdown.showProgress
@@ -273,6 +277,8 @@ struct EditCountdownView: View {
                 thumbPath = .some(nil)
             }
         case .none:
+            colorIndex = .some(nil)
+            colorHex = .some(nil)
             if existingImagePath != nil || existingThumbPath != nil {
                 if let p = existingImagePath { try? FileManager.default.removeItem(atPath: p) }
                 if let p = existingThumbPath { try? FileManager.default.removeItem(atPath: p) }

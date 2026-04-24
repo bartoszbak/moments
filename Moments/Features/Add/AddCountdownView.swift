@@ -159,7 +159,7 @@ struct AddCountdownView: View {
     @State private var targetDate = Calendar.current.startOfDay(
         for: Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
     )
-    @State private var background: BackgroundSelection = .none
+    @State private var background: BackgroundSelection = .preset(5)
     @State private var startPercentage: Double = WidgetProgressDefaults.startPercentage
     @State private var showProgress: Bool = true
     @State private var showDate: Bool = true

@@ -181,6 +181,7 @@ struct MomentPreviewScrollEdgeView: View {
                 || viewModel.isPrimaryActionEnabled(for: countdown, now: timerManager.currentTime),
             prefersResponsiveGlassStyle: prefersResponsiveGlassStyle(for: countdown),
             label: primaryActionButtonLabel(for: countdown),
+            secondaryLabel: primaryActionButtonSecondaryLabel(for: countdown),
             foregroundColor: primaryButtonForegroundColor,
             backgroundColor: primaryButtonColor,
             disabledBackgroundColor: disabledPrimaryActionBackgroundColor(for: countdown),
@@ -310,14 +311,21 @@ struct MomentPreviewScrollEdgeView: View {
             }
         }
 
-        guard viewModel.errorText == nil,
+        return title
+    }
+
+    private func primaryActionButtonSecondaryLabel(for countdown: Countdown) -> String? {
+        guard !countdown.isFutureManifestation,
+              viewModel.errorText == nil,
               viewModel.isPrimaryActionEnabled(for: countdown, now: timerManager.currentTime),
               !subscriptionService.isPremium,
               subscriptionService.freeAIGenerationsRemaining > 0 else {
-            return title
+            return nil
         }
 
-        return "\(title) (\(subscriptionService.freeAIGenerationsRemaining) available)"
+        let remaining = subscriptionService.freeAIGenerationsRemaining
+        let noun = remaining == 1 ? "generation" : "generations"
+        return "\(remaining) \(noun) available"
     }
 
     private var previewSymbolColor: Color {

@@ -7,6 +7,7 @@ struct MomentPreviewPrimaryActionButton: View {
     let isEnabled: Bool
     let prefersResponsiveGlassStyle: Bool
     let label: String
+    let secondaryLabel: String?
     let foregroundColor: Color
     let backgroundColor: Color
     let disabledBackgroundColor: Color?
@@ -15,25 +16,36 @@ struct MomentPreviewPrimaryActionButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            Group {
-                if isLoading {
-                    ThinkingActionLabel(
-                        foregroundColor: loadingForegroundColor,
-                        backgroundColor: loadingBackgroundColor
-                    )
-                } else {
-                    Text(label)
-                        .font(.headline.weight(.semibold))
-                        .foregroundStyle(resolvedForegroundColor)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(buttonBackground)
+        VStack(spacing: 8) {
+            Button(action: action) {
+                Group {
+                    if isLoading {
+                        ThinkingActionLabel(
+                            foregroundColor: loadingForegroundColor,
+                            backgroundColor: loadingBackgroundColor
+                        )
+                    } else {
+                        Text(label)
+                            .font(.headline.weight(.semibold))
+                            .foregroundStyle(resolvedForegroundColor)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                            .background(buttonBackground)
+                    }
                 }
             }
+            .buttonStyle(.plain)
+            .allowsHitTesting(!isLoading && isEnabled)
+
+            if let secondaryLabel, !isLoading {
+                Text(secondaryLabel)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity)
+            }
         }
-        .buttonStyle(.plain)
-        .allowsHitTesting(!isLoading && isEnabled)
     }
 
     private var resolvedForegroundColor: Color {
