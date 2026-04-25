@@ -21,6 +21,8 @@ struct MomentPreviewScrollEdgeView: View {
     @State private var completedRevealStages: Set<Int> = []
     @State private var heroHeight: CGFloat = 0
     @State private var reflectionHeight: CGFloat = 0
+    @State private var hasRevealedDetailContent = false
+    @State private var dragOffsetY: CGFloat = 0
 
     init(countdownID: UUID) {
         self.countdownID = countdownID
@@ -83,13 +85,34 @@ struct MomentPreviewScrollEdgeView: View {
         }
         .navigationTitle("Moment")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .topBarLeading) {
                 Button("Edit") {
                     showingEditSheet = true
                 }
                 .fontWeight(.medium)
                 .foregroundStyle(editButtonColor)
+                .opacity(hasRevealedDetailContent ? 1 : 0)
+                .offset(y: hasRevealedDetailContent ? 0 : 8)
+                .animation(.easeOut(duration: 0.24).delay(0.08), value: hasRevealedDetailContent)
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.primary)
+                        .frame(width: 30, height: 30)
+                        .background(.ultraThinMaterial, in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Dismiss")
+                .opacity(hasRevealedDetailContent ? 1 : 0)
+                .scaleEffect(hasRevealedDetailContent ? 1 : 0.92)
+                .animation(.easeOut(duration: 0.24).delay(0.1), value: hasRevealedDetailContent)
             }
         }
         .sheet(isPresented: $showingEditSheet) {
@@ -103,6 +126,7 @@ struct MomentPreviewScrollEdgeView: View {
         }
         .onAppear {
             viewModel.syncSavedReflection(from: countdown)
+            revealDetailContentIfNeeded()
         }
         .onChange(of: repository.countdowns) { _, _ in
             guard let updatedCountdown = self.countdown else {
@@ -113,6 +137,26 @@ struct MomentPreviewScrollEdgeView: View {
             }
             viewModel.syncSavedReflection(from: updatedCountdown)
         }
+        .offset(y: dragOffsetY)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 18, coordinateSpace: .local)
+                .onChanged { value in
+                    guard value.translation.height > 0 else { return }
+                    dragOffsetY = value.translation.height * 0.22
+                }
+                .onEnded { value in
+                    let shouldDismiss =
+                        value.translation.height > 140
+                        || value.predictedEndTranslation.height > 220
+                    if shouldDismiss {
+                        dismiss()
+                    } else {
+                        withAnimation(.spring(response: 0.36, dampingFraction: 0.86)) {
+                            dragOffsetY = 0
+                        }
+                    }
+                }
+        )
     }
 
     @ViewBuilder
@@ -161,9 +205,12 @@ struct MomentPreviewScrollEdgeView: View {
                 .padding(.horizontal, 32)
                 .padding(.top, 28)
                 .padding(.bottom, bottomContentPadding(for: countdown))
+                .opacity(hasRevealedDetailContent ? 1 : 0.18)
+                .offset(y: hasRevealedDetailContent ? 0 : 24)
                 .animation(.smooth(duration: 0.4, extraBounce: 0), value: viewModel.shouldShowReflectionCard)
                 .animation(.smooth(duration: 0.4, extraBounce: 0), value: heroHeight)
                 .animation(.smooth(duration: 0.4, extraBounce: 0), value: reflectionHeight)
+                .animation(.easeOut(duration: 0.34).delay(0.08), value: hasRevealedDetailContent)
         }
         .scrollIndicators(.hidden)
     }
@@ -507,5 +554,18 @@ struct MomentPreviewScrollEdgeView: View {
 
     private func bottomBlurGradientHeight(for countdown: Countdown) -> CGFloat {
         viewModel.showsBottomPrimaryAction(for: countdown, now: timerManager.currentTime) ? 52 : 40
+    }
+}
+
+private extension MomentPreviewScrollEdgeView {
+    func revealDetailContentIfNeeded() {
+        guard !hasRevealedDetailContent else { return }
+
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(120))
+            withAnimation(.easeOut(duration: 0.3)) {
+                hasRevealedDetailContent = true
+            }
+        }
     }
 }

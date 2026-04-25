@@ -28,6 +28,7 @@ struct CountdownListView: View {
     @State private var pendingMomentCountReveal = false
     @State private var momentCountRevealTrigger = 0
     @State private var lastHandledAddMomentRequestToken = 0
+    @Namespace private var cardZoomNamespace
 
     private var isiPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
@@ -119,6 +120,10 @@ struct CountdownListView: View {
                 }
                 .navigationDestination(item: $previewingCountdown) { countdown in
                     MomentPreviewScrollEdgeView(countdownID: countdown.id)
+                        .applyCardZoomNavigationTransition(
+                            sourceID: countdown.id,
+                            in: cardZoomNamespace
+                        )
                 }
             }
         }
@@ -225,6 +230,10 @@ struct CountdownListView: View {
                         currentTime: timerManager.currentTime
                     )
                 }
+                .applyCardZoomTransitionSource(
+                    sourceID: countdown.id,
+                    in: cardZoomNamespace
+                )
                 .buttonStyle(.plain)
                 .id(countdown.id)
                 .contentShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
@@ -548,6 +557,37 @@ struct CountdownListView: View {
             return !countdown.isFutureManifestation && !countdown.isExpired(at: timerManager.currentTime)
         case .present:
             return countdown.isFutureManifestation
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func applyCardZoomTransitionSource(sourceID: UUID, in namespace: Namespace.ID) -> some View {
+        if #available(iOS 18.0, *) {
+            matchedTransitionSource(
+                id: sourceID,
+                in: namespace
+            ) { source in
+                source
+                    .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            }
+        } else {
+            self
+        }
+    }
+
+    @ViewBuilder
+    func applyCardZoomNavigationTransition(sourceID: UUID, in namespace: Namespace.ID) -> some View {
+        if #available(iOS 18.0, *) {
+            navigationTransition(
+                .zoom(
+                    sourceID: sourceID,
+                    in: namespace
+                )
+            )
+        } else {
+            self
         }
     }
 }
