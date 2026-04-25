@@ -23,6 +23,7 @@ struct SettingsView: View {
     @State private var showingPremiumPaywall = false
     @State private var highlightedPaywallFeature: PremiumFeature?
     @State private var showingAboutSheet = false
+    @State private var showingBonusBackgroundsSheet = false
     @State private var settingsBadgeRotation = 0.0
 
     private var isiPad: Bool {
@@ -193,6 +194,13 @@ struct SettingsView: View {
                         SettingsRowLabel("About", systemImage: "info.circle.fill")
                     }
                     .foregroundStyle(.primary)
+
+                    Button {
+                        showingBonusBackgroundsSheet = true
+                    } label: {
+                        SettingsRowLabel("Bonus", systemImage: "giftcard.fill")
+                    }
+                    .foregroundStyle(.primary)
                 }
 
                 Section("Developer") {
@@ -236,6 +244,9 @@ struct SettingsView: View {
         }
         .id(appearanceSetting)
         .preferredColorScheme(preferredColorScheme)
+        .sheet(isPresented: $showingBonusBackgroundsSheet) {
+            BonusBackgroundsSheetView()
+        }
         .sheet(isPresented: $showingPremiumPaywall) {
             PremiumPaywallView()
                 .environmentObject(subscriptionService)

@@ -18,24 +18,27 @@ struct CountdownTileView: View {
     private var daysSince: Int { countdown.daysSince(from: currentTime) }
 
     var body: some View {
-        Group {
-            if #available(iOS 26, *) {
-                tileContent
-                    .glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
-            } else {
-                tileContent
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-                    .shadow(color: .black.opacity(colorScheme == .dark ? 0.24 : 0.12), radius: 22, x: 0, y: 12)
+        let tileShape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+
+        if #available(iOS 26, *) {
+            tileContent
+                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: cornerRadius))
+                .contentShape(tileShape)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(accessibilityLabel)
+        } else {
+            tileContent
+                .background(.ultraThinMaterial, in: tileShape)
+                .shadow(color: .black.opacity(colorScheme == .dark ? 0.24 : 0.12), radius: 22, x: 0, y: 12)
+                .clipShape(tileShape)
+                .overlay {
+                    tileShape
+                        .strokeBorder(tileBorderColor, lineWidth: 1)
+                }
+                .contentShape(tileShape)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(accessibilityLabel)
             }
-        }
-        .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .strokeBorder(tileBorderColor, lineWidth: 1)
-        }
-        .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(accessibilityLabel)
     }
 
     private var tileContent: some View {
