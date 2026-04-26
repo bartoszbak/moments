@@ -50,7 +50,7 @@ FIELD RULES:
 
 1. "anchor"
 - 1-2 sentences
-- short (4–8 words ideally)
+- short (6–12 words ideally)
 - strong, grounded, decisive
 - no first person
 - no fluff or filler

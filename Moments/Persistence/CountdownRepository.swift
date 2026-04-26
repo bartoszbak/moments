@@ -134,18 +134,20 @@ final class CountdownRepository: NSObject, ObservableObject {
 
         return [
             SeedCountdownItem(
-                title: "Euro Trip with Jordan",
-                detailsText: "Six months from now, you are stepping into a trip filled with train rides, long dinners, and stories you will keep retelling.",
+                title: "Move Into the New Place",
+                detailsText: "You are a few months away from unpacking the essentials, arranging the first evening, and making the space feel like yours.",
                 targetDate: calendar.date(byAdding: .month, value: 6, to: now)!,
                 backgroundColorIndex: 2,
-                sfSymbolName: "airplane.up.forward"
+                sfSymbolName: "sailboat.fill",
+                widgetFontOption: .rounded
             ),
             SeedCountdownItem(
-                title: "Amazing People Around Me",
-                detailsText: "You naturally attract kind, inspiring, emotionally healthy people who make life feel lighter and more expansive.",
+                title: "Supportive People Around Me",
+                detailsText: "You naturally build relationships that are calm, reciprocal, and easy to trust.",
                 targetDate: now,
-                backgroundColorIndex: 1,
-                sfSymbolName: "sparkle",
+                backgroundColorIndex: 5,
+                sfSymbolName: "sun.max.fill",
+                widgetFontOption: .serif,
                 isFutureManifestation: true
             ),
         ]
@@ -166,6 +168,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             entity.startPercentage = WidgetProgressDefaults.startPercentage
             entity.createdDate = now
             entity.sfSymbolName = MomentSymbolPolicy.normalized(item.sfSymbolName)
+            entity.widgetFontOptionRaw = item.widgetFontOption.rawValue
             entity.isFutureManifestation = item.isFutureManifestation
         }
 
@@ -180,6 +183,7 @@ final class CountdownRepository: NSObject, ObservableObject {
         let targetDate: Date
         let backgroundColorIndex: Int
         let sfSymbolName: String?
+        let widgetFontOption: WidgetFontOption
         let isFutureManifestation: Bool
 
         init(
@@ -188,6 +192,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             targetDate: Date,
             backgroundColorIndex: Int,
             sfSymbolName: String? = nil,
+            widgetFontOption: WidgetFontOption = .defaultOption,
             isFutureManifestation: Bool = false
         ) {
             self.title = title
@@ -195,6 +200,7 @@ final class CountdownRepository: NSObject, ObservableObject {
             self.targetDate = targetDate
             self.backgroundColorIndex = backgroundColorIndex
             self.sfSymbolName = sfSymbolName
+            self.widgetFontOption = widgetFontOption
             self.isFutureManifestation = isFutureManifestation
         }
     }
