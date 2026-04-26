@@ -6,6 +6,7 @@ struct CountdownWidgetView: View {
     let entry: CountdownEntry
 
     @Environment(\.widgetFamily) private var family
+    @Environment(\.showsWidgetContainerBackground) private var showsWidgetContainerBackground
 
     private var typography: WidgetTypography {
         WidgetTypography(option: entry.countdown?.widgetFontOption ?? .defaultOption)
@@ -41,7 +42,8 @@ struct CountdownWidgetView: View {
         }
 
         return AnyView(
-            VStack(alignment: .leading, spacing: 0) {
+            systemWidgetContent {
+                VStack(alignment: .leading, spacing: 0) {
             // Top row: big number (+ subtitle when symbol shown) + label or symbol
             HStack(alignment: .top, spacing: 4) {
                 if let countdown = entry.countdown {
@@ -70,7 +72,7 @@ struct CountdownWidgetView: View {
                             .minimumScaleFactor(0.4)
                             .lineLimit(1)
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding(.top, -4)
+                            .padding(.top, 2)
 
                         Spacer()
 
@@ -94,7 +96,7 @@ struct CountdownWidgetView: View {
                         .font(typography.font(size: 32, relativeTo: .largeTitle, weight: .bold))
                         .foregroundStyle(fgPrimary)
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, -7)
+                        .padding(.top, 2)
 
                     Spacer()
 
@@ -132,8 +134,7 @@ struct CountdownWidgetView: View {
                 }
             }
         }
-        .padding(1)
-        .containerBackground(for: .widget) { containerBackground }
+            }
         )
     }
 
@@ -149,7 +150,8 @@ struct CountdownWidgetView: View {
         }
 
         return AnyView(
-            VStack(alignment: .leading, spacing: 0) {
+            systemWidgetContent {
+                VStack(alignment: .leading, spacing: 0) {
             // Top row: big number + label or symbol
             HStack(alignment: .top, spacing: 4) {
                 if let countdown = entry.countdown {
@@ -178,7 +180,7 @@ struct CountdownWidgetView: View {
                             .minimumScaleFactor(0.4)
                             .lineLimit(1)
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding(.top, -7)
+                            .padding(.top, 2)
 
                         Spacer()
 
@@ -202,7 +204,7 @@ struct CountdownWidgetView: View {
                         .font(typography.font(size: 32, relativeTo: .largeTitle, weight: .bold))
                         .foregroundStyle(fgPrimary)
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.top, -7)
+                        .padding(.top, 2)
 
                     Spacer()
 
@@ -240,8 +242,7 @@ struct CountdownWidgetView: View {
                 }
             }
         }
-        .padding(1)
-        .containerBackground(for: .widget) { containerBackground }
+            }
         )
     }
 
@@ -274,8 +275,10 @@ struct CountdownWidgetView: View {
                 .font(typography.font(.caption))
                 .foregroundStyle(fgSecondary)
         }
-        .padding(1)
-        .containerBackground(for: .widget) { containerBackground }
+        .modifier(SystemWidgetChrome(
+            containerBackground: containerBackground,
+            padding: systemWidgetPadding
+        ))
     }
 
     private func minimalisticWidgetView(countdown: WidgetCountdown) -> some View {
@@ -291,8 +294,10 @@ struct CountdownWidgetView: View {
 
             minimalWidgetFooter(for: countdown)
         }
-        .padding(1)
-        .containerBackground(for: .widget) { containerBackground }
+        .modifier(SystemWidgetChrome(
+            containerBackground: containerBackground,
+            padding: systemWidgetPadding
+        ))
     }
 
     // MARK: - Accessory Circular
@@ -366,6 +371,10 @@ struct CountdownWidgetView: View {
     }
 
     private var usesLightText: Bool {
+        if !showsWidgetContainerBackground {
+            return true
+        }
+
         if let image = backgroundImage {
             return image.prefersLightForeground(afterApplyingBlackOverlay: imageOverlayAverageOpacity)
         }
@@ -409,6 +418,25 @@ struct CountdownWidgetView: View {
                 Color.white
             }
         }
+    }
+
+    private var systemWidgetPadding: EdgeInsets {
+        switch family {
+        case .systemSmall:
+            return EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)
+        case .systemMedium:
+            return EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)
+        default:
+            return EdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)
+        }
+    }
+
+    private func systemWidgetContent<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        content()
+            .modifier(SystemWidgetChrome(
+                containerBackground: containerBackground,
+                padding: systemWidgetPadding
+            ))
     }
 
     @ViewBuilder
@@ -558,6 +586,17 @@ struct CountdownWidgetView: View {
 
 }
 
+private struct SystemWidgetChrome<Background: View>: ViewModifier {
+    let containerBackground: Background
+    let padding: EdgeInsets
+
+    func body(content: Content) -> some View {
+        content
+            .padding(padding)
+            .containerBackground(for: .widget) { containerBackground }
+    }
+}
+
 private extension UIImage {
     func prefersLightForeground(afterApplyingBlackOverlay overlayOpacity: Double) -> Bool {
         let effectiveLuminance = averageLuminance * (1 - overlayOpacity)
@@ -593,11 +632,11 @@ private extension UIImage {
 #Preview(as: .systemSmall) {
     CountdownWidget()
 } timeline: {
-    CountdownEntry(date: .now, countdown: .placeholder)
+    CountdownEntry(date: .now, countdown: .placeholder, relevance: nil)
 }
 
 #Preview(as: .systemMedium) {
     CountdownWidget()
 } timeline: {
-    CountdownEntry(date: .now, countdown: .placeholder)
+    CountdownEntry(date: .now, countdown: .placeholder, relevance: nil)
 }

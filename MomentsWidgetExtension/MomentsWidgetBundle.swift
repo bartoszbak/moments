@@ -25,6 +25,8 @@ struct CountdownWidget: Widget {
         }
         .configurationDisplayName("Widget")
         .description("See how many days until or since your moment.")
+        .contentMarginsDisabled()
+        .containerBackgroundRemovable(false)
         .supportedFamilies([
             .systemSmall,
             .systemMedium,

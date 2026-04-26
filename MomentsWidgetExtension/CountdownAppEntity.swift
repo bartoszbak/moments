@@ -21,7 +21,28 @@ struct CountdownEntityQuery: EntityQuery {
     }
 
     func suggestedEntities() async throws -> [CountdownAppEntity] {
-        SharedDataStore.countdowns
+        let now = Date()
+
+        return SharedDataStore.countdowns
+            .sorted { lhs, rhs in
+                sortKey(for: lhs, now: now) < sortKey(for: rhs, now: now)
+            }
             .map { CountdownAppEntity(id: $0.id, title: $0.title) }
+    }
+
+    private func sortKey(for countdown: WidgetCountdown, now: Date) -> (Int, Date) {
+        if countdown.isToday(at: now) {
+            return (0, countdown.targetDate)
+        }
+
+        if !countdown.isFutureManifestation && !countdown.isExpired(at: now) {
+            return (1, countdown.targetDate)
+        }
+
+        if countdown.isFutureManifestation {
+            return (2, countdown.targetDate)
+        }
+
+        return (3, countdown.targetDate)
     }
 }

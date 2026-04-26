@@ -81,34 +81,48 @@ struct WidgetCountdown: Codable, Identifiable {
         MinimalWidgetProgressStyle(rawValue: minimalWidgetProgressStyleRaw ?? "") ?? .defaultStyle
     }
 
-    var isExpired: Bool {
+    func isExpired(at now: Date, calendar: Calendar = .current) -> Bool {
         if isFutureManifestation { return false }
-        let calendar = Calendar.current
-        return calendar.startOfDay(for: targetDate) < calendar.startOfDay(for: Date())
-    }
-    var isToday: Bool {
-        if isFutureManifestation { return false }
-        return Calendar.current.isDateInToday(targetDate)
+        let startOfNow = calendar.startOfDay(for: now)
+        let startOfTarget = calendar.startOfDay(for: targetDate)
+        return startOfTarget < startOfNow
     }
 
-    var daysUntil: Int {
+    func isToday(at now: Date, calendar: Calendar = .current) -> Bool {
+        if isFutureManifestation { return false }
+        return calendar.isDate(targetDate, inSameDayAs: now)
+    }
+
+    func daysUntil(from now: Date, calendar: Calendar = .current) -> Int {
         if isFutureManifestation { return 0 }
-        guard !isToday else { return 0 }
-        let calendar = Calendar.current
-        let now = Date()
+        guard !isToday(at: now, calendar: calendar) else { return 0 }
         let startOfNow = calendar.startOfDay(for: now)
         let startOfTarget = calendar.startOfDay(for: targetDate)
         return max(0, calendar.dateComponents([.day], from: startOfNow, to: startOfTarget).day ?? 0)
     }
 
-    var daysSince: Int {
+    func daysSince(from now: Date, calendar: Calendar = .current) -> Int {
         if isFutureManifestation { return 0 }
-        guard !isToday else { return 0 }
-        let calendar = Calendar.current
-        let now = Date()
+        guard !isToday(at: now, calendar: calendar) else { return 0 }
         let startOfNow = calendar.startOfDay(for: now)
         let startOfTarget = calendar.startOfDay(for: targetDate)
         return max(0, calendar.dateComponents([.day], from: startOfTarget, to: startOfNow).day ?? 0)
+    }
+
+    var isExpired: Bool {
+        isExpired(at: Date())
+    }
+
+    var isToday: Bool {
+        isToday(at: Date())
+    }
+
+    var daysUntil: Int {
+        daysUntil(from: Date())
+    }
+
+    var daysSince: Int {
+        daysSince(from: Date())
     }
 
     /// 0.0 (just created) → 1.0 (reached target)
