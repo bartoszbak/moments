@@ -140,6 +140,7 @@ struct NativeRevealText: View {
     let color: Color
     var alignment: TextAlignment = .leading
     var fontDesignOverride: Font.Design? = .rounded
+    var lineSpacing: CGFloat = 0
     var onRevealCompleted: (() -> Void)? = nil
 
     @State private var isRevealed = false
@@ -151,6 +152,7 @@ struct NativeRevealText: View {
             .fontDesign(fontDesignOverride)
             .foregroundStyle(color)
             .multilineTextAlignment(alignment)
+            .lineSpacing(lineSpacing)
             .frame(maxWidth: .infinity, alignment: alignment == .center ? .center : .leading)
             .opacity(isRevealed ? 1 : 0)
             .blur(radius: isRevealed ? 0 : 14)

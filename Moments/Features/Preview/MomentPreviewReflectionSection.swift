@@ -51,6 +51,7 @@ struct MomentPreviewReflectionSection: View {
                             color: .primary,
                             alignment: .center,
                             fontDesignOverride: nil,
+                            lineSpacing: reflectionLineSpacing,
                             onRevealCompleted: { onRevealCompleted(viewModel.guidanceStage) }
                         )
                         .transition(.opacity)
