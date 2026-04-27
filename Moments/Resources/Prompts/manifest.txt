@@ -78,7 +78,8 @@ Examples of tone:
 STYLE:
 
 - calm but firm
-- grounded, direct, precise
+- grounded, direct, precise, bold
+- giving a pump
 - minimal but strong
 - reads like a clear internal stance
 - must feel deep

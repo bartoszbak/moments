@@ -236,9 +236,27 @@ struct SettingsView: View {
                 handleManifestNotificationToggleChange(isEnabled)
             }
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                    .accessibilityLabel("Close")
+                    .foregroundStyle(doneButtonColor)
+                }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
-                        .foregroundStyle(doneButtonColor)
+                    ShareLink(
+                        item: AppShareConfig.shareText,
+                        preview: SharePreview(
+                            AppShareConfig.appName,
+                            image: Image(AppShareConfig.previewAssetName)
+                        )
+                    ) {
+                        Image(systemName: "arrowshape.turn.up.forward")
+                    }
+                    .accessibilityLabel("Share Moments")
+                    .foregroundStyle(doneButtonColor)
                 }
             }
         }
@@ -804,6 +822,17 @@ enum AppSettingsDefaults {
     static let hapticsEnabled = true
     static let hasSeenAboutSheet = false
     static let hasSeenIntroSheet = false
+}
+
+enum AppShareConfig {
+    static let appName = "Moments"
+    static let previewAssetName = "AppIconOriginalPreview"
+    static let shareURLString = "https://x.com/bartbak_"
+    static let shareMessage = "Moments helps you count down to what matters and reflect on what moved you."
+
+    static var shareText: String {
+        "\(shareMessage) \(shareURLString)"
+    }
 }
 
 enum AppIconOption: String, CaseIterable, Identifiable {
